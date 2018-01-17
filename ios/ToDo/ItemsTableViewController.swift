@@ -11,15 +11,15 @@ import RealmSwift
 
 class ItemsTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    let realm = try! Realm()
+    let realm: Realm
+    let items: Results<Item>
     
-    lazy var items: Results<Item> = {
-        return self.realm.objects(Item.self).sorted(byKeyPath: "timestamp", ascending: false)
-    }()
     var notificationToken: NotificationToken?
     var tableView = UITableView()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        self.realm = try! Realm()
+        self.items = realm.objects(Item.self).sorted(byKeyPath: "timestamp", ascending: false)
         super.init(nibName: nil, bundle: nil)
     }
     
