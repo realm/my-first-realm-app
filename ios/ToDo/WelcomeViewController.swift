@@ -31,7 +31,7 @@ class WelcomeViewController: UIViewController {
                 let textField = alertController.textFields![0] as UITextField
                 let creds = SyncCredentials.nickname(textField.text!, isAdmin: true)
                 
-                SyncUser.logIn(with: creds, server: URL(string: "https://MY_REALM_INSTANCE_ADDRESS")!, onCompletion: { [weak self](user, err) in
+                SyncUser.logIn(with: creds, server: Constants.AUTH_URL, onCompletion: { [weak self](user, err) in
                     if let _ = user {
                         self?.navigationController?.pushViewController(ItemsViewController(), animated: true)
                     } else if let error = err {

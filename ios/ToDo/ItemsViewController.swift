@@ -18,7 +18,7 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var tableView = UITableView()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: URL(string: "realms://MY_REALM_INSTANCE_ADDRESS/items")!)
+        let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: Constants.REALM_URL)
         self.realm = try! Realm(configuration: Realm.Configuration(syncConfiguration: syncConfig))
         self.items = realm.objects(Item.self).sorted(byKeyPath: "timestamp", ascending: false)
         super.init(nibName: nil, bundle: nil)
@@ -30,7 +30,7 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "To Do Item"
+        title = "Things ToDo!"
         view.addSubview(tableView)
         tableView.frame = self.view.frame
         self.tableView.delegate = self
@@ -38,7 +38,7 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         // Do any additional setup after loading the view, typically from a nib.
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(leftBarButtonDidClick))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(rightBarButtonDidClick))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(rightBarButtonDidClick))
         
         notificationToken = items.observe { [weak self] (changes) in
             guard let tableView = self?.tableView else { return }
@@ -89,10 +89,10 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     @objc func rightBarButtonDidClick() {
         let alertController = UIAlertController(title: "Logout", message: "", preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "Yes, Logout", style: .default, handler: {
+        alertController.addAction(UIAlertAction(title: "Yes, Logout", style: .destructive, handler: {
             alert -> Void in
             SyncUser.current?.logOut()
-            self.navigationController?.setViewControllers([WelcomeViewController], animated: true)
+            self.navigationController?.setViewControllers([WelcomeViewController()], animated: true)
         }))
         alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         self.present(alertController, animated: true, completion: nil)
