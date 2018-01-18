@@ -18,7 +18,8 @@ class ItemsTableViewController: UIViewController, UITableViewDelegate, UITableVi
     var tableView = UITableView()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        self.realm = try! Realm()
+        let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: URL(string: "realms://MY_REALM_INSTANCE_URL")!)
+        self.realm = try! Realm(configuration: Realm.Configuration(syncConfiguration: syncConfig))
         self.items = realm.objects(Item.self).sorted(byKeyPath: "timestamp", ascending: false)
         super.init(nibName: nil, bundle: nil)
     }
