@@ -14,6 +14,7 @@
 		E37818AB200EF7EE00231BAE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E37818A9200EF7EE00231BAE /* LaunchScreen.storyboard */; };
 		E37818B3200F002C00231BAE /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37818B2200F002C00231BAE /* Item.swift */; };
 		E37818B52010DEA200231BAE /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37818B42010DEA200231BAE /* WelcomeViewController.swift */; };
+		E37818B72011180F00231BAE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37818B62011180F00231BAE /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		E37818AC200EF7EE00231BAE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E37818B2200F002C00231BAE /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		E37818B42010DEA200231BAE /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
+		E37818B62011180F00231BAE /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +89,7 @@
 				E37818AC200EF7EE00231BAE /* Info.plist */,
 				E37818B2200F002C00231BAE /* Item.swift */,
 				E37818B42010DEA200231BAE /* WelcomeViewController.swift */,
+				E37818B62011180F00231BAE /* Constants.swift */,
 			);
 			path = ToDo;
 			sourceTree = "<group>";
@@ -221,6 +224,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E37818B72011180F00231BAE /* Constants.swift in Sources */,
 				E37818A3200EF7EE00231BAE /* ItemsViewController.swift in Sources */,
 				E37818B52010DEA200231BAE /* WelcomeViewController.swift in Sources */,
 				E37818B3200F002C00231BAE /* Item.swift in Sources */,
