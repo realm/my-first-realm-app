@@ -15,4 +15,8 @@ class Item: Object {
     @objc dynamic var isDone: Bool = false
     @objc dynamic var timestamp: Date = Date()
     
+    override static func primaryKey() -> String? {
+        return "itemId"
+    }
+    
 }

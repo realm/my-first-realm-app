@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class ItemsTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     let realm: Realm
     let items: Results<Item>
@@ -18,7 +18,7 @@ class ItemsTableViewController: UIViewController, UITableViewDelegate, UITableVi
     var tableView = UITableView()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: URL(string: "realms://MY_REALM_INSTANCE_URL")!)
+        let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: URL(string: "realms://MY_REALM_INSTANCE_ADDRESS/items")!)
         self.realm = try! Realm(configuration: Realm.Configuration(syncConfiguration: syncConfig))
         self.items = realm.objects(Item.self).sorted(byKeyPath: "timestamp", ascending: false)
         super.init(nibName: nil, bundle: nil)
@@ -38,6 +38,7 @@ class ItemsTableViewController: UIViewController, UITableViewDelegate, UITableVi
         // Do any additional setup after loading the view, typically from a nib.
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(leftBarButtonDidClick))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(rightBarButtonDidClick))
         
         notificationToken = items.observe { [weak self] (changes) in
             guard let tableView = self?.tableView else { return }
@@ -83,6 +84,17 @@ class ItemsTableViewController: UIViewController, UITableViewDelegate, UITableVi
         alertController.addTextField(configurationHandler: {(textField : UITextField!) -> Void in
             textField.placeholder = "New Item Text"
         })
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    @objc func rightBarButtonDidClick() {
+        let alertController = UIAlertController(title: "Logout", message: "", preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "Yes, Logout", style: .default, handler: {
+            alert -> Void in
+            SyncUser.current?.logOut()
+            self.navigationController?.setViewControllers([WelcomeViewController], animated: true)
+        }))
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         self.present(alertController, animated: true, completion: nil)
     }
     

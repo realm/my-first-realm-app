@@ -21,7 +21,8 @@ class WelcomeViewController: UIViewController {
         title = "Welcome"
         
         if let _ = SyncUser.current {
-            self.navigationController?.pushViewController(ItemsTableViewController(), animated: true)
+            // We have already logged in here!
+            self.navigationController?.pushViewController(ItemsViewController(), animated: true)
         } else {
             let alertController = UIAlertController(title: "Login to Realm Cloud", message: "Supply a nice nickname!", preferredStyle: .alert)
             
@@ -30,9 +31,9 @@ class WelcomeViewController: UIViewController {
                 let textField = alertController.textFields![0] as UITextField
                 let creds = SyncCredentials.nickname(textField.text!, isAdmin: true)
                 
-                SyncUser.logIn(with: creds, server: URL(string: "https://MY_REALM_INSTANCE")!, onCompletion: { [weak self](user, err) in
+                SyncUser.logIn(with: creds, server: URL(string: "https://MY_REALM_INSTANCE_ADDRESS")!, onCompletion: { [weak self](user, err) in
                     if let _ = user {
-                        self?.navigationController?.pushViewController(ItemsTableViewController(), animated: true)
+                        self?.navigationController?.pushViewController(ItemsViewController(), animated: true)
                     } else if let error = err {
                         fatalError(error.localizedDescription)
                     }

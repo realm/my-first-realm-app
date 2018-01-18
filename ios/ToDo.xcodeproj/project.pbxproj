@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		775112A78234234D6116C00E /* Pods_ToDo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2988118EB960BC5E6E1F7A15 /* Pods_ToDo.framework */; };
 		E37818A1200EF7EE00231BAE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37818A0200EF7EE00231BAE /* AppDelegate.swift */; };
-		E37818A3200EF7EE00231BAE /* ItemsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37818A2200EF7EE00231BAE /* ItemsTableViewController.swift */; };
+		E37818A3200EF7EE00231BAE /* ItemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37818A2200EF7EE00231BAE /* ItemsViewController.swift */; };
 		E37818A8200EF7EE00231BAE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E37818A7200EF7EE00231BAE /* Assets.xcassets */; };
 		E37818AB200EF7EE00231BAE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E37818A9200EF7EE00231BAE /* LaunchScreen.storyboard */; };
 		E37818B3200F002C00231BAE /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37818B2200F002C00231BAE /* Item.swift */; };
@@ -22,7 +22,7 @@
 		CA8D824E98A040D347A165BE /* Pods-ToDo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ToDo.release.xcconfig"; path = "Pods/Target Support Files/Pods-ToDo/Pods-ToDo.release.xcconfig"; sourceTree = "<group>"; };
 		E378189D200EF7EE00231BAE /* ToDo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E37818A0200EF7EE00231BAE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		E37818A2200EF7EE00231BAE /* ItemsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemsTableViewController.swift; sourceTree = "<group>"; };
+		E37818A2200EF7EE00231BAE /* ItemsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemsViewController.swift; sourceTree = "<group>"; };
 		E37818A7200EF7EE00231BAE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E37818AA200EF7EE00231BAE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E37818AC200EF7EE00231BAE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -81,7 +81,7 @@
 			isa = PBXGroup;
 			children = (
 				E37818A0200EF7EE00231BAE /* AppDelegate.swift */,
-				E37818A2200EF7EE00231BAE /* ItemsTableViewController.swift */,
+				E37818A2200EF7EE00231BAE /* ItemsViewController.swift */,
 				E37818A7200EF7EE00231BAE /* Assets.xcassets */,
 				E37818A9200EF7EE00231BAE /* LaunchScreen.storyboard */,
 				E37818AC200EF7EE00231BAE /* Info.plist */,
@@ -221,7 +221,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E37818A3200EF7EE00231BAE /* ItemsTableViewController.swift in Sources */,
+				E37818A3200EF7EE00231BAE /* ItemsViewController.swift in Sources */,
 				E37818B52010DEA200231BAE /* WelcomeViewController.swift in Sources */,
 				E37818B3200F002C00231BAE /* Item.swift in Sources */,
 				E37818A1200EF7EE00231BAE /* AppDelegate.swift in Sources */,
