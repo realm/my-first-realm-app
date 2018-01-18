@@ -55,11 +55,11 @@ public class ItemsActivity extends AppCompatActivity {
                     .setMessage("What do you want to do next?")
                     .setView(taskEditText)
                     .setPositiveButton("Add", (dialog, which) -> {
-                        mRealm.beginTransaction();
-                        Item item = new Item();
-                        item.setBody(taskEditText.getText().toString());
-                        mRealm.insert(item);
-                        mRealm.commitTransaction();
+                        mRealm.executeTransactionAsync(realm -> {
+                            Item item = new Item();
+                            item.setBody(taskEditText.getText().toString());
+                            realm.insert(item);
+                        });
                     })
                     .setNegativeButton("Cancel", null)
                     .create()
