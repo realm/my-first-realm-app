@@ -128,14 +128,6 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
     }
     
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if let oldIndex = tableView.indexPathForSelectedRow {
-            tableView.cellForRow(at: oldIndex)?.accessoryType = .none
-        }
-        tableView.cellForRow(at: indexPath as IndexPath)?.accessoryType = .checkmark
-        return indexPath
-    }
-    
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         guard editingStyle == .delete else { return }
         let item = items[indexPath.row]
