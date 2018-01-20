@@ -6,28 +6,33 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import javax.annotation.Nullable;
 
 import io.realm.OrderedCollectionChangeSet;
 import io.realm.OrderedRealmCollectionChangeListener;
-import io.realm.RealmChangeListener;
+import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
-/**
- * Created by maximilianalexander on 1/17/18.
- */
 
 class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdapter.ViewHolder> {
 
     private RealmResults<Item> mResults;
+    private Realm mRealm;
     private LayoutInflater mLayoutInflater;
     private final OrderedRealmCollectionChangeListener<RealmResults<Item>> mChangeListener;
 
-    ItemsRecyclerAdapter(Context context, RealmResults<Item> results) {
+    ItemsRecyclerAdapter(Context context, Realm realm) {
         super();
-        mResults = results;
+        mRealm = realm;
+        mResults = mRealm
+                .where(Item.class)
+                .sort("timestamp", Sort.DESCENDING)
+                .findAll();;
         mLayoutInflater = LayoutInflater.from(context);
         mChangeListener = new OrderedRealmCollectionChangeListener<RealmResults<Item>>() {
             @Override
@@ -54,16 +59,33 @@ class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdapter.Vie
                 }
             }
         };
-        results.addChangeListener(mChangeListener);
-
+        mResults.addChangeListener(mChangeListener);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView text;
+    public static class ViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnClickListener {
+        public TextView textView;
+        public CheckBox checkBox;
+        private Item mItem;
 
         ViewHolder(View itemView) {
             super(itemView);
-            text = itemView.findViewById(R.id.body_textview);
+            textView = itemView.findViewById(R.id.body);
+            checkBox = itemView.findViewById(R.id.checkbox);
+            checkBox.setOnClickListener(this);
+        }
+
+        void setItem(Item item){
+            this.mItem = item;
+            this.textView.setText(item.getBody());
+            this.checkBox.setChecked(item.getIsDone());
+        }
+
+        @Override
+        public void onClick(View v) {
+            Realm realm = this.mItem.getRealm();
+            realm.beginTransaction();
+            mItem.setIsDone(!this.mItem.getIsDone());
+            realm.commitTransaction();
         }
     }
 
@@ -80,7 +102,7 @@ class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdapter.Vie
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Item item = mResults.get(position);
-        holder.text.setText(item.getBody());
+        holder.setItem(item);
     }
 
     void removeListener() {

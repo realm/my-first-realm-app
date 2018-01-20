@@ -7,9 +7,6 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-/**
- * Created by maximilianalexander on 1/17/18.
- */
 
 public class Item extends RealmObject {
     @PrimaryKey
@@ -37,11 +34,11 @@ public class Item extends RealmObject {
         this.body = body;
     }
 
-    public Boolean getDone() {
+    public Boolean getIsDone() {
         return isDone;
     }
 
-    public void setDone(Boolean done) {
+    public void setIsDone(Boolean done) {
         isDone = done;
     }
 

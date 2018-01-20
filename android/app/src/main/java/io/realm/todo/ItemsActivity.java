@@ -1,9 +1,9 @@
 package io.realm.todo;
 
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -11,13 +11,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.EditText;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import io.realm.SyncConfiguration;
+import io.realm.SyncManager;
+import io.realm.SyncSession;
+import io.realm.SyncUser;
 
 public class ItemsActivity extends AppCompatActivity {
 
@@ -25,26 +27,23 @@ public class ItemsActivity extends AppCompatActivity {
     private ItemsRecyclerAdapter mItemsRecyclerAdapter;
     private Realm mRealm;
 
-    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_items);
-        mRealm = Realm.getDefaultInstance();
-        mRecyclerView = findViewById(R.id.recycler_view);
-        RealmResults<Item> items = mRealm
-                .where(Item.class)
-                .sort("timestamp", Sort.DESCENDING)
-                .findAll();
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        mItemsRecyclerAdapter = new ItemsRecyclerAdapter(this, items);
+        SyncConfiguration configuration = new SyncConfiguration.Builder(SyncUser.currentUser(), "realms://nickss.ngrok.io/items")
+                    .build();
+        mRealm = Realm.getInstance(configuration);
+
+        mRecyclerView = findViewById(R.id.recycler_view);
+        mItemsRecyclerAdapter = new ItemsRecyclerAdapter(this, mRealm);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mItemsRecyclerAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -78,31 +77,4 @@ public class ItemsActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mItemsRecyclerAdapter.removeListener();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_items, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }
