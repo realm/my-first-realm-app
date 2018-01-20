@@ -105,6 +105,14 @@ class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdapter.Vie
         holder.setItem(item);
     }
 
+    void removeItemAtPosition(int position) {
+        mRealm.beginTransaction();
+        Item item = mResults.get(position);
+        item.deleteFromRealm();
+        mRealm.commitTransaction();
+
+    }
+
     void removeListener() {
         mResults.removeChangeListener(mChangeListener);
     }
