@@ -18,9 +18,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    realm {
-        syncEnabled = true
-    }
+}
+
+realm {
+    syncEnabled = true
 }
 
 dependencies {
