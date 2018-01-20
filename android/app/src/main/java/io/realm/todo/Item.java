@@ -10,6 +10,7 @@ import io.realm.annotations.Required;
 
 public class Item extends RealmObject {
     @PrimaryKey
+    @Required
     private String itemId;
     @Required
     private String body;
