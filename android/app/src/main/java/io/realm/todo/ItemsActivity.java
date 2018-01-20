@@ -37,7 +37,7 @@ public class ItemsActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        SyncConfiguration configuration = new SyncConfiguration.Builder(SyncUser.currentUser(), "realms://nickss.ngrok.io/items")
+        SyncConfiguration configuration = new SyncConfiguration.Builder(SyncUser.currentUser(), "realms://MY_INSTANCE_ADDRESS/items")
                     .build();
         mRealm = Realm.getInstance(configuration);
 

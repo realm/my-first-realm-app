@@ -109,7 +109,7 @@ public class WelcomeActivity extends AppCompatActivity {
             // TODO: attempt authentication against a network service.
             SyncCredentials creds = SyncCredentials.nickname(mNickname, true);
             try {
-                SyncUser user = SyncUser.login(creds, "https://nickss.ngrok.io");
+                SyncUser user = SyncUser.login(creds, "https://MY_INSTANCE_ADDRESS");
             } catch (ObjectServerError e) {
                 Log.d("Login", e.getErrorMessage());
                 return false;
