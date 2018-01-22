@@ -1,15 +1,25 @@
+////////////////////////////////////////////////////////////////////////////
 //
-//  ViewController.swift
-//  ToDo
+// Copyright 2018 Realm Inc.
 //
-//  Created by Maximilian Alexander on 1/16/18.
-//  Copyright © 2018 Maximilian Alexander. All rights reserved.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+////////////////////////////////////////////////////////////////////////////
 
 import UIKit
 import RealmSwift
 
-class ItemsTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     let realm: Realm
     let items: Results<Item>
@@ -18,7 +28,8 @@ class ItemsTableViewController: UIViewController, UITableViewDelegate, UITableVi
     var tableView = UITableView()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        self.realm = try! Realm()
+        let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: Constants.REALM_URL)
+        self.realm = try! Realm(configuration: Realm.Configuration(syncConfiguration: syncConfig))
         self.items = realm.objects(Item.self).sorted(byKeyPath: "timestamp", ascending: false)
         super.init(nibName: nil, bundle: nil)
     }
@@ -29,7 +40,7 @@ class ItemsTableViewController: UIViewController, UITableViewDelegate, UITableVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "To Do Item"
+        title = "Things ToDo!"
         view.addSubview(tableView)
         tableView.frame = self.view.frame
         self.tableView.delegate = self
@@ -37,6 +48,7 @@ class ItemsTableViewController: UIViewController, UITableViewDelegate, UITableVi
         // Do any additional setup after loading the view, typically from a nib.
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(leftBarButtonDidClick))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(rightBarButtonDidClick))
         
         notificationToken = items.observe { [weak self] (changes) in
             guard let tableView = self?.tableView else { return }
@@ -85,6 +97,17 @@ class ItemsTableViewController: UIViewController, UITableViewDelegate, UITableVi
         self.present(alertController, animated: true, completion: nil)
     }
     
+    @objc func rightBarButtonDidClick() {
+        let alertController = UIAlertController(title: "Logout", message: "", preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "Yes, Logout", style: .destructive, handler: {
+            alert -> Void in
+            SyncUser.current?.logOut()
+            self.navigationController?.setViewControllers([WelcomeViewController()], animated: true)
+        }))
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
     }
@@ -103,14 +126,6 @@ class ItemsTableViewController: UIViewController, UITableViewDelegate, UITableVi
         try! realm.write {
             item.isDone = !item.isDone
         }
-    }
-    
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if let oldIndex = tableView.indexPathForSelectedRow {
-            tableView.cellForRow(at: oldIndex)?.accessoryType = .none
-        }
-        tableView.cellForRow(at: indexPath as IndexPath)?.accessoryType = .checkmark
-        return indexPath
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {

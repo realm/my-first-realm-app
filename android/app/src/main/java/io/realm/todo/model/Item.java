@@ -26,6 +26,7 @@ import io.realm.annotations.Required;
 
 public class Item extends RealmObject {
     @PrimaryKey
+    @Required
     private String itemId;
     @Required
     private String body;
@@ -50,11 +51,11 @@ public class Item extends RealmObject {
         this.body = body;
     }
 
-    public Boolean getDone() {
+    public Boolean getIsDone() {
         return isDone;
     }
 
-    public void setDone(Boolean done) {
+    public void setIsDone(Boolean done) {
         isDone = done;
     }
 

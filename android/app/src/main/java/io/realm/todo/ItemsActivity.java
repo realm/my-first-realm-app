@@ -21,16 +21,23 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import io.realm.SyncConfiguration;
+import io.realm.SyncUser;
 import io.realm.todo.model.Item;
 import io.realm.todo.ui.ItemsRecyclerAdapter;
+
+import static io.realm.todo.Constants.REALM_URL;
 
 public class ItemsActivity extends AppCompatActivity {
 
@@ -41,23 +48,25 @@ public class ItemsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_items);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        setSupportActionBar(findViewById(R.id.toolbar));
 
         findViewById(R.id.fab).setOnClickListener(view -> {
             final EditText taskEditText = new EditText(ItemsActivity.this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            taskEditText.setLayoutParams(params);
 
+            View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_task, null);
+            EditText taskText = dialogView.findViewById(R.id.task);
             new AlertDialog.Builder(ItemsActivity.this)
                     .setTitle("Add a new task")
                     .setMessage("What do you want to do next?")
-                    .setView(taskEditText)
+                    .setView(dialogView)
                     .setPositiveButton("Add", (dialog, which) -> {
                         mRealm.executeTransactionAsync(realm -> {
                             Item item = new Item();
-                            item.setBody(taskEditText.getText().toString());
+                            item.setBody(taskText.getText().toString());
                             realm.insert(item);
                         });
                     })
@@ -66,13 +75,43 @@ public class ItemsActivity extends AppCompatActivity {
                     .show();
         });
 
-        // Setup the recycler view with the result of the Realm query
-        mRealm = Realm.getDefaultInstance();
-        RealmResults<Item> items = mRealm
+        RealmResults<Item> items = setUpRealm();
+
+        final ItemsRecyclerAdapter itemsRecyclerAdapter = new ItemsRecyclerAdapter(items);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(itemsRecyclerAdapter);
+
+
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                int position = viewHolder.getAdapterPosition();
+                String id = itemsRecyclerAdapter.getItem(position).getItemId();
+                mRealm.executeTransactionAsync(realm -> realm.where(Item.class).equalTo("itemId", id).findFirst().deleteFromRealm());
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private RealmResults<Item> setUpRealm() {
+        SyncConfiguration configuration = new SyncConfiguration.Builder(
+                SyncUser.currentUser(),
+                REALM_URL + "/items").build();
+        mRealm = Realm.getInstance(configuration);
+
+        return mRealm
                 .where(Item.class)
                 .sort("timestamp", Sort.DESCENDING)
                 .findAllAsync();
-        recyclerView.setAdapter(new ItemsRecyclerAdapter(items));
     }
 
     @Override
@@ -90,7 +129,11 @@ public class ItemsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_logout) {
-            // TODO handle logout
+            SyncUser syncUser = SyncUser.currentUser();
+            if (syncUser != null) {
+                syncUser.logout();
+                finish();
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);

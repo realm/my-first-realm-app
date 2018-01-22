@@ -21,9 +21,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import io.realm.OrderedRealmCollection;
+import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.todo.R;
 import io.realm.todo.model.Item;
@@ -44,15 +46,33 @@ public class ItemsRecyclerAdapter extends RealmRecyclerViewAdapter<Item, ItemsRe
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final Item item = getItem(position);
-        holder.text.setText(item.getBody());
+        holder.setItem(item);
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView text;
+    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView textView;
+        CheckBox checkBox;
+        Item mItem;
 
-        MyViewHolder(View view) {
-            super(view);
-            text = itemView.findViewById(R.id.body_textview);
+        MyViewHolder(View itemView) {
+            super(itemView);
+            textView = itemView.findViewById(R.id.body);
+            checkBox = itemView.findViewById(R.id.checkbox);
+            checkBox.setOnClickListener(this);
+        }
+
+        void setItem(Item item){
+            this.mItem = item;
+            this.textView.setText(item.getBody());
+            this.checkBox.setChecked(item.getIsDone());
+        }
+
+        @Override
+        public void onClick(View v) {
+            Realm realm = this.mItem.getRealm();
+            realm.beginTransaction();
+            mItem.setIsDone(!this.mItem.getIsDone());
+            realm.commitTransaction();
         }
     }
 }
