@@ -27,7 +27,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -51,12 +50,6 @@ public class ItemsActivity extends AppCompatActivity {
         setSupportActionBar(findViewById(R.id.toolbar));
 
         findViewById(R.id.fab).setOnClickListener(view -> {
-            final EditText taskEditText = new EditText(ItemsActivity.this);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
-            taskEditText.setLayoutParams(params);
-
             View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_task, null);
             EditText taskText = dialogView.findViewById(R.id.task);
             new AlertDialog.Builder(ItemsActivity.this)
