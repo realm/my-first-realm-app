@@ -21,6 +21,8 @@ import io.realm.ObjectServerError;
 import io.realm.SyncCredentials;
 import io.realm.SyncUser;
 
+import static io.realm.todo.Constants.AUTH_URL;
+
 public class WelcomeActivity extends AppCompatActivity {
 
     private LoginTask mAuthTask = null;
@@ -109,7 +111,7 @@ public class WelcomeActivity extends AppCompatActivity {
             // TODO: attempt authentication against a network service.
             SyncCredentials creds = SyncCredentials.nickname(mNickname, true);
             try {
-                SyncUser user = SyncUser.login(creds, "https://MY_INSTANCE_ADDRESS");
+                SyncUser user = SyncUser.login(creds, AUTH_URL);
             } catch (ObjectServerError e) {
                 Log.d("Login", e.getErrorMessage());
                 return false;

@@ -32,7 +32,7 @@ class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdapter.Vie
         mResults = mRealm
                 .where(Item.class)
                 .sort("timestamp", Sort.DESCENDING)
-                .findAll();;
+                .findAll();
         mLayoutInflater = LayoutInflater.from(context);
         mChangeListener = new OrderedRealmCollectionChangeListener<RealmResults<Item>>() {
             @Override
@@ -63,8 +63,8 @@ class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdapter.Vie
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnClickListener {
-        public TextView textView;
-        public CheckBox checkBox;
+        TextView textView;
+        CheckBox checkBox;
         private Item mItem;
 
         ViewHolder(View itemView) {
@@ -108,7 +108,9 @@ class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdapter.Vie
     void removeItemAtPosition(int position) {
         mRealm.beginTransaction();
         Item item = mResults.get(position);
-        item.deleteFromRealm();
+        if (item != null) {
+            item.deleteFromRealm();
+        }
         mRealm.commitTransaction();
 
     }
