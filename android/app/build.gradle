@@ -12,14 +12,14 @@ android {
         versionName "1.0"
     }
 
-    realm {
-        syncEnabled = true
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+}
+
+realm {
+    syncEnabled = true
 }
 
 dependencies {
