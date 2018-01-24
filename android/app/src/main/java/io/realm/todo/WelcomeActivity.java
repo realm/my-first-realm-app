@@ -91,7 +91,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void goToItemsActivity(){
-        Intent intent = new Intent(WelcomeActivity.this, ItemsActivity.class);
+        Intent intent = new Intent(WelcomeActivity.this, CategoriesActivity.class);
         startActivity(intent);
     }
 }

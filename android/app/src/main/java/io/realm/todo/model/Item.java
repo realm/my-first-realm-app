@@ -35,6 +35,8 @@ public class Item extends RealmObject {
     @Required
     private Date timestamp;
 
+    private String category;
+
     public String getItemId() {
         return itemId;
     }
@@ -65,6 +67,14 @@ public class Item extends RealmObject {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public Item() {

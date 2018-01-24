@@ -26,7 +26,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -41,17 +43,28 @@ import static io.realm.todo.Constants.REALM_URL;
 public class ItemsActivity extends AppCompatActivity {
 
     private Realm mRealm;
+    private String category;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_items);
 
+        // get the selected category
+        category = getIntent().getStringExtra("category");
+
         setSupportActionBar(findViewById(R.id.toolbar));
 
         findViewById(R.id.fab).setOnClickListener(view -> {
             View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_task, null);
             EditText taskText = dialogView.findViewById(R.id.task);
+
+            Spinner spinner = dialogView.findViewById(R.id.categories);
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                    R.array.category_array, android.R.layout.simple_spinner_item);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(adapter);
+
             new AlertDialog.Builder(ItemsActivity.this)
                     .setTitle("Add a new task")
                     .setMessage("What do you want to do next?")
@@ -60,6 +73,7 @@ public class ItemsActivity extends AppCompatActivity {
                         mRealm.executeTransactionAsync(realm -> {
                             Item item = new Item();
                             item.setBody(taskText.getText().toString());
+                            item.setCategory(spinner.getSelectedItem().toString());
                             realm.insert(item);
                         });
                     })
@@ -96,21 +110,36 @@ public class ItemsActivity extends AppCompatActivity {
     }
 
     private RealmResults<Item> setUpRealm() {
+        // Use Partial Sync to only sync on the device the Items
+        // belonging to the selected category
         SyncConfiguration configuration = new SyncConfiguration.Builder(
                 SyncUser.currentUser(),
-                REALM_URL + "/items").build();
+                REALM_URL + "/items")
+                .partialRealm()
+                .build();
         mRealm = Realm.getInstance(configuration);
 
         return mRealm
                 .where(Item.class)
+                .equalTo("category", category)
                 .sort("timestamp", Sort.DESCENDING)
-                .findAllAsync();
+                .findAllAsync("subscription");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mRealm.close();
+        mRealm.unsubscribeAsync("subscription", new Realm.UnsubscribeCallback() {
+            @Override
+            public void onSuccess(String subscriptionName) {
+                mRealm.close();
+            }
+
+            @Override
+            public void onError(String subscriptionName, Throwable error) {
+                mRealm.close();
+            }
+        });
     }
 
     @Override

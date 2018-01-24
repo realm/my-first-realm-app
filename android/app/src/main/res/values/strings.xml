@@ -15,4 +15,10 @@
         completions."
     </string>
 
+    <string-array name="category_array">
+        <item>Work</item>
+        <item>Personal</item>
+        <item>Hobby</item>
+    </string-array>
+
 </resources>

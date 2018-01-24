@@ -24,7 +24,13 @@
         <activity
             android:name=".ItemsActivity"
             android:label="@string/title_activity_items"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+            android:name=".CategoriesActivity"
+            android:label="@string/title_activity_items"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
     </application>
 
 </manifest>
