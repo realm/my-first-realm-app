@@ -10,7 +10,7 @@ struct Constants {
     
     static var REALM_URL: URL {
         let realmsUrlString = Constants.AUTH_URL.absoluteString.replacingOccurrences(of: "https://", with: "realms://")
-        return URL(string: realmsUrlString)!
+        return URL(string: "\(realmsUrlString)/ToDo")!
     }
     
 }
