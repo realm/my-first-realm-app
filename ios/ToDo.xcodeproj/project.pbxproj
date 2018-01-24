@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		775112A78234234D6116C00E /* Pods_ToDo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2988118EB960BC5E6E1F7A15 /* Pods_ToDo.framework */; };
+		8BC3DFAD2017D84000F302FE /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 8BC3DFAC2017D84000F302FE /* README.md */; };
 		E37818A1200EF7EE00231BAE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37818A0200EF7EE00231BAE /* AppDelegate.swift */; };
 		E37818A3200EF7EE00231BAE /* ItemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37818A2200EF7EE00231BAE /* ItemsViewController.swift */; };
 		E37818A8200EF7EE00231BAE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E37818A7200EF7EE00231BAE /* Assets.xcassets */; };
@@ -20,6 +21,7 @@
 /* Begin PBXFileReference section */
 		2988118EB960BC5E6E1F7A15 /* Pods_ToDo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ToDo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E7717A4F035623313ACD46C /* Pods-ToDo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ToDo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ToDo/Pods-ToDo.debug.xcconfig"; sourceTree = "<group>"; };
+		8BC3DFAC2017D84000F302FE /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		CA8D824E98A040D347A165BE /* Pods-ToDo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ToDo.release.xcconfig"; path = "Pods/Target Support Files/Pods-ToDo/Pods-ToDo.release.xcconfig"; sourceTree = "<group>"; };
 		E378189D200EF7EE00231BAE /* ToDo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E37818A0200EF7EE00231BAE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -64,6 +66,7 @@
 		E3781894200EF7EE00231BAE = {
 			isa = PBXGroup;
 			children = (
+				8BC3DFAC2017D84000F302FE /* README.md */,
 				E378189F200EF7EE00231BAE /* ToDo */,
 				E378189E200EF7EE00231BAE /* Products */,
 				5F05071D7CEA4F1A32EA11DB /* Pods */,
@@ -156,6 +159,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BC3DFAD2017D84000F302FE /* README.md in Resources */,
 				E37818AB200EF7EE00231BAE /* LaunchScreen.storyboard in Resources */,
 				E37818A8200EF7EE00231BAE /* Assets.xcassets in Resources */,
 			);
