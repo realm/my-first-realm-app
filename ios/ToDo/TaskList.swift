@@ -22,7 +22,7 @@ class TaskList: Object {
     
     @objc dynamic var listId: String = UUID().uuidString
     @objc dynamic var name: String = ""
-    @objc dynamic var timestamp: Date = Date()
+    @objc dynamic var owner: String = ""
     
     let items = List<Item>()
     

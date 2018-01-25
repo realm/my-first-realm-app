@@ -29,7 +29,7 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: Constants.REALM_URL)
-        self.realm = try! Realm(configuration: Realm.Configuration(syncConfiguration: syncConfig))
+        self.realm = try! Realm(configuration: Realm.Configuration(syncConfiguration: syncConfig, objectTypes:[Item.self, TaskList.self]))
         self.items = realm.objects(Item.self).sorted(byKeyPath: "timestamp", ascending: false)
         super.init(nibName: nil, bundle: nil)
     }
