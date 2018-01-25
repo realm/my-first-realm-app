@@ -25,7 +25,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import io.realm.OrderedRealmCollection;
-import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.todo.R;
 import io.realm.todo.model.Item;
@@ -69,10 +68,14 @@ public class ItemsRecyclerAdapter extends RealmRecyclerViewAdapter<Item, ItemsRe
 
         @Override
         public void onClick(View v) {
-            Realm realm = this.mItem.getRealm();
-            realm.beginTransaction();
-            mItem.setIsDone(!this.mItem.getIsDone());
-            realm.commitTransaction();
+            String itemId = mItem.getItemId();
+            boolean isDone = this.mItem.getIsDone();
+            this.mItem.getRealm().executeTransactionAsync(realm -> {
+                Item item = realm.where(Item.class).equalTo("itemId", itemId).findFirst();
+                if (item != null) {
+                    item.setIsDone(!isDone);
+                }
+            });
         }
     }
 }

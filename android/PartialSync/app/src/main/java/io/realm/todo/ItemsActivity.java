@@ -38,7 +38,7 @@ import io.realm.todo.ui.ItemsRecyclerAdapter;
 
 public class ItemsActivity extends AppCompatActivity {
 
-    private Realm mRealm;
+    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +56,7 @@ public class ItemsActivity extends AppCompatActivity {
                     .setTitle("Add a new task")
                     .setMessage("What do you want to do next?")
                     .setView(dialogView)
-                    .setPositiveButton("Add", (dialog, which) -> mRealm.executeTransactionAsync(realm -> {
+                    .setPositiveButton("Add", (dialog, which) -> realm.executeTransactionAsync(realm -> {
                         Item item = new Item();
                         item.setBody(taskText.getText().toString());
                         realm.where(Project.class).equalTo("id", projectId).findFirst().getTasks().add(item);
@@ -66,9 +66,10 @@ public class ItemsActivity extends AppCompatActivity {
                     .show();
         });
 
-        mRealm = Realm.getDefaultInstance();
-        Project project = mRealm.where(Project.class).equalTo("id", projectId).findFirst();
+        realm = Realm.getDefaultInstance();
+        Project project = realm.where(Project.class).equalTo("id", projectId).findFirst();
 
+        setTitle(project.getName());
         final ItemsRecyclerAdapter itemsRecyclerAdapter = new ItemsRecyclerAdapter(project.getTasks().sort("timestamp", Sort.ASCENDING));
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -85,12 +86,13 @@ public class ItemsActivity extends AppCompatActivity {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = viewHolder.getAdapterPosition();
                 String id = itemsRecyclerAdapter.getItem(position).getItemId();
-                mRealm.executeTransactionAsync(realm ->
-                        realm.where(Item.class)
-                                .equalTo("itemId", id)
-                                .findFirst()
-                                .deleteFromRealm()
-                );
+                realm.executeTransactionAsync(realm -> {
+                    Item item = realm.where(Item.class).equalTo("itemId", id)
+                            .findFirst();
+                    if (item != null) {
+                        item.deleteFromRealm();
+                    }
+                });
             }
         };
 
@@ -101,7 +103,7 @@ public class ItemsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mRealm.close();
+        realm.close();
     }
 
     @Override

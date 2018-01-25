@@ -30,6 +30,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import java.util.Date;
+import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -39,7 +40,7 @@ import io.realm.todo.model.Project;
 import io.realm.todo.ui.ProjectsRecyclerAdapter;
 
 public class ProjectsActivity extends AppCompatActivity {
-    private Realm mRealm;
+    private Realm realm;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,14 +55,12 @@ public class ProjectsActivity extends AppCompatActivity {
             new AlertDialog.Builder(ProjectsActivity.this)
                     .setTitle("Add a new project")
                     .setView(dialogView)
-                    .setPositiveButton("Add", (dialog, which) -> mRealm.executeTransactionAsync(realm -> {
+                    .setPositiveButton("Add", (dialog, which) -> realm.executeTransactionAsync(realm -> {
                         Project project = new Project();
                         String userId = SyncUser.currentUser().getIdentity();
                         String name = taskText.getText().toString();
 
-                        // To avoid collision we use an id composed
-                        // of the name + SyncUser#id
-                        project.setId(userId + name);
+                        project.setId(UUID.randomUUID().toString());
                         project.setOwner(userId);
                         project.setName(name);
                         project.setTimestamp(new Date());
@@ -75,8 +74,8 @@ public class ProjectsActivity extends AppCompatActivity {
 
         // using the current SyncUser#id, perform a partial query to obtain
         // only projects belonging to this SyncUser.
-        mRealm = Realm.getDefaultInstance();
-        RealmResults<Project> projects = mRealm
+        realm = Realm.getDefaultInstance();
+        RealmResults<Project> projects = realm
                 .where(Project.class)
                 .equalTo("owner", SyncUser.currentUser().getIdentity())
                 .sort("timestamp", Sort.DESCENDING)
@@ -91,7 +90,7 @@ public class ProjectsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mRealm.close();
+        realm.close();
     }
 
     @Override
