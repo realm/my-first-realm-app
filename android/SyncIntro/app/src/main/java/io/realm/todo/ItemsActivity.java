@@ -16,6 +16,7 @@
 
 package io.realm.todo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -36,11 +37,11 @@ import io.realm.SyncUser;
 import io.realm.todo.model.Item;
 import io.realm.todo.ui.ItemsRecyclerAdapter;
 
-import static io.realm.todo.Constants.REALM_URL;
+import static io.realm.todo.Constants.REALM_BASE_URL;
 
 public class ItemsActivity extends AppCompatActivity {
 
-    private Realm mRealm;
+    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,7 @@ public class ItemsActivity extends AppCompatActivity {
                     .setMessage("What do you want to do next?")
                     .setView(dialogView)
                     .setPositiveButton("Add", (dialog, which) -> {
-                        mRealm.executeTransactionAsync(realm -> {
+                        realm.executeTransactionAsync(realm -> {
                             Item item = new Item();
                             item.setBody(taskText.getText().toString());
                             realm.insert(item);
@@ -87,7 +88,14 @@ public class ItemsActivity extends AppCompatActivity {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = viewHolder.getAdapterPosition();
                 String id = itemsRecyclerAdapter.getItem(position).getItemId();
-                mRealm.executeTransactionAsync(realm -> realm.where(Item.class).equalTo("itemId", id).findFirst().deleteFromRealm());
+                realm.executeTransactionAsync(realm -> {
+                    Item item = realm.where(Item.class)
+                            .equalTo("itemId", id)
+                            .findFirst();
+                    if (item != null) {
+                        item.deleteFromRealm();
+                    }
+                });
             }
         };
 
@@ -98,10 +106,10 @@ public class ItemsActivity extends AppCompatActivity {
     private RealmResults<Item> setUpRealm() {
         SyncConfiguration configuration = new SyncConfiguration.Builder(
                 SyncUser.currentUser(),
-                REALM_URL + "/items").build();
-        mRealm = Realm.getInstance(configuration);
+                REALM_BASE_URL + "/items").build();
+        realm = Realm.getInstance(configuration);
 
-        return mRealm
+        return realm
                 .where(Item.class)
                 .sort("timestamp", Sort.DESCENDING)
                 .findAllAsync();
@@ -110,7 +118,7 @@ public class ItemsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mRealm.close();
+        realm.close();
     }
 
     @Override
@@ -125,7 +133,9 @@ public class ItemsActivity extends AppCompatActivity {
             SyncUser syncUser = SyncUser.currentUser();
             if (syncUser != null) {
                 syncUser.logout();
-                finish();
+                Intent intent = new Intent(this, WelcomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             }
             return true;
         }
