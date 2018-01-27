@@ -51,7 +51,6 @@ class WelcomeViewController: UIViewController {
                     }
                 })
             }))
-            alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             alertController.addTextField(configurationHandler: {(textField : UITextField!) -> Void in
                 textField.placeholder = "A Name for your user"
             })
