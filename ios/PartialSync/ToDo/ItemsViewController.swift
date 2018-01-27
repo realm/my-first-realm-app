@@ -22,9 +22,10 @@ import RealmSwift
 class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     let realm: Realm
-    var items: Results<Item>?
+    var items: List<Item>?
     var project: Project?
-    
+    var projectId = ""
+
     var notificationToken: NotificationToken?
     var tableView = UITableView()
     
@@ -40,11 +41,12 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.items = project?.items
         
-        //self.items = realm.subscribe(to: Item.self, where: <#T##String#>, completion: <#T##(Results<T>?, Error?) -> Void#>)
-        self.items = realm.objects(Item.self).filter(NSPredicate(format:"owner = %s", SyncUser.current!.identity!)).sorted(byKeyPath: "timestamp", ascending: false)
+        // Add partial syhnc query here...
+        //realm.objects(Item.self).filter(NSPredicate(format:"owner = %s", SyncUser.current!.identity!)).sorted(byKeyPath: "timestamp", ascending: false)
 
-        title = "Things ToDo!"
+        title = project?.name ?? "Unnamed Project"
         view.addSubview(tableView)
         tableView.frame = self.view.frame
         self.tableView.delegate = self
@@ -54,7 +56,7 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(leftBarButtonDidClick))
         let logoutButton = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(rightBarButtonDidClick))
         
-        navigationItem.rightBarButtonItems = [addButton, logoutButton]
+        navigationItem.rightBarButtonItems = [logoutButton, addButton]
         
         
         notificationToken = items?.observe { [weak self] (changes) in
@@ -93,8 +95,9 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             let item = Item()
             item.body = textField.text ?? ""
 
-            try! self.realm.write {
-                self.realm.add(item)
+            try! self.project?.realm?.write {
+                self.project?.items.append(item)
+                // note we use the project's realminstance to add,  ut we subscribe to the oiems using the local realminstance.
             }
             // do something with textField
         }))
@@ -117,7 +120,7 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items!.count
+        return items?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

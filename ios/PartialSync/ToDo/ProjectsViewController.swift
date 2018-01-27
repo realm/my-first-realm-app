@@ -30,7 +30,7 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: Constants.REALM_URL)
         realm = try! Realm(configuration: Realm.Configuration(syncConfiguration: syncConfig))
-        projects = realm.objects(Project.self).filter("owner = \(SyncUser.current!.identity!)").sorted(byKeyPath: "timestamp", ascending: false)
+        projects = realm.objects(Project.self).filter(NSPredicate(format: "owner = '\(SyncUser.current!.identity!)'")).sorted(byKeyPath: "timestamp", ascending: false)
         //let subscription = projects.subscribe(named: "my-projects")
 
         

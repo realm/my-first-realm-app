@@ -32,7 +32,8 @@ class WelcomeViewController: UIViewController {
         
         if let _ = SyncUser.current {
             // We have already logged in here!
-            self.navigationController?.pushViewController(ItemsViewController(), animated: true)
+            self.navigationController?.viewControllers = [ProjectsViewController()]
+            //self.navigationController?.pushViewController(ItemsViewController(), animated: true)
         } else {
             let alertController = UIAlertController(title: "Login to Realm Cloud", message: "Supply a nice nickname!", preferredStyle: .alert)
             
@@ -43,7 +44,8 @@ class WelcomeViewController: UIViewController {
                 
                 SyncUser.logIn(with: creds, server: Constants.AUTH_URL, onCompletion: { [weak self](user, err) in
                     if let _ = user {
-                        self?.navigationController?.pushViewController(ProjectsViewController(), animated: true)
+                        self?.navigationController?.viewControllers = [ProjectsViewController()]
+                        //self?.navigationController?.pushViewController(ProjectsViewController(), animated: true)
                     } else if let error = err {
                         fatalError(error.localizedDescription)
                     }
