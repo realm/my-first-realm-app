@@ -26,25 +26,19 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     
     var notificationToken: NotificationToken?
     var tableView = UITableView()
+    let activityIndicator = UIActivityIndicatorView()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: Constants.REALM_URL)
+        let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: Constants.REALM_URL, isPartial: true)
         realm = try! Realm(configuration: Realm.Configuration(syncConfiguration: syncConfig))
-        projects = realm.objects(Project.self).filter(NSPredicate(format: "owner = '\(SyncUser.current!.identity!)'")).sorted(byKeyPath: "timestamp", ascending: false)
-        //let subscription = projects.subscribe(named: "my-projects")
-
         
-        /*
-         
-        let results = realm.objects(MyObject.self).filter("number > 5")
-        let subscription = results.subscribe(named: "big-numbers")
-        activityIndicator.startAnimating()
-        let subscriptionToken = subscription.observe(\.state, options: .initial) { state in
-        if state == .complete {
-            activityIndicator.stopAnimating()
-            }
-        }
-        */
+        // In a fully-synchronised use, we would just get all of the Project rows in the Realm:
+        //projects = realm.objects(Project.self).filter(NSPredicate(format: "owner = '\(SyncUser.current!.identity!)'")).sorted(byKeyPath: "timestamp", ascending: false)
+
+        // A more finely-tuned use case we would only subscribe to our own Projects:
+         projects = realm.objects(Project.self).filter(NSPredicate(format: "owner = '\(SyncUser.current!.identity!)'")).sorted(byKeyPath: "timestamp", ascending: false)
+
+        self.activityIndicator.hidesWhenStopped = true
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -63,6 +57,16 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(leftBarButtonDidClick))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(rightBarButtonDidClick))
+        
+        let subscription = projects.subscribe(named: "my-projects")
+        activityIndicator.center = self.view.center
+        activityIndicator.startAnimating()
+        let subscriptionToken = subscription.observe(\.state, options: .initial) { state in
+            if state == .complete {
+                self.activityIndicator.stopAnimating()
+            }
+        }
+
         
         notificationToken = projects.observe { [weak self] (changes) in
             guard let tableView = self?.tableView else { return }

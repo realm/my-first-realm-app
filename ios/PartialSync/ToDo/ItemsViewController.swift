@@ -41,10 +41,8 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
         self.items = project?.items
-        
-        // Add partial syhnc query here...
-        //realm.objects(Item.self).filter(NSPredicate(format:"owner = %s", SyncUser.current!.identity!)).sorted(byKeyPath: "timestamp", ascending: false)
 
         title = project?.name ?? "Unnamed Project"
         view.addSubview(tableView)
