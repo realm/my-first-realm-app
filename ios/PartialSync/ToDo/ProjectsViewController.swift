@@ -48,12 +48,13 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Projects"
+        title = "My Projects"
         view.addSubview(tableView)
+        view.addSubview(activityIndicator)
+
         tableView.frame = self.view.frame
-        self.tableView.delegate = self
-        self.tableView.dataSource = self
-        // Do any additional setup after loading the view, typically from a nib.
+        tableView.delegate = self
+        tableView.dataSource = self
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(leftBarButtonDidClick))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(rightBarButtonDidClick))
@@ -132,10 +133,11 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") ?? UITableViewCell(style: .default, reuseIdentifier: "Cell")
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") ?? UITableViewCell(style: .subtitle, reuseIdentifier: "Cell")
         cell.selectionStyle = .none
         let project = projects[indexPath.row]
         cell.textLabel?.text = project.name
+        cell.detailTextLabel?.text = project.items.count > 0 ? "\(project.items.count) task(s)" : "No tasks"
         return cell
     }
     
