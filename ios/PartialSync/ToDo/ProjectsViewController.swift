@@ -25,6 +25,7 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     let projects: Results<Project>
     
     var notificationToken: NotificationToken?
+
     var tableView = UITableView()
     let activityIndicator = UIActivityIndicatorView()
     
@@ -51,6 +52,7 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         title = "My Projects"
         view.addSubview(tableView)
         view.addSubview(activityIndicator)
+        activityIndicator.center = self.view.center
 
         tableView.frame = self.view.frame
         tableView.delegate = self
@@ -60,7 +62,6 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(rightBarButtonDidClick))
         
         let subscription = projects.subscribe(named: "my-projects")
-        activityIndicator.center = self.view.center
         activityIndicator.startAnimating()
         let subscriptionToken = subscription.observe(\.state, options: .initial) { state in
             if state == .complete {
