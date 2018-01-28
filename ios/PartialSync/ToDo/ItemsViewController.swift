@@ -21,17 +21,13 @@ import RealmSwift
 
 class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    let realm: Realm
     var items: List<Item>?
     var project: Project?
-    var projectId = ""
 
     var notificationToken: NotificationToken?
     var tableView = UITableView()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: Constants.REALM_URL, isPartial: true)
-        self.realm = try! Realm(configuration: Realm.Configuration(syncConfiguration: syncConfig))
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -51,8 +47,8 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.tableView.dataSource = self
         // Do any additional setup after loading the view, typically from a nib.
         
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(leftBarButtonDidClick))
-        let logoutButton = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(rightBarButtonDidClick))
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButtonDidClick))
+        let logoutButton = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutButtonDidClick))
         
         navigationItem.rightBarButtonItems = [logoutButton, addButton]
         
@@ -84,7 +80,7 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         notificationToken?.invalidate()
     }
     
-    @objc func leftBarButtonDidClick() {
+    @objc func addItemButtonDidClick() {
         let alertController = UIAlertController(title: "Add Item", message: "", preferredStyle: .alert)
         
         alertController.addAction(UIAlertAction(title: "Save", style: .default, handler: {
@@ -95,7 +91,6 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
             try! self.project?.realm?.write {
                 self.project?.items.append(item)
-                // note we use the project's realminstance to add,  ut we subscribe to the oiems using the local realminstance.
             }
             // do something with textField
         }))
@@ -106,7 +101,7 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.present(alertController, animated: true, completion: nil)
     }
     
-    @objc func rightBarButtonDidClick() {
+    @objc func logoutButtonDidClick() {
         let alertController = UIAlertController(title: "Logout", message: "", preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "Yes, Logout", style: .destructive, handler: {
             alert -> Void in
@@ -132,7 +127,7 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = items?[indexPath.row]
-        try! realm.write {
+        try! self.project?.realm?.write {
             item!.isDone = !(item!.isDone)
         }
     }
@@ -140,8 +135,8 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         guard editingStyle == .delete else { return }
         let item = items?[indexPath.row]
-        try! realm.write {
-            realm.delete(item!)
+        try! self.project?.realm?.write {
+            self.project?.realm?.delete(item!)
         }
     }
 

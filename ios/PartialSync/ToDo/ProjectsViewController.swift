@@ -58,14 +58,15 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.delegate = self
         tableView.dataSource = self
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(leftBarButtonDidClick))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(rightBarButtonDidClick))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButtonDidClick))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutButtonDidClick))
         
         let subscription = projects.subscribe(named: "my-projects")
         activityIndicator.startAnimating()
         let subscriptionToken = subscription.observe(\.state, options: .initial) { state in
             if state == .complete {
                 self.activityIndicator.stopAnimating()
+                self.tableView.reloadData()
             }
         }
 
@@ -97,7 +98,7 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         notificationToken?.invalidate()
     }
     
-    @objc func leftBarButtonDidClick() {
+    @objc func addItemButtonDidClick() {
         let alertController = UIAlertController(title: "Add New Project", message: "", preferredStyle: .alert)
         
         alertController.addAction(UIAlertAction(title: "Save", style: .default, handler: {
@@ -118,7 +119,7 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         self.present(alertController, animated: true, completion: nil)
     }
     
-    @objc func rightBarButtonDidClick() {
+    @objc func logoutButtonDidClick() {
         let alertController = UIAlertController(title: "Logout", message: "", preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "Yes, Logout", style: .destructive, handler: {
             alert -> Void in
