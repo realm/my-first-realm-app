@@ -14,7 +14,7 @@ struct Constants {
 
     static var REALM_URL: URL {
         // return URL(string: "realms://MY_INSTANCE_ADDRESS/ToDo")!
-        return URL(string: "realms://todo.us1.cloud.realm.ioTo/ToDo")!
+        return URL(string: "realms://todo.us1.cloud.realm.io/ToDo")!
     }
 }
 
