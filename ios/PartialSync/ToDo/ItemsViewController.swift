@@ -38,20 +38,18 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.items = project?.items
+        self.items = project?.items // get the list of items from the project
 
         title = project?.name ?? "Unnamed Project"
         view.addSubview(tableView)
         tableView.frame = self.view.frame
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        // Do any additional setup after loading the view, typically from a nib.
         
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButtonDidClick))
         let logoutButton = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutButtonDidClick))
         
         navigationItem.rightBarButtonItems = [logoutButton, addButton]
-        
         
         notificationToken = items?.observe { [weak self] (changes) in
             guard let tableView = self?.tableView else { return }

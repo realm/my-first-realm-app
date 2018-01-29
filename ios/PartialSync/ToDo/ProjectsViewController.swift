@@ -23,9 +23,9 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     
     let realm: Realm
     let projects: Results<Project>
-    
     var notificationToken: NotificationToken?
-
+    var subscriptionToken: NotificationToken?
+    
     var tableView = UITableView()
     let activityIndicator = UIActivityIndicatorView()
     
@@ -33,13 +33,8 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: Constants.REALM_URL, isPartial: true)
         realm = try! Realm(configuration: Realm.Configuration(syncConfiguration: syncConfig))
         
-        // In a fully-synchronised use, we would just get all of the Project rows in the Realm:
-        //projects = realm.objects(Project.self).filter(NSPredicate(format: "owner = '\(SyncUser.current!.identity!)'")).sorted(byKeyPath: "timestamp", ascending: false)
-
-        // A more finely-tuned use case we would only subscribe to our own Projects:
-         projects = realm.objects(Project.self).filter(NSPredicate(format: "owner = '\(SyncUser.current!.identity!)'")).sorted(byKeyPath: "timestamp", ascending: false)
-
-        self.activityIndicator.hidesWhenStopped = true
+        projects = realm.objects(Project.self).filter(NSPredicate(format: "owner = '\(SyncUser.current!.identity!)'")).sorted(byKeyPath: "timestamp", ascending: false)
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -53,7 +48,10 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         view.addSubview(tableView)
         view.addSubview(activityIndicator)
         activityIndicator.center = self.view.center
-
+        activityIndicator.color = .darkGray
+        activityIndicator.isHidden = false
+        activityIndicator.hidesWhenStopped = true
+        
         tableView.frame = self.view.frame
         tableView.delegate = self
         tableView.dataSource = self
@@ -61,15 +59,19 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButtonDidClick))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutButtonDidClick))
         
+        // In a Partial Sync use case this is where we tell the server we want to
+        // subscribe to a particular query.
         let subscription = projects.subscribe(named: "my-projects")
+        
         activityIndicator.startAnimating()
-        let subscriptionToken = subscription.observe(\.state, options: .initial) { state in
+        subscriptionToken = subscription.observe(\.state, options: .initial) { state in
             if state == .complete {
                 self.activityIndicator.stopAnimating()
-                self.tableView.reloadData()
+            } else {
+                print("Subscription State: \(state)")
             }
         }
-
+        
         
         notificationToken = projects.observe { [weak self] (changes) in
             guard let tableView = self?.tableView else { return }
@@ -96,6 +98,8 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     
     deinit {
         notificationToken?.invalidate()
+        subscriptionToken?.invalidate()
+        activityIndicator.stopAnimating()
     }
     
     @objc func addItemButtonDidClick() {
@@ -150,14 +154,32 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         self.navigationController?.pushViewController(itemsVC, animated: true)
     }
     
-//    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-//        guard editingStyle == .delete else { return }
-//        let item = items[indexPath.row]
-//        try! realm.write {
-//            realm.delete(item)
-//        }
-//    }
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        guard editingStyle == .delete else { return }
+        let project = projects[indexPath.row]
+        if project.items.count > 0 {
+            confirmDeleteProjectAndTasks(project: project)
+        } else {
+            deleteProject(project)
+        }
+    }
+    
+    @objc func confirmDeleteProjectAndTasks(project: Project) {
+        let alertController = UIAlertController(title: "Delete \(project.name)?", message: "This will delete \(project.items.count) task(s)", preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "Yes, Delete \(project.name)", style: .destructive, handler: {
+            alert -> Void in
+            self.deleteProject(project)
+        }))
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        self.present(alertController, animated: true, completion: nil)
+    }
 
-
+    func deleteProject(_ project:Project) {
+        try! realm.write {
+            realm.delete(project.items)
+            realm.delete(project)
+        }
+    }
+    
 }
 
