@@ -1,0 +1,38 @@
+PODS:
+  - Realm (3.1.0):
+    - Realm/Headers (= 3.1.0)
+  - Realm/Headers (3.1.0)
+  - RealmSwift (3.1.0):
+    - Realm (= 3.1.0)
+
+DEPENDENCIES:
+  - Realm (from `https://github.com/realm/realm-cocoa`, branch `mar/partial-sync`)
+  - RealmSwift (from `https://github.com/realm/realm-cocoa`, branch `mar/partial-sync`)
+
+EXTERNAL SOURCES:
+  Realm:
+    :branch: mar/partial-sync
+    :git: https://github.com/realm/realm-cocoa
+    :submodules: true
+  RealmSwift:
+    :branch: mar/partial-sync
+    :git: https://github.com/realm/realm-cocoa
+    :submodules: true
+
+CHECKOUT OPTIONS:
+  Realm:
+    :commit: 6c6a337c032d2519e9affeb69359d58f82f68432
+    :git: https://github.com/realm/realm-cocoa
+    :submodules: true
+  RealmSwift:
+    :commit: 6c6a337c032d2519e9affeb69359d58f82f68432
+    :git: https://github.com/realm/realm-cocoa
+    :submodules: true
+
+SPEC CHECKSUMS:
+  Realm: 09513d7c054678d65cd02ce09871f805b0d758ac
+  RealmSwift: d4db6bba6d5f1f5363e5a9ad607c11a823ffa34f
+
+PODFILE CHECKSUM: 6e5d8502177f3fbaa235f24e01fd6c22c9346e0d
+
+COCOAPODS: 1.4.0.rc.1
