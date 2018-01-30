@@ -25,6 +25,7 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     let projects: Results<Project>
     var notificationToken: NotificationToken?
     var subscriptionToken: NotificationToken?
+    var subscription: SyncSubscription<Project>!
     
     var tableView = UITableView()
     let activityIndicator = UIActivityIndicatorView()
@@ -61,7 +62,7 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         
         // In a Partial Sync use case this is where we tell the server we want to
         // subscribe to a particular query.
-        let subscription = projects.subscribe(named: "my-projects")
+        subscription = projects.subscribe(named: "my-projects")
         
         activityIndicator.startAnimating()
         subscriptionToken = subscription.observe(\.state, options: .initial) { state in
