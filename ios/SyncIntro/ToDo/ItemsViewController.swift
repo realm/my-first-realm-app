@@ -25,6 +25,7 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     let items: Results<Item>
     
     var notificationToken: NotificationToken?
+    var notificationTokenCount: NotificationToken?
     var tableView = UITableView()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -45,10 +46,32 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.frame = self.view.frame
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        
+        let dogs = realm.objects(Item.self)
+        print(dogs)
         // Do any additional setup after loading the view, typically from a nib.
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(leftBarButtonDidClick))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(rightBarButtonDidClick))
+        
+        /*  THIS WORKS FOR WHAT I WANT
+        var token : NotificationToken?
+        token = items[0].observe { change in
+            switch change {
+            case .change(let properties):
+                for property in properties {
+                    if property.name == "isDone"  {
+                        print("Congratulations, you've exceeded 1000 steps.")
+                        token = nil
+                    }
+                }
+            case .error(let error):
+                print("An error occurred: \(error)")
+            case .deleted:
+                print("The object was deleted.")
+            }
+        }
+ */
         
         notificationToken = items.observe { [weak self] (changes) in
             guard let tableView = self?.tableView else { return }
@@ -71,7 +94,31 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 fatalError("\(error)")
             }
         }
+        
+        notificationTokenCount = items.observe { [weak self] (changes: RealmCollectionChange) in
+            switch changes {
+            case .initial:
+                print("init")
+                self?.getDoneCount()
+            case .update(_, let deletions, let insertions, let modifications):
+                //get count of objects that are not done
+                self?.getDoneCount()
+            case .error(let error):
+                fatalError("\(error)")
+            }
+        }
+        
+        
+        
     }
+    
+    func getDoneCount(){
+        let isDone = self.items.filter("isDone == true").count
+        let notDone = self.items.filter("isDone == false").count
+        print("Tasks completed: \(isDone) Tasks not completed: \(notDone)")
+        
+    }
+    
     
     deinit {
         notificationToken?.invalidate()
