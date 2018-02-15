@@ -9,7 +9,7 @@ This is a complement to the Realm Cloud _ToDo List_ tutorial https://docs.realm.
 
 ## Setup
 
-1. In a new terminal window, run `pod install --repo-update` to update and install the required Realm SDK.
+1. In a new terminal window, clone this repo and run `pod install --repo-update` to update and install the required Realm SDK.
 2. Open `ToDo.xcworkspace` with Xcode.
 3. Locate the `Constants.swift` file in the file navigator; Edit it and replace `MY_INSTANCE_ADDRESS` with your Cloud Instance Address.
 5. Select a simulator from the Xcode tool bar (see figure 1).
