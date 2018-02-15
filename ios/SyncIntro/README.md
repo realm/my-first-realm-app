@@ -16,4 +16,4 @@ This is a complement to the Realm Cloud _ToDo List_ tutorial https://docs.realm.
 6. Run the project by pressing the run button on the tool bar.
 
 
-<center> <img src="Graphics/Xcode-buildmenu.png" /><br/>Selecting a Simulator</center><br>
+<center> <img src="Graphics/Xcode-buildmenu.png" /></center>
