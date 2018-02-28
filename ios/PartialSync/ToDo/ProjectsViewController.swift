@@ -34,7 +34,7 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: Constants.REALM_URL, isPartial: true)
         realm = try! Realm(configuration: Realm.Configuration(syncConfiguration: syncConfig))
         
-        projects = realm.objects(Project.self).filter(NSPredicate(format: "owner = '\(SyncUser.current!.identity!)'")).sorted(byKeyPath: "timestamp", ascending: false)
+        projects = realm.objects(Project.self).filter("owner = %@", SyncUser.current!.identity!).sorted(byKeyPath: "timestamp", ascending: false)
         
         super.init(nibName: nil, bundle: nil)
     }
