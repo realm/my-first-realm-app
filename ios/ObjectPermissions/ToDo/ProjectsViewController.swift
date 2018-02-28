@@ -33,8 +33,9 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: Constants.REALM_URL, isPartial: true)
         realm = try! Realm(configuration: Realm.Configuration(syncConfiguration: syncConfig))
-        
-        projects = realm.objects(Project.self).filter("owner = %@", SyncUser.current!.identity!).sorted(byKeyPath: "timestamp", ascending: false)
+
+        // Display all projects that the user has permissions to see.
+        projects = realm.objects(Project.self).sorted(byKeyPath: "timestamp", ascending: false)
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -66,14 +67,12 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         
         activityIndicator.startAnimating()
         subscriptionToken = subscription.observe(\.state, options: .initial) { state in
+            print("Subscription State: \(state)")
             if state == .complete {
                 self.activityIndicator.stopAnimating()
-            } else {
-                print("Subscription State: \(state)")
             }
         }
-        
-        
+
         notificationToken = projects.observe { [weak self] (changes) in
             guard let tableView = self?.tableView else { return }
             switch changes {
@@ -106,21 +105,29 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     @objc func addItemButtonDidClick() {
         let alertController = UIAlertController(title: "Add New Project", message: "", preferredStyle: .alert)
         
-        alertController.addAction(UIAlertAction(title: "Save", style: .default, handler: {
-            alert -> Void in
-            let textField = alertController.textFields![0] as UITextField
+        alertController.addAction(UIAlertAction(title: "Save", style: .default) { _ in
+            let textField = alertController.textFields![0]
             let project = Project()
             project.name = textField.text ?? ""
-            project.owner = SyncUser.current!.identity!
+
             try! self.realm.write {
                 self.realm.add(project)
+
+                let user = SyncUser.current!
+                if !user.isAdmin {
+                    // Projects created by non-admin users can only be read, updated, or deleted by
+                    // the user that created them.
+                    let permission = project.permissions.findOrCreate(forRoleNamed: user.identity!)
+                    permission.canRead = true
+                    permission.canUpdate = true
+                    permission.canDelete = true
+                }
             }
-            // do something with textField
-        }))
-        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        alertController.addTextField(configurationHandler: {(textField : UITextField!) -> Void in
-            textField.placeholder = "New Item Text"
         })
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alertController.addTextField() { textField in
+            textField.placeholder = "New Item Text"
+        }
         self.present(alertController, animated: true, completion: nil)
     }
     

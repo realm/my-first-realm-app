@@ -6,12 +6,33 @@ PODS:
     - Realm (= 3.2.0-beta.1)
 
 DEPENDENCIES:
-  - RealmSwift (~> 3.2.0-beta.1)
+  - Realm (from `https://github.com/realm/realm-cocoa.git`, branch `tg/object-level-permissions-tests`)
+  - RealmSwift (from `https://github.com/realm/realm-cocoa.git`, branch `tg/object-level-permissions-tests`)
+
+EXTERNAL SOURCES:
+  Realm:
+    :branch: tg/object-level-permissions-tests
+    :git: https://github.com/realm/realm-cocoa.git
+    :submodules: true
+  RealmSwift:
+    :branch: tg/object-level-permissions-tests
+    :git: https://github.com/realm/realm-cocoa.git
+    :submodules: true
+
+CHECKOUT OPTIONS:
+  Realm:
+    :commit: 8c4cfb535a4397b2357b30fb7903df584515ce20
+    :git: https://github.com/realm/realm-cocoa.git
+    :submodules: true
+  RealmSwift:
+    :commit: 8c4cfb535a4397b2357b30fb7903df584515ce20
+    :git: https://github.com/realm/realm-cocoa.git
+    :submodules: true
 
 SPEC CHECKSUMS:
   Realm: fd50751c473cfd78d04e98e4af7d649e216dcad3
-  RealmSwift: e87e3734e7d07b690575bf22af42ee2ee0618bc5
+  RealmSwift: fa74669ab78b55471fc518d66783cc603c72a6da
 
-PODFILE CHECKSUM: 22853d779117d1bbed9dbefbf29e9118593a8b6d
+PODFILE CHECKSUM: 91321cd808d64a2ef706eaa6fe9bd226cdd2791b
 
 COCOAPODS: 1.3.1
