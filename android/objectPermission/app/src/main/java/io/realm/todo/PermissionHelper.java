@@ -1,9 +1,7 @@
 package io.realm.todo;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import io.realm.Realm;
+import io.realm.RealmResults;
 import io.realm.SyncUser;
 import io.realm.sync.permissions.ClassPermissions;
 import io.realm.sync.permissions.Permission;
@@ -12,11 +10,63 @@ import io.realm.sync.permissions.Role;
 
 public class PermissionHelper {
 
-    // create user specific Role, used to enforce ACL
-    // if it doesn't already exists
-    // should be called from UI thread
-    public static void createUserSpecificRoleIfNotExist(SyncUser user, String roleId, Runnable postStep) {
+    /**
+     * Called after a given user is logged in.
+     * This will ensure the permissions system is setup before starting using the app.
+     * @param user current logged in SyncUser.
+     * @param postInitialization block to run after the Role has been added or found, usually a
+     *                           navigation to the next screen.
+     */
+    public static void initializePermissions(SyncUser user, Runnable postInitialization) {
+        ensureRoleExists(user, postInitialization);// How to close the Realm
+
+        // FIXME workaround until this is fixed in Sync
+        //       wait for the permission system to be synchronized before applying changes
         Realm realm = Realm.getDefaultInstance();
+        RealmResults<RealmPermissions> allAsync = realm.where(RealmPermissions.class).findAllAsync();
+        allAsync.addChangeListener((realmPermissions, changeSet) -> {
+            switch (changeSet.getState()) {
+                case UPDATE: {
+                    allAsync.removeAllChangeListeners();
+                    initializeRealmPermissions(realm);
+                }
+            }
+        });
+    }
+
+    /**
+     * Configure the permissions on the Realm and each model class.
+     * This will only succeed the first time that this code is executed. Subsequent attempts
+     * will silently fail due to `canSetPermissions` having already been removed.
+     * @param realm partially synchronized Realm.
+     */
+    private static void initializeRealmPermissions(Realm realm) {
+        // setup and lock the schema
+        realm.executeTransactionAsync(bgRealm -> {
+            // Lower "everyone" Role on Item & Project to restrict permission modifications
+            Permission itemPermission = bgRealm.where(ClassPermissions.class).equalTo("name", "Item").findFirst().getPermissions().first();
+            Permission projectPermission = bgRealm.where(ClassPermissions.class).equalTo("name", "Project").findFirst().getPermissions().first();
+            itemPermission.setCanSetPermissions(false);
+            projectPermission.setCanSetPermissions(false);
+
+            // Lock the permission and schema
+            RealmPermissions permission = bgRealm.where(RealmPermissions.class).equalTo("id", 0).findFirst();
+            Permission everyonePermission = permission.getPermissions().first();
+            everyonePermission.setCanModifySchema(false);
+            everyonePermission.setCanSetPermissions(false);
+        }, realm::close);
+    }
+
+    /**
+     * Ensure there's a role named for the user.
+     * @param user current logged in SyncUser.
+     * @param postInitialization block to run after the Role has been added or found, usually a
+     *                           navigation to the next screen.
+     */
+    private static void ensureRoleExists(SyncUser user, Runnable postInitialization) {
+        Realm realm = Realm.getDefaultInstance();
+        // Create a role for this user if it doesn't exist yet
+        String roleId = "role_" + user.getIdentity();
         Role role = realm.where(Role.class).equalTo("name", roleId).findFirst();
         if (role == null) {
             realm.executeTransactionAsync(bgRealm -> {
@@ -26,81 +76,12 @@ public class PermissionHelper {
                 userRole.addMember(user.getIdentity());
             }, () -> {
                 realm.close();
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(postStep);
+                postInitialization.run();
             });
+
         } else {
             realm.close();
-            postStep.run();
-        }
-    }
-
-    // Upload schema, and define permission for this Realm
-    // should be called from UI thread
-    public static void createRealmAndLockSchema(SyncUser adminUser, Runnable postStep) {
-        Realm realm = Realm.getDefaultInstance();
-
-        // if the Role admin is not present this means that the schema needs to be initialised & locked
-        Role adminRole = realm.where(Role.class).equalTo("name", "admin").findFirst();
-        if (adminRole == null) {
-            // setup and lock the schema
-            realm.executeTransactionAsync(bgRealm -> {
-                Role admin = bgRealm.createObject(Role.class, "admin");
-                admin.addMember(adminUser.getIdentity());
-                Role everyone = bgRealm.where(Role.class).equalTo("name", "everyone").findFirst();
-
-                // only admin can administer the Realm now, (not the everyone user)
-                RealmPermissions permission = bgRealm.where(RealmPermissions.class).equalTo("id", 0).findFirst();
-
-                // Lower the everyone permission
-                Permission everyonePermission = new Permission(everyone);
-                everyonePermission.setCanRead(true);
-                everyonePermission.setCanUpdate(true);
-                everyonePermission.setCanModifySchema(false);
-                everyonePermission.setCanSetPermissions(true);// FIXME CHECK IF THIS IS NEEDED?
-                everyonePermission.setCanCreate(false);//N/A
-                everyonePermission.setCanDelete(false);//N/A
-                everyonePermission.setCanQuery(false);//N/A
-
-                // Admin can do everything
-                Permission adminPermission = new Permission(admin);
-                adminPermission.setCanCreate(true);
-                adminPermission.setCanDelete(true);
-                adminPermission.setCanModifySchema(true);
-                adminPermission.setCanQuery(true);
-                adminPermission.setCanRead(true);
-                adminPermission.setCanSetPermissions(true);
-                adminPermission.setCanUpdate(true);
-
-                permission.getPermissions().deleteAllFromRealm();
-                permission.getPermissions().add(everyonePermission);
-                permission.getPermissions().add(adminPermission);
-
-                // Lower "everyone" Role on Item & Project to restrict schema/permission modifications
-                ClassPermissions itemPermission = bgRealm.where(ClassPermissions.class).equalTo("name", "Item").findFirst();
-                ClassPermissions projectPermission = bgRealm.where(ClassPermissions.class).equalTo("name", "Project").findFirst();
-
-                Permission userModelPrivileges = new Permission(everyone);
-                userModelPrivileges.setCanRead(true);
-                userModelPrivileges.setCanQuery(true);
-                userModelPrivileges.setCanUpdate(true);
-                userModelPrivileges.setCanCreate(true);
-                userModelPrivileges.setCanDelete(true);
-                userModelPrivileges.setCanSetPermissions(false);
-                userModelPrivileges.setCanModifySchema(false);
-
-                itemPermission.getPermissions().deleteAllFromRealm();
-                projectPermission.getPermissions().deleteAllFromRealm();
-                itemPermission.getPermissions().add(userModelPrivileges);
-                projectPermission.getPermissions().add(userModelPrivileges);
-            }, () -> {
-                realm.close();
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(postStep);
-            });
-        } else {
-            realm.close();
-            postStep.run();
+            postInitialization.run();
         }
     }
 }

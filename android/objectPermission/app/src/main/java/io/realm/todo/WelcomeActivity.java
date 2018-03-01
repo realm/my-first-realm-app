@@ -52,12 +52,7 @@ public class WelcomeActivity extends AppCompatActivity {
         SyncUser user = SyncUser.currentUser();
         if (user != null) {
             setUpDefaultRealm(user);
-            if (user.isAdmin()) {
-                setupRealmPermissionAndGoToListTaskActivity(user);
-
-            } else {
-                setupUserSpecificRoleAndGoToListTaskActivity(user);
-            }
+            navigateToListOfProject();
         }
 
         // Set up the login form.
@@ -83,11 +78,7 @@ public class WelcomeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(SyncUser user) {
                 setUpDefaultRealm(user);
-                if (user.isAdmin()) {
-                    setupRealmPermissionAndGoToListTaskActivity(user);
-                } else {
-                    setupUserSpecificRoleAndGoToListTaskActivity(user);
-                }
+                PermissionHelper.initializePermissions(user, () -> navigateToListOfProject());
             }
 
             @Override
@@ -127,28 +118,16 @@ public class WelcomeActivity extends AppCompatActivity {
     private void setUpDefaultRealm(SyncUser user) {
         SyncConfiguration configuration = new SyncConfiguration.Builder(
                 user,
-                REALM_BASE_URL + "/items")
+                REALM_BASE_URL + "/todo")
                 .partialRealm()
                 .modules(Realm.getDefaultModule(), new ObjectPermissionsModule())
                 .build();
         Realm.setDefaultConfiguration(configuration);
     }
 
-    private void setupUserSpecificRoleAndGoToListTaskActivity(SyncUser user) {
-        String roleId = "role_" + user.getIdentity();
-        PermissionHelper.createUserSpecificRoleIfNotExist(user, roleId, () -> {
-            Intent intent = new Intent(WelcomeActivity.this, ProjectsActivity.class);
-            intent.putExtra("role_id", roleId);
-            startActivity(intent);
-        });
+    private void navigateToListOfProject() {
+        Intent intent = new Intent(WelcomeActivity.this, ProjectsActivity.class);
+        startActivity(intent);
     }
-
-    private void setupRealmPermissionAndGoToListTaskActivity(SyncUser adminUser) {
-        PermissionHelper.createRealmAndLockSchema(adminUser, () -> {
-            Intent intent = new Intent(WelcomeActivity.this, ProjectsActivity.class);
-            startActivity(intent);
-        });
-    }
-
 }
 

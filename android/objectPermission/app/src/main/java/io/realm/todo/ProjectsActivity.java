@@ -51,7 +51,7 @@ public class ProjectsActivity extends AppCompatActivity {
 
         setSupportActionBar(findViewById(R.id.toolbar));
 
-        String roleId = getIntent().getStringExtra("role_id");
+        String roleId = "role_" + SyncUser.currentUser().getIdentity();
 
         findViewById(R.id.fab).setOnClickListener(view -> {
             View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_task, null);
@@ -67,20 +67,18 @@ public class ProjectsActivity extends AppCompatActivity {
                         project.setTimestamp(new Date());
 
                         // Create a restrictive permission to limit read/write access to the current user only
-                        if (roleId != null) {
-                            Role role = realm.where(Role.class).equalTo("name", roleId).findFirst();
-                            Permission permission = new Permission(role);
-                            permission.setCanRead(true);
-                            permission.setCanQuery(true);
-                            permission.setCanCreate(true);
-                            permission.setCanUpdate(true);
-                            permission.setCanUpdate(true);
-                            permission.setCanDelete(true);
-                            permission.setCanSetPermissions(true);
-                            permission.setCanModifySchema(true);
+                        Role role = realm.where(Role.class).equalTo("name", roleId).findFirst();
+                        Permission permission = new Permission(role);
+                        permission.setCanRead(true);
+                        permission.setCanQuery(true);
+                        permission.setCanCreate(true);
+                        permission.setCanUpdate(true);
+                        permission.setCanUpdate(true);
+                        permission.setCanDelete(true);
+                        permission.setCanSetPermissions(true);
+                        permission.setCanModifySchema(true);
 
-                            project.getPermissions().add(permission);
-                        }
+                        project.getPermissions().add(permission);
                     }))
                     .setNegativeButton("Cancel", null)
                     .create()
