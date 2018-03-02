@@ -113,15 +113,10 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
             try! self.realm.write {
                 self.realm.add(project)
 
-                let user = SyncUser.current!
-                if !user.isAdmin {
-                    // Projects created by non-admin users can only be read, updated, or deleted by
-                    // the user that created them.
-                    let permission = project.permissions.findOrCreate(forRoleNamed: user.identity!)
-                    permission.canRead = true
-                    permission.canUpdate = true
-                    permission.canDelete = true
-                }
+                let permission = project.permissions.findOrCreate(forRoleNamed: SyncUser.current!.identity!)
+                permission.canRead = true
+                permission.canUpdate = true
+                permission.canDelete = true
             }
         })
         alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel))
