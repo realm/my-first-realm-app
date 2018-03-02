@@ -61,29 +61,6 @@ func ensureRoleExists(_ user: SyncUser, _ realm: Realm) {
     role.users.append(permissionUser)
 }
 
-// FIXME: The server may not have populated the permissions objects at this point.
-// We need to wait for the server to do this to ensure that the permissions end up
-// in the correct state (no duplicate users in a role, for instance).
-// We do this by creating a partial sync subscription, and waiting for it to
-// report that the server has processed it.
-// <https://github.com/realm/realm-sync/issues/2049>
-func waitForPermissionsToSynchronize(in realm: Realm, completion: @escaping (Error?) -> Void) {
-    let subscription = realm.objects(PermissionRole.self).filter("name = 'This doesn\\'t need to match anything'").subscribe()
-    var token: NotificationToken!
-    token = subscription.observe(\.state) { state in
-        if case .complete = state {
-            completion(nil)
-            token.invalidate()
-            subscription.unsubscribe()
-        }
-        else if case let .error(error) = state {
-            completion(error)
-            token.invalidate()
-            subscription.unsubscribe()
-        }
-    }
-}
-
 // Initialize the default permissions of the Realm.
 // This is done asynchronously, as we must first wait for the Realm to download from the server
 // to ensure that we don't end up with the same user being added to a role multiple times.
@@ -95,18 +72,12 @@ func initializePermissions(_ user: SyncUser, completion: @escaping (Error?) -> V
             return
         }
 
-        waitForPermissionsToSynchronize(in: realm) { error in
-            if let error = error {
-                return completion(error)
-            }
-
-            try! realm.write {
-                initializeRealmPermissions(realm)
-                ensureRoleExists(user, realm)
-            }
-
-            completion(nil)
+        try! realm.write {
+            initializeRealmPermissions(realm)
+            ensureRoleExists(user, realm)
         }
+
+        completion(nil)
     }
 }
 
