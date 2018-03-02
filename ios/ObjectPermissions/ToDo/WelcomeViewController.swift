@@ -22,19 +22,29 @@ import RealmSwift
 // Configure the permissions on the Realm and each model class.
 // This will only succeed the first time that this code is executed. Subsequent attempts
 // will silently fail due to `canSetPermissions` having already been removed.
+//
+// NOTE: This initial configuration of permissions would typically be done by an admin via
+// Realm Studio or a dedicated script, not as part of your app's logic. We show it here
+// solely to demonstrate a more advanced use of the Swift API.
 func initializeRealmPermissions(_ realm: Realm) {
+    // Ensure that class-level permissions cannot be modified by anyone but admin users.
+    // The Project type can be queried, while Item cannot. This means that the only Item
+    // objects that will be synchronized are those associated with our Projects.
+    let queryable = [Project.className(): true, Item.className(): false]
+    for cls in [Project.self, Item.self] {
+        let classPermissions = realm.objects(ClassPermission.self).filter("name = %@", cls.className()).first!
+        let everyonePermission = classPermissions.permissions.findOrCreate(forRoleNamed: "everyone")
+        everyonePermission.canQuery = queryable[cls.className()]!
+        everyonePermission.canSetPermissions = false
+    }
+
     // Ensure that the schema and Realm-level permissions cannot be modified by anyone but admin users.
     let realmPermissions = realm.objects(RealmPermission.self).first!
     let everyonePermission = realmPermissions.permissions.findOrCreate(forRoleNamed: "everyone")
     everyonePermission.canModifySchema = false
+    // `canSetPermissions` must be disabled last, as it would otherwise prevent other permission changes
+    // from taking effect.
     everyonePermission.canSetPermissions = false
-
-    // Ensure that class-level permissions cannot be modified by anyone but admin users.
-    for cls in [Project.self, Item.self] {
-        let classPermissions = realm.objects(ClassPermission.self).filter("name = %@", cls.className()).first!
-        let everyonePermission = classPermissions.permissions.findOrCreate(forRoleNamed: "everyone")
-        everyonePermission.canSetPermissions = false
-    }
 }
 
 // Ensure there's a role named for the user with the user as a member.
