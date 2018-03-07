@@ -17,8 +17,7 @@
 package io.realm.todo;
 
 final class Constants {
-//    private static final String INSTANCE_ADDRESS = "YOUR_INSTANCE.cloud.realm.io";
-    private static final String INSTANCE_ADDRESS = "192.168.1.65:9080";
-    static final String AUTH_URL = "http://" + INSTANCE_ADDRESS + "/auth";
-    static final String REALM_BASE_URL = "realm://" + INSTANCE_ADDRESS;
+    private static final String INSTANCE_ADDRESS = "YOUR_INSTANCE.cloud.realm.io";
+    static final String AUTH_URL = "https://" + INSTANCE_ADDRESS + "/auth";
+    static final String REALM_BASE_URL = "realms://" + INSTANCE_ADDRESS;
 }
