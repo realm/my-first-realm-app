@@ -35,25 +35,15 @@
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/username"
+                    android:id="@+id/nickname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
-                    android:hint="Username"
+                    android:hint="A Cool Nickname"
                     android:maxLines="1"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
-
-            <EditText
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="top"
-                android:hint="Password"
-                android:inputType="textPassword"
-                android:singleLine="true">
-            </EditText>
 
             <Button
                 android:id="@+id/login_button"

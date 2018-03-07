@@ -40,8 +40,7 @@ import static io.realm.todo.Constants.REALM_BASE_URL;
 
 public class WelcomeActivity extends AppCompatActivity {
 
-    private EditText mUserNameTextView;
-    private EditText mPasswordTextView;
+    private EditText mNicknameTextView;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -56,8 +55,7 @@ public class WelcomeActivity extends AppCompatActivity {
         }
 
         // Set up the login form.
-        mUserNameTextView = findViewById(R.id.username);
-        mPasswordTextView = findViewById(R.id.password);
+        mNicknameTextView = findViewById(R.id.nickname);
         Button loginButton = findViewById(R.id.login_button);
         loginButton.setOnClickListener(view -> attemptLogin());
         mLoginFormView = findViewById(R.id.login_form);
@@ -65,15 +63,14 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void attemptLogin() {
-        // Reset errors.
-        mUserNameTextView.setError(null);
+        // Reset mNicknameTextView.
+        mNicknameTextView.setError(null);
         // Store values at the time of the login attempt.
-        String username = mUserNameTextView.getText().toString();
-        String password = mPasswordTextView.getText().toString();
+        String nickname = mNicknameTextView.getText().toString();
 
         showProgress(true);
 
-        SyncCredentials credentials = SyncCredentials.usernamePassword(username, password);
+        SyncCredentials credentials = SyncCredentials.nickname(nickname, false);
         SyncUser.loginAsync(credentials, AUTH_URL, new SyncUser.Callback<SyncUser>() {
             @Override
             public void onSuccess(SyncUser user) {
@@ -84,8 +81,8 @@ public class WelcomeActivity extends AppCompatActivity {
             @Override
             public void onError(ObjectServerError error) {
                 showProgress(false);
-                mUserNameTextView.setError("Uh oh something went wrong! (check your logcat please)");
-                mUserNameTextView.requestFocus();
+                mNicknameTextView.setError("Uh oh something went wrong! (check your logcat please)");
+                mNicknameTextView.requestFocus();
                 Log.e("Login error", error.toString());
             }
         });
@@ -118,9 +115,9 @@ public class WelcomeActivity extends AppCompatActivity {
     private void setUpDefaultRealm(SyncUser user) {
         SyncConfiguration configuration = new SyncConfiguration.Builder(
                 user,
-                REALM_BASE_URL + "/todo")
-                .partialRealm()
+                REALM_BASE_URL + "/ToDo-permissions")
                 .modules(Realm.getDefaultModule(), new ObjectPermissionsModule())
+                .partialRealm()
                 .build();
         Realm.setDefaultConfiguration(configuration);
     }

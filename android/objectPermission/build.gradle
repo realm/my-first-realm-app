@@ -5,13 +5,10 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven {
-            url '/Users/Nabil/.m2/repository'
-        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
-        classpath "io.realm:realm-gradle-plugin:5.0.0-SNAPSHOT"
+        classpath "io.realm:realm-gradle-plugin:5.0.0-BETA1"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -22,9 +19,6 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven {
-            url '/Users/Nabil/.m2/repository/'
-        }
     }
 }
 
