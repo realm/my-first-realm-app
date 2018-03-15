@@ -29,19 +29,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import io.realm.Realm;
-import io.realm.RealmResults;
-import io.realm.Sort;
-import io.realm.SyncConfiguration;
-import io.realm.SyncUser;
+import java.util.ArrayList;
+import java.util.List;
+
 import io.realm.todo.model.Item;
 import io.realm.todo.ui.ItemsRecyclerAdapter;
 
-import static io.realm.todo.Constants.REALM_BASE_URL;
-
 public class ItemsActivity extends AppCompatActivity {
 
-    private Realm realm;
+    private List<Item> items = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,18 +54,14 @@ public class ItemsActivity extends AppCompatActivity {
                     .setMessage("What do you want to do next?")
                     .setView(dialogView)
                     .setPositiveButton("Add", (dialog, which) -> {
-                        realm.executeTransactionAsync(realm -> {
-                            Item item = new Item();
-                            item.setBody(taskText.getText().toString());
-                            realm.insert(item);
-                        });
+                        Item item = new Item();
+                        item.setBody(taskText.getText().toString());
+                        items.add(item);
                     })
                     .setNegativeButton("Cancel", null)
                     .create()
                     .show();
         });
-
-        RealmResults<Item> items = setUpRealm();
 
         final ItemsRecyclerAdapter itemsRecyclerAdapter = new ItemsRecyclerAdapter(items);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -88,14 +80,12 @@ public class ItemsActivity extends AppCompatActivity {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = viewHolder.getAdapterPosition();
                 String id = itemsRecyclerAdapter.getItem(position).getItemId();
-                realm.executeTransactionAsync(realm -> {
-                    Item item = realm.where(Item.class)
-                            .equalTo("itemId", id)
-                            .findFirst();
-                    if (item != null) {
-                        item.deleteFromRealm();
+                for (Item item : items) {
+                    if (item.getItemId() == id) {
+                        items.remove(item);
+                        break;
                     }
-                });
+                }
             }
         };
 
@@ -103,22 +93,9 @@ public class ItemsActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private RealmResults<Item> setUpRealm() {
-        SyncConfiguration configuration = new SyncConfiguration.Builder(
-                SyncUser.currentUser(),
-                REALM_BASE_URL + "/items").build();
-        realm = Realm.getInstance(configuration);
-
-        return realm
-                .where(Item.class)
-                .sort("timestamp", Sort.DESCENDING)
-                .findAllAsync();
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        realm.close();
     }
 
     @Override
@@ -130,13 +107,10 @@ public class ItemsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_logout) {
-            SyncUser syncUser = SyncUser.currentUser();
-            if (syncUser != null) {
-                syncUser.logout();
-                Intent intent = new Intent(this, WelcomeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
+            Intent intent = new Intent(this, WelcomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            
             return true;
         }
         return super.onOptionsItemSelected(item);
