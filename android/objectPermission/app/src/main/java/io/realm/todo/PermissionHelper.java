@@ -2,33 +2,21 @@ package io.realm.todo;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
-import io.realm.SyncUser;
 import io.realm.sync.permissions.ClassPermissions;
 import io.realm.sync.permissions.Permission;
 import io.realm.sync.permissions.RealmPermissions;
-import io.realm.sync.permissions.Role;
 
 public class PermissionHelper {
-
-    /**
-     * Called after a given user is logged in.
-     * This will ensure the permissions system is setup before starting using the app.
-     *
-     * @param user               current logged in SyncUser.
-     * @param postInitialization block to run after the Role has been added or found, usually a
-     *                           navigation to the next screen.
-     */
-    public static void initializePermissions(SyncUser user, Runnable postInitialization) {
-        initializeRealmPermissions();
-        ensureRoleExists(user, postInitialization);
-    }
 
     /**
      * Configure the permissions on the Realm and each model class.
      * This will only succeed the first time that this code is executed. Subsequent attempts
      * will silently fail due to `canSetPermissions` having already been removed.
+     *
+     * @param postInitialization block to run after the Role has been added or found, usually a
+     *                           navigation to the next screen.
      */
-    private static void initializeRealmPermissions() {
+    public static void initializePermissions(Runnable postInitialization) {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<RealmPermissions> realmPermissions = realm.where(RealmPermissions.class).findAllAsync();
         Permission realmPermission = realmPermissions.first().getPermissions().first();
@@ -53,38 +41,13 @@ public class PermissionHelper {
                             Permission everyonePermission = permission.getPermissions().first();
                             everyonePermission.setCanModifySchema(false);
                             everyonePermission.setCanSetPermissions(false);
-                        }, realm::close);
+                        }, () -> {
+                            realm.close();
+                            postInitialization.run();
+                        });
                     }
                 }
             });
-        } else {
-            realm.close();
-        }
-    }
-
-    /**
-     * Ensure there's a role named for the user.
-     *
-     * @param user               current logged in SyncUser.
-     * @param postInitialization block to run after the Role has been added or found, usually a
-     *                           navigation to the next screen.
-     */
-    private static void ensureRoleExists(SyncUser user, Runnable postInitialization) {
-        Realm realm = Realm.getDefaultInstance();
-        // Create a role for this user if it doesn't exist yet
-        String roleId = "role_" + user.getIdentity();
-        Role role = realm.where(Role.class).equalTo("name", roleId).findFirst();
-        if (role == null) {
-            realm.executeTransactionAsync(bgRealm -> {
-                // Create a Role specific to this user
-                Role userRole = bgRealm.createObject(Role.class, roleId);
-                // add current user to it
-                userRole.addMember(user.getIdentity());
-            }, () -> {
-                realm.close();
-                postInitialization.run();
-            });
-
         } else {
             realm.close();
             postInitialization.run();

@@ -48,7 +48,7 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-        SyncUser user = SyncUser.currentUser();
+        SyncUser user = SyncUser.current();
         if (user != null) {
             setUpDefaultRealm(user);
             navigateToListOfProject();
@@ -71,11 +71,11 @@ public class WelcomeActivity extends AppCompatActivity {
         showProgress(true);
 
         SyncCredentials credentials = SyncCredentials.nickname(nickname, false);
-        SyncUser.loginAsync(credentials, AUTH_URL, new SyncUser.Callback<SyncUser>() {
+        SyncUser.logInAsync(credentials, AUTH_URL, new SyncUser.Callback<SyncUser>() {
             @Override
             public void onSuccess(SyncUser user) {
                 setUpDefaultRealm(user);
-                PermissionHelper.initializePermissions(user, () -> navigateToListOfProject());
+                PermissionHelper.initializePermissions(() -> navigateToListOfProject());
             }
 
             @Override
@@ -115,7 +115,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private void setUpDefaultRealm(SyncUser user) {
         SyncConfiguration configuration = new SyncConfiguration.Builder(
                 user,
-                REALM_BASE_URL + "/ToDo-permissions")
+                REALM_BASE_URL + "/default")
                 .modules(Realm.getDefaultModule(), new ObjectPermissionsModule())
                 .partialRealm()
                 .build();
