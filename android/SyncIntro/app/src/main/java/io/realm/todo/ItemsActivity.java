@@ -32,6 +32,7 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.SyncUser;
 import io.realm.todo.model.Item;
 import io.realm.todo.ui.ItemsRecyclerAdapter;
 
@@ -107,10 +108,14 @@ public class ItemsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_logout) {
-            Intent intent = new Intent(this, WelcomeActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            
+            SyncUser syncUser = SyncUser.current();
+            if (syncUser != null) {
+                syncUser.logOut();
+                Intent intent = new Intent(this, WelcomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+
             return true;
         }
         return super.onOptionsItemSelected(item);

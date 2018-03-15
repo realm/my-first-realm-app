@@ -28,6 +28,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import io.realm.ObjectServerError;
+import io.realm.SyncCredentials;
+import io.realm.SyncUser;
+
+import static io.realm.todo.Constants.AUTH_URL;
+
 public class WelcomeActivity extends AppCompatActivity {
 
     private EditText mNicknameTextView;
@@ -38,6 +44,10 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+
+        if (SyncUser.current() != null) {
+            this.goToItemsActivity();
+        }
 
         // Set up the login form.
         mNicknameTextView = findViewById(R.id.nickname);
@@ -54,7 +64,22 @@ public class WelcomeActivity extends AppCompatActivity {
         String nickname = mNicknameTextView.getText().toString();
         showProgress(true);
 
-        goToItemsActivity();
+        SyncCredentials credentials = SyncCredentials.nickname(nickname, true);
+        SyncUser.logInAsync(credentials, AUTH_URL, new SyncUser.Callback<SyncUser>() {
+            @Override
+            public void onSuccess(SyncUser user) {
+                showProgress(false);
+                goToItemsActivity();
+            }
+
+            @Override
+            public void onError(ObjectServerError error) {
+                showProgress(false);
+                mNicknameTextView.setError("Uh oh something went wrong! (check your logcat please)");
+                mNicknameTextView.requestFocus();
+                Log.e("Login error", error.toString());
+            }
+        });
     }
 
     /**
