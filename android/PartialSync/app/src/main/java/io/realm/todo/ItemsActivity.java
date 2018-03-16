@@ -67,7 +67,7 @@ public class ItemsActivity extends AppCompatActivity {
         });
 
         realm = Realm.getDefaultInstance();
-        Project project = realm.where(Project.class).equalTo("id", projectId).findFirst();
+        Project project = realm.where(Project.class).equalTo("projectId", projectId).findFirst();
 
         setTitle(project.getName());
         final ItemsRecyclerAdapter itemsRecyclerAdapter = new ItemsRecyclerAdapter(project.getTasks().sort("timestamp", Sort.ASCENDING));
