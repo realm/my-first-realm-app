@@ -29,8 +29,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import java.util.List;
-
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -44,7 +42,6 @@ import static io.realm.todo.Constants.REALM_BASE_URL;
 public class ItemsActivity extends AppCompatActivity {
 
     private Realm realm;
-    private List<Item> items;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +60,9 @@ public class ItemsActivity extends AppCompatActivity {
                     .setPositiveButton("Add", (dialog, which) -> {
                         Item item = new Item();
                         item.setBody(taskText.getText().toString());
-                        items.add(item);
+                        realm.executeTransactionAsync(realm -> {
+                            realm.insert(item);
+                        });
                     })
                     .setNegativeButton("Cancel", null)
                     .create()
@@ -90,12 +89,14 @@ public class ItemsActivity extends AppCompatActivity {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = viewHolder.getAdapterPosition();
                 String id = itemsRecyclerAdapter.getItem(position).getItemId();
-                for (Item item : items) {
-                    if (item.getItemId() == id) {
-                        items.remove(item);
-                        break;
+                realm.executeTransactionAsync(realm -> {
+                    Item item = realm.where(Item.class)
+                            .equalTo("itemId", id)
+                            .findFirst();
+                    if (item != null) {
+                        item.deleteFromRealm();
                     }
-                }
+                });
             }
         };
 
