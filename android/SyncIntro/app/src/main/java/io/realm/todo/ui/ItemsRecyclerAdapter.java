@@ -24,20 +24,15 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import java.util.List;
-
+import io.realm.OrderedRealmCollection;
+import io.realm.RealmRecyclerViewAdapter;
 import io.realm.todo.R;
 import io.realm.todo.model.Item;
 
-public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdapter.MyViewHolder> {
-    List<Item> mData;
+public class ItemsRecyclerAdapter extends RealmRecyclerViewAdapter<Item, ItemsRecyclerAdapter.MyViewHolder> {
 
-    public ItemsRecyclerAdapter(List<Item> data) {
-        mData = data;
-    }
-
-    public Item getItem(int position) {
-        return mData.get(position);
+    public ItemsRecyclerAdapter(OrderedRealmCollection<Item> data) {
+        super(data, true);
     }
 
     @Override
@@ -51,11 +46,6 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final Item item = getItem(position);
         holder.setItem(item);
-    }
-
-    @Override
-    public int getItemCount() {
-        return mData.size();
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -80,12 +70,12 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<ItemsRecyclerAdap
         public void onClick(View v) {
             String itemId = mItem.getItemId();
             boolean isDone = this.mItem.getIsDone();
-            for (Item i : mData) {
-                if (i.getItemId() == itemId) {
-                    i.setIsDone(!isDone);
-                    break;
+            this.mItem.getRealm().executeTransactionAsync(realm -> {
+                Item item = realm.where(Item.class).equalTo("itemId", itemId).findFirst();
+                if (item != null) {
+                    item.setIsDone(!isDone);
                 }
-            }
+            });
         }
     }
 }
