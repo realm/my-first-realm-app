@@ -33,10 +33,8 @@ import io.realm.Realm;
 import io.realm.SyncConfiguration;
 import io.realm.SyncCredentials;
 import io.realm.SyncUser;
-import io.realm.internal.sync.permissions.ObjectPermissionsModule;
 
 import static io.realm.todo.Constants.AUTH_URL;
-import static io.realm.todo.Constants.REALM_BASE_URL;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -50,7 +48,7 @@ public class WelcomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
         SyncUser user = SyncUser.current();
         if (user != null) {
-            setUpDefaultRealm(user);
+            setUpDefaultRealm();
             navigateToListOfProject();
         }
 
@@ -74,7 +72,7 @@ public class WelcomeActivity extends AppCompatActivity {
         SyncUser.logInAsync(credentials, AUTH_URL, new SyncUser.Callback<SyncUser>() {
             @Override
             public void onSuccess(SyncUser user) {
-                setUpDefaultRealm(user);
+                setUpDefaultRealm();
                 PermissionHelper.initializePermissions(() -> navigateToListOfProject());
             }
 
@@ -112,14 +110,8 @@ public class WelcomeActivity extends AppCompatActivity {
         });
     }
 
-    private void setUpDefaultRealm(SyncUser user) {
-        SyncConfiguration configuration = new SyncConfiguration.Builder(
-                user,
-                REALM_BASE_URL + "/default")
-                .modules(Realm.getDefaultModule(), new ObjectPermissionsModule())
-                .partialRealm()
-                .build();
-        Realm.setDefaultConfiguration(configuration);
+    private void setUpDefaultRealm() {
+        Realm.setDefaultConfiguration(SyncConfiguration.automatic());
     }
 
     private void navigateToListOfProject() {

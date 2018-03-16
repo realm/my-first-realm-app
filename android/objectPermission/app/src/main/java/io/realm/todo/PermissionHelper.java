@@ -29,6 +29,11 @@ public class PermissionHelper {
                         realmPermissions.removeAllChangeListeners();
                         // setup and lock the schema
                         realm.executeTransactionAsync(bgRealm -> {
+                            // Remove update permissions from the __Role table to prevent a malicious user
+                            // from adding themselves to another user's private role.
+                            Permission rolePermission = bgRealm.where(ClassPermissions.class).equalTo("name", "__Role").findFirst().getPermissions().first();
+                            rolePermission.setCanUpdate(false);
+
                             // Lower "everyone" Role on Item & Project to restrict permission modifications
                             Permission itemPermission = bgRealm.where(ClassPermissions.class).equalTo("name", "Item").findFirst().getPermissions().first();
                             Permission projectPermission = bgRealm.where(ClassPermissions.class).equalTo("name", "Project").findFirst().getPermissions().first();
