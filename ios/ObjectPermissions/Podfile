@@ -3,5 +3,7 @@ platform :ios, '11.0'
 
 target 'ToDo' do
   use_frameworks!
-  pod 'RealmSwift', '~> 3.2.0'
+  # pod 'RealmSwift', '~> 3.3.0'
+  pod 'Realm', :git => 'https://github.com/realm/realm-cocoa.git', :branch => 'master', :submodules => true
+  pod 'RealmSwift', :git => 'https://github.com/realm/realm-cocoa.git', :branch => 'master'
 end

@@ -112,7 +112,8 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
             try! self.realm.write {
                 self.realm.add(project)
 
-                let permission = project.permissions.findOrCreate(forRoleNamed: SyncUser.current!.identity!)
+                let user = self.realm.object(ofType: PermissionUser.self, forPrimaryKey: SyncUser.current!.identity!)!
+                let permission = project.permissions.findOrCreate(forRole: user.role!)
                 permission.canRead = true
                 permission.canUpdate = true
                 permission.canDelete = true
