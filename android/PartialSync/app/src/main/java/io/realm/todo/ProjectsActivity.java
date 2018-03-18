@@ -57,7 +57,7 @@ public class ProjectsActivity extends AppCompatActivity {
                     .setView(dialogView)
                     .setPositiveButton("Add", (dialog, which) -> realm.executeTransactionAsync(realm -> {
                         Project project = new Project();
-                        String userId = SyncUser.currentUser().getIdentity();
+                        String userId = SyncUser.current().getIdentity();
                         String name = taskText.getText().toString();
 
                         project.setId(UUID.randomUUID().toString());
@@ -77,7 +77,7 @@ public class ProjectsActivity extends AppCompatActivity {
         realm = Realm.getDefaultInstance();
         RealmResults<Project> projects = realm
                 .where(Project.class)
-                .equalTo("owner", SyncUser.currentUser().getIdentity())
+                .equalTo("owner", SyncUser.current().getIdentity())
                 .sort("timestamp", Sort.DESCENDING)
                 .findAllAsync();
 
@@ -102,9 +102,9 @@ public class ProjectsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_logout) {
-            SyncUser syncUser = SyncUser.currentUser();
+            SyncUser syncUser = SyncUser.current();
             if (syncUser != null) {
-                syncUser.logout();
+                syncUser.logOut();
                 Intent intent = new Intent(this, WelcomeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);

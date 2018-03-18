@@ -45,7 +45,7 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        if (SyncUser.currentUser() != null) {
+        if (SyncUser.current() != null) {
             this.goToItemsActivity();
         }
 
@@ -65,7 +65,7 @@ public class WelcomeActivity extends AppCompatActivity {
         showProgress(true);
 
         SyncCredentials credentials = SyncCredentials.nickname(nickname, true);
-        SyncUser.loginAsync(credentials, AUTH_URL, new SyncUser.Callback<SyncUser>() {
+        SyncUser.logInAsync(credentials, AUTH_URL, new SyncUser.Callback<SyncUser>() {
             @Override
             public void onSuccess(SyncUser user) {
                 showProgress(false);

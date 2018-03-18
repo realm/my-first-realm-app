@@ -59,7 +59,7 @@ public class ItemsActivity extends AppCompatActivity {
                     .setPositiveButton("Add", (dialog, which) -> realm.executeTransactionAsync(realm -> {
                         Item item = new Item();
                         item.setBody(taskText.getText().toString());
-                        realm.where(Project.class).equalTo("id", projectId).findFirst().getTasks().add(item);
+                        realm.where(Project.class).equalTo("projectId", projectId).findFirst().getTasks().add(item);
                     }))
                     .setNegativeButton("Cancel", null)
                     .create()
@@ -67,7 +67,7 @@ public class ItemsActivity extends AppCompatActivity {
         });
 
         realm = Realm.getDefaultInstance();
-        Project project = realm.where(Project.class).equalTo("id", projectId).findFirst();
+        Project project = realm.where(Project.class).equalTo("projectId", projectId).findFirst();
 
         setTitle(project.getName());
         final ItemsRecyclerAdapter itemsRecyclerAdapter = new ItemsRecyclerAdapter(project.getTasks().sort("timestamp", Sort.ASCENDING));
