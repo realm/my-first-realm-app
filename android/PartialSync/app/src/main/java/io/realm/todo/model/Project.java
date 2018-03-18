@@ -26,7 +26,7 @@ import io.realm.annotations.Required;
 public class Project extends RealmObject {
     @PrimaryKey
     @Required
-    private String id;
+    private String projectId;
 
     @Required
     private String owner;
@@ -40,11 +40,11 @@ public class Project extends RealmObject {
     private RealmList<Item> items;
 
     public String getId() {
-        return id;
+        return projectId;
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.projectId = id;
     }
 
     public String getOwner() {

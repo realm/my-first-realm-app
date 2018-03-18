@@ -48,7 +48,7 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        if (SyncUser.currentUser() != null) {
+        if (SyncUser.current() != null) {
             setUpRealmAndGoToListTaskActivity();
         }
 
@@ -68,7 +68,7 @@ public class WelcomeActivity extends AppCompatActivity {
         showProgress(true);
 
         SyncCredentials credentials = SyncCredentials.nickname(nickname, true);
-        SyncUser.loginAsync(credentials, AUTH_URL, new SyncUser.Callback<SyncUser>() {
+        SyncUser.logInAsync(credentials, AUTH_URL, new SyncUser.Callback<SyncUser>() {
             @Override
             public void onSuccess(SyncUser user) {
                 showProgress(false);
@@ -109,10 +109,10 @@ public class WelcomeActivity extends AppCompatActivity {
         });
     }
 
-    private void setUpRealmAndGoToListTaskActivity(){
+    private void setUpRealmAndGoToListTaskActivity() {
         SyncConfiguration configuration = new SyncConfiguration.Builder(
-                SyncUser.currentUser(),
-                REALM_BASE_URL + "/items")
+                SyncUser.current(),
+                REALM_BASE_URL + "/default")
                 .partialRealm()
                 .build();
         Realm.setDefaultConfiguration(configuration);

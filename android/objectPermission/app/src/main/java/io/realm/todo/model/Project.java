@@ -27,7 +27,7 @@ import io.realm.sync.permissions.Permission;
 public class Project extends RealmObject {
     @PrimaryKey
     @Required
-    private String id;
+    private String projectId;
 
     @Required
     private String name;
@@ -40,11 +40,11 @@ public class Project extends RealmObject {
     private RealmList<Permission> permissions;
 
     public String getId() {
-        return id;
+        return projectId;
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.projectId = id;
     }
 
     public String getName() {

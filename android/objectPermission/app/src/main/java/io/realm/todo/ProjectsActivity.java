@@ -37,6 +37,7 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import io.realm.SyncUser;
 import io.realm.sync.permissions.Permission;
+import io.realm.sync.permissions.PermissionUser;
 import io.realm.sync.permissions.Role;
 import io.realm.todo.model.Project;
 import io.realm.todo.ui.ProjectsRecyclerAdapter;
@@ -51,7 +52,7 @@ public class ProjectsActivity extends AppCompatActivity {
 
         setSupportActionBar(findViewById(R.id.toolbar));
 
-        String roleId = "role_" + SyncUser.currentUser().getIdentity();
+        final String userId = SyncUser.current().getIdentity();
 
         findViewById(R.id.fab).setOnClickListener(view -> {
             View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_task, null);
@@ -67,7 +68,11 @@ public class ProjectsActivity extends AppCompatActivity {
                         project.setTimestamp(new Date());
 
                         // Create a restrictive permission to limit read/write access to the current user only
-                        Role role = realm.where(Role.class).equalTo("name", roleId).findFirst();
+                        Role role = realm.where(PermissionUser.class)
+                                .equalTo("id", userId)
+                                .findFirst()
+                                .getRoles()
+                                .first();
                         Permission permission = new Permission(role);
                         permission.setCanRead(true);
                         permission.setCanQuery(true);
@@ -116,9 +121,9 @@ public class ProjectsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_logout) {
-            SyncUser syncUser = SyncUser.currentUser();
+            SyncUser syncUser = SyncUser.current();
             if (syncUser != null) {
-                syncUser.logout();
+                syncUser.logOut();
                 Intent intent = new Intent(this, WelcomeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);

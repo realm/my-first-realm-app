@@ -76,7 +76,6 @@ public class ItemsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(itemsRecyclerAdapter);
 
-
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
             @Override
@@ -105,8 +104,8 @@ public class ItemsActivity extends AppCompatActivity {
 
     private RealmResults<Item> setUpRealm() {
         SyncConfiguration configuration = new SyncConfiguration.Builder(
-                SyncUser.currentUser(),
-                REALM_BASE_URL + "/items").build();
+                SyncUser.current(),
+                REALM_BASE_URL + "/default").build();
         realm = Realm.getInstance(configuration);
 
         return realm
@@ -130,9 +129,9 @@ public class ItemsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_logout) {
-            SyncUser syncUser = SyncUser.currentUser();
+            SyncUser syncUser = SyncUser.current();
             if (syncUser != null) {
-                syncUser.logout();
+                syncUser.logOut();
                 Intent intent = new Intent(this, WelcomeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
