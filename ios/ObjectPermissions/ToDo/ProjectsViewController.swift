@@ -31,8 +31,7 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     let activityIndicator = UIActivityIndicatorView()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        let syncConfig = SyncConfiguration(user: SyncUser.current!, realmURL: Constants.REALM_URL, isPartial: true)
-        realm = try! Realm(configuration: Realm.Configuration(syncConfiguration: syncConfig))
+        realm = try! Realm(configuration: SyncConfiguration.automatic())
 
         // Display all projects that the user has permissions to see.
         projects = realm.objects(Project.self).sorted(byKeyPath: "timestamp", ascending: false)
@@ -113,7 +112,8 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
             try! self.realm.write {
                 self.realm.add(project)
 
-                let permission = project.permissions.findOrCreate(forRoleNamed: SyncUser.current!.identity!)
+                let user = self.realm.object(ofType: PermissionUser.self, forPrimaryKey: SyncUser.current!.identity!)!
+                let permission = project.permissions.findOrCreate(forRole: user.role!)
                 permission.canRead = true
                 permission.canUpdate = true
                 permission.canDelete = true
