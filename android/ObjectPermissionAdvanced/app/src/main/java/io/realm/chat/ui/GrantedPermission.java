@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package io.realm.todo.util;
+package io.realm.chat.ui;
 
-final public class Constants {
-    private static final String INSTANCE_ADDRESS = "jarjar4.us1.cloud.realm.io";
-    public static final String AUTH_URL = "https://" + INSTANCE_ADDRESS + "/auth";
+/**
+ * Encapsulate the granted permission(s) for a user.
+ *
+ * Used in {@link GrantPermissionsRecyclerAdapter} and {@link EditPermissionsRecyclerAdapter}.
+ */
+public class GrantedPermission {
+    public String userId;
+    public boolean canRead;
+    public boolean canWrite;
 }

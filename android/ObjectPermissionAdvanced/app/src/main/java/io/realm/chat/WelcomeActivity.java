@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.realm.todo;
+package io.realm.chat;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -33,9 +33,9 @@ import io.realm.Realm;
 import io.realm.SyncConfiguration;
 import io.realm.SyncCredentials;
 import io.realm.SyncUser;
-import io.realm.todo.util.PermissionHelper;
+import io.realm.chat.util.PermissionHelper;
 
-import static io.realm.todo.util.Constants.AUTH_URL;
+import static io.realm.chat.util.Constants.AUTH_URL;
 
 public class WelcomeActivity extends AppCompatActivity {
 

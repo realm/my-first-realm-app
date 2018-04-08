@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.realm.todo;
+package io.realm.chat;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,11 +32,11 @@ import io.realm.SyncUser;
 import io.realm.sync.permissions.Permission;
 import io.realm.sync.permissions.PermissionUser;
 import io.realm.sync.permissions.Role;
-import io.realm.todo.model.PrivateChatRoom;
-import io.realm.todo.ui.EditPermissionsRecyclerAdapter;
-import io.realm.todo.ui.GrantPermissionsRecyclerAdapter;
-import io.realm.todo.ui.GrantedPermission;
-import io.realm.todo.util.PermissionHelper;
+import io.realm.chat.model.PrivateChatRoom;
+import io.realm.chat.ui.EditPermissionsRecyclerAdapter;
+import io.realm.chat.ui.GrantPermissionsRecyclerAdapter;
+import io.realm.chat.ui.GrantedPermission;
+import io.realm.chat.util.PermissionHelper;
 
 /**
  * Allow the connected user to grant (read/write) permissions to the other users, for the newly created {@link PrivateChatRoom}

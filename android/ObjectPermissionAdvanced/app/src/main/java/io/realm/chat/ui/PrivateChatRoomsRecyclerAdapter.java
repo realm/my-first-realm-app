@@ -15,7 +15,7 @@
  */
 
 
-package io.realm.todo.ui;
+package io.realm.chat.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,21 +23,26 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import io.realm.OrderedRealmCollection;
+import io.realm.RealmObject;
 import io.realm.RealmRecyclerViewAdapter;
-import io.realm.todo.ChatRoomActivity;
-import io.realm.todo.model.ChatRoom;
-import io.realm.todo.model.PublicChatRoom;
+import io.realm.sync.permissions.ObjectPrivileges;
+import io.realm.chat.ChatRoomActivity;
+import io.realm.chat.GrantPermissionsActivity;
+import io.realm.chat.R;
+import io.realm.chat.model.ChatRoom;
+import io.realm.chat.model.PrivateChatRoom;
 
 /**
- * Adapter to display the list of public chat rooms.
+ * Adapter to display the list of private chat rooms.
  */
-public class PublicChatRoomsRecyclerAdapter extends RealmRecyclerViewAdapter<PublicChatRoom, PublicChatRoomsRecyclerAdapter.MyViewHolder> {
+public class PrivateChatRoomsRecyclerAdapter extends RealmRecyclerViewAdapter<PrivateChatRoom, PrivateChatRoomsRecyclerAdapter.MyViewHolder> {
     private final Context context;
 
-    public PublicChatRoomsRecyclerAdapter(Context context, OrderedRealmCollection<PublicChatRoom> data) {
+    public PrivateChatRoomsRecyclerAdapter(Context context, OrderedRealmCollection<PrivateChatRoom> data) {
         super(data, true);
         this.context = context;
     }
@@ -45,7 +50,7 @@ public class PublicChatRoomsRecyclerAdapter extends RealmRecyclerViewAdapter<Pub
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(android.R.layout.simple_list_item_1, parent, false);
+                .inflate(R.layout.private_chat_room_item, parent, false);
         return new MyViewHolder(itemView);
     }
 
@@ -54,10 +59,23 @@ public class PublicChatRoomsRecyclerAdapter extends RealmRecyclerViewAdapter<Pub
         final ChatRoom chatRoom = getItem(position);
         if (chatRoom != null) {
             holder.textView.setText(chatRoom.getName());
+            ObjectPrivileges privileges = RealmObject.getRealm(chatRoom).getPrivileges(chatRoom);
+            if (privileges.canSetPermissions()) {
+                holder.btnEdit.setVisibility(View.VISIBLE);
+                holder.btnEdit.setOnClickListener(v -> {
+                    Intent intent = new Intent(PrivateChatRoomsRecyclerAdapter.this.context, GrantPermissionsActivity.class);
+                    intent.putExtra("room_name", holder.textView.getText().toString());
+                    intent.putExtra("edit_mode", true);
+                    PrivateChatRoomsRecyclerAdapter.this.context.startActivity(intent);
+                });
+            } else {
+                holder.btnEdit.setVisibility(View.GONE);
+            }
+
             holder.textView.setOnClickListener(v -> {
                 Intent intent = new Intent(context, ChatRoomActivity.class);
                 intent.putExtra("room_name", chatRoom.getName());
-                intent.putExtra("is_private_room", false);
+                intent.putExtra("is_private_room", true);
                 context.startActivity(intent);
             });
         }
@@ -65,10 +83,12 @@ public class PublicChatRoomsRecyclerAdapter extends RealmRecyclerViewAdapter<Pub
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
+        ImageView btnEdit;
 
         MyViewHolder(View itemView) {
             super(itemView);
-            textView = itemView.findViewById(android.R.id.text1);
+            textView = itemView.findViewById(R.id.room_name);
+            btnEdit = itemView.findViewById(R.id.btn_edit);
         }
     }
 }

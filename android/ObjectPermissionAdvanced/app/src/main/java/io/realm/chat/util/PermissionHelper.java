@@ -1,4 +1,4 @@
-package io.realm.todo.util;
+package io.realm.chat.util;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ import io.realm.sync.permissions.Permission;
 import io.realm.sync.permissions.PermissionUser;
 import io.realm.sync.permissions.RealmPermissions;
 import io.realm.sync.permissions.Role;
-import io.realm.todo.model.PrivateChatRoom;
-import io.realm.todo.ui.GrantedPermission;
+import io.realm.chat.model.PrivateChatRoom;
+import io.realm.chat.ui.GrantedPermission;
 
 public class PermissionHelper {
 

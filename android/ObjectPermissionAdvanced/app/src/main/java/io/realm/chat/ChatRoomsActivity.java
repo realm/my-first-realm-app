@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.realm.todo;
+package io.realm.chat;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,10 +32,10 @@ import android.widget.EditText;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.SyncUser;
-import io.realm.todo.model.PrivateChatRoom;
-import io.realm.todo.model.PublicChatRoom;
-import io.realm.todo.ui.PrivateChatRoomsRecyclerAdapter;
-import io.realm.todo.ui.PublicChatRoomsRecyclerAdapter;
+import io.realm.chat.model.PrivateChatRoom;
+import io.realm.chat.model.PublicChatRoom;
+import io.realm.chat.ui.PrivateChatRoomsRecyclerAdapter;
+import io.realm.chat.ui.PublicChatRoomsRecyclerAdapter;
 
 /**
  * Displays the list of {@link PublicChatRoom} and {@link PrivateChatRoom} available to the current user, with

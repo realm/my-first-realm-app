@@ -15,7 +15,7 @@
  */
 
 
-package io.realm.todo.ui;
+package io.realm.chat.ui;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -31,16 +31,16 @@ import java.util.Set;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
-import io.realm.sync.permissions.PermissionUser;
-import io.realm.todo.R;
+import io.realm.sync.permissions.Permission;
+import io.realm.chat.R;
 
 /**
- * Adapter to display the list of user id with associated read/write granted permission(s).
+ * Adapter to display the list of existing granted permission(s) per user id.
  */
-public class GrantPermissionsRecyclerAdapter extends RealmRecyclerViewAdapter<PermissionUser, GrantPermissionsRecyclerAdapter.MyViewHolder> {
+public class EditPermissionsRecyclerAdapter extends RealmRecyclerViewAdapter<Permission, EditPermissionsRecyclerAdapter.MyViewHolder> {
     private Set<MyViewHolder> userPermissions = new HashSet<>(getItemCount());
 
-    public GrantPermissionsRecyclerAdapter(OrderedRealmCollection<PermissionUser> data) {
+    public EditPermissionsRecyclerAdapter(OrderedRealmCollection<Permission> data) {
         super(data, true);
     }
 
@@ -53,9 +53,11 @@ public class GrantPermissionsRecyclerAdapter extends RealmRecyclerViewAdapter<Pe
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        final PermissionUser user = getItem(position);
-        if (user != null) {
-            holder.textView.setText(user.getId());
+        final Permission permission = getItem(position);
+        if (permission != null) {
+            holder.textView.setText(permission.getRole().getMembers().first().getId());
+            holder.canReadCheckBox.setChecked(permission.canRead());
+            holder.canWriteCheckBox.setChecked(permission.canUpdate());
             userPermissions.add(holder);
         }
     }

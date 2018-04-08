@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.realm.todo.ui;
+package io.realm.chat.ui;
 
 import android.support.annotation.ColorInt;
 import android.support.v7.widget.RecyclerView;
@@ -25,8 +25,8 @@ import android.widget.TextView;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
-import io.realm.todo.R;
-import io.realm.todo.model.Message;
+import io.realm.chat.R;
+import io.realm.chat.model.Message;
 
 /**
  * Adapter to display the list of {@link Message}.

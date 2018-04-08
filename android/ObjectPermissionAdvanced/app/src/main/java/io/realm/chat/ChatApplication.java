@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package io.realm.todo.ui;
 
-/**
- * Encapsulate the granted permission(s) for a user.
- *
- * Used in {@link GrantPermissionsRecyclerAdapter} and {@link EditPermissionsRecyclerAdapter}.
- */
-public class GrantedPermission {
-    public String userId;
-    public boolean canRead;
-    public boolean canWrite;
+package io.realm.chat;
+
+import android.app.Application;
+
+import io.realm.Realm;
+
+public class ChatApplication extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Realm.init(this);
+    }
 }

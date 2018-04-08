@@ -1,4 +1,4 @@
-package io.realm.todo.model;
+package io.realm.chat.model;
 
 
 import io.realm.RealmObject;

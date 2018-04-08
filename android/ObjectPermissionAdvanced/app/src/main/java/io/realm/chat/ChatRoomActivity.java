@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.realm.todo;
+package io.realm.chat;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,11 +27,11 @@ import android.widget.EditText;
 
 import io.realm.Realm;
 import io.realm.SyncUser;
-import io.realm.todo.model.ChatRoom;
-import io.realm.todo.model.Message;
-import io.realm.todo.model.PrivateChatRoom;
-import io.realm.todo.model.PublicChatRoom;
-import io.realm.todo.ui.MessagesRecyclerAdapter;
+import io.realm.chat.model.ChatRoom;
+import io.realm.chat.model.Message;
+import io.realm.chat.model.PrivateChatRoom;
+import io.realm.chat.model.PublicChatRoom;
+import io.realm.chat.ui.MessagesRecyclerAdapter;
 
 /**
  * Displays discussion ({@link Message}) for the selected room, (this could be {@link PublicChatRoom} or {@link PrivateChatRoom}.

@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
+package io.realm.chat.util;
 
-package io.realm.todo;
-
-import android.app.Application;
-
-import io.realm.Realm;
-
-public class ToDoApplication extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Realm.init(this);
-    }
+final public class Constants {
+    private static final String INSTANCE_ADDRESS = "jarjar4.us1.cloud.realm.io";
+    public static final String AUTH_URL = "https://" + INSTANCE_ADDRESS + "/auth";
 }
