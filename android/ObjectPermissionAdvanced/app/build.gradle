@@ -1,0 +1,30 @@
+apply plugin: 'com.android.application'
+apply plugin: 'realm-android'
+
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "io.realm.todo"
+        minSdkVersion 22
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+realm {
+    syncEnabled = true
+}
+
+dependencies {
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'io.realm:android-adapters:3.0.0'
+}
