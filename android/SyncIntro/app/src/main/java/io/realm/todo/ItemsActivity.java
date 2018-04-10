@@ -32,12 +32,15 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.SyncConfiguration;
 import io.realm.SyncUser;
 import io.realm.todo.model.Item;
 import io.realm.todo.ui.ItemsRecyclerAdapter;
 
 public class ItemsActivity extends AppCompatActivity {
 
+    private Realm realm;
     private List<Item> items = new ArrayList<>();
 
     @Override
@@ -63,6 +66,8 @@ public class ItemsActivity extends AppCompatActivity {
                     .create()
                     .show();
         });
+
+        setUpRealm();
 
         final ItemsRecyclerAdapter itemsRecyclerAdapter = new ItemsRecyclerAdapter(items);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -94,9 +99,15 @@ public class ItemsActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
+    private void setUpRealm() {
+        Realm.setDefaultConfiguration(SyncConfiguration.automatic());
+        realm = Realm.getDefaultInstance();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        realm.close();
     }
 
     @Override
