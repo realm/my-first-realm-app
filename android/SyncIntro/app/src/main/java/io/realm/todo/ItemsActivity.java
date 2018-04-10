@@ -29,10 +29,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
+import io.realm.Sort;
 import io.realm.SyncConfiguration;
 import io.realm.SyncUser;
 import io.realm.todo.model.Item;
@@ -41,7 +42,7 @@ import io.realm.todo.ui.ItemsRecyclerAdapter;
 public class ItemsActivity extends AppCompatActivity {
 
     private Realm realm;
-    private List<Item> items = new ArrayList<>();
+    private List<Item> items;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,8 @@ public class ItemsActivity extends AppCompatActivity {
         });
 
         setUpRealm();
+
+        RealmResults<Item> items = realm.where(Item.class).sort("timestamp", Sort.DESCENDING).findAllAsync();
 
         final ItemsRecyclerAdapter itemsRecyclerAdapter = new ItemsRecyclerAdapter(items);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
