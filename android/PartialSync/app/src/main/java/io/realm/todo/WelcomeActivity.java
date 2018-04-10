@@ -35,7 +35,6 @@ import io.realm.SyncCredentials;
 import io.realm.SyncUser;
 
 import static io.realm.todo.Constants.AUTH_URL;
-import static io.realm.todo.Constants.REALM_BASE_URL;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -110,12 +109,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void setUpRealmAndGoToListTaskActivity() {
-        SyncConfiguration configuration = new SyncConfiguration.Builder(
-                SyncUser.current(),
-                REALM_BASE_URL + "/default")
-                .partialRealm()
-                .build();
-        Realm.setDefaultConfiguration(configuration);
+        Realm.setDefaultConfiguration(SyncConfiguration.automatic());
         Intent intent = new Intent(WelcomeActivity.this, ProjectsActivity.class);
         startActivity(intent);
     }
