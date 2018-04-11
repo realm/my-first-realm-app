@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package io.realm.chat.ui;
 
 import android.support.v7.widget.RecyclerView;
@@ -31,8 +30,8 @@ import java.util.Set;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
-import io.realm.sync.permissions.Permission;
 import io.realm.chat.R;
+import io.realm.sync.permissions.Permission;
 
 /**
  * Adapter to display the list of existing granted permission(s) per user id.
@@ -78,7 +77,7 @@ public class EditPermissionsRecyclerAdapter extends RealmRecyclerViewAdapter<Per
     public List<GrantedPermission> getGrantedPermission () {
         List<GrantedPermission> permissions = new ArrayList<>(userPermissions.size());
         GrantedPermission grantedPermission;
-        for (MyViewHolder viewHolder :userPermissions) {
+        for (MyViewHolder viewHolder : userPermissions) {
             grantedPermission = new GrantedPermission();
             grantedPermission.userId = viewHolder.textView.getText().toString();
             grantedPermission.canRead = viewHolder.canReadCheckBox.isChecked();

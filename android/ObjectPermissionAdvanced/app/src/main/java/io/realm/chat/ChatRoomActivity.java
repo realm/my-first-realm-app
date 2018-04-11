@@ -51,20 +51,24 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         String chatRoom = getIntent().getStringExtra("room_name");
         boolean isPrivate = getIntent().getBooleanExtra("is_private_room", false);
+        final String userIdentity = SyncUser.current().getIdentity();
 
-        findViewById(R.id.send).setOnClickListener(view -> realm.executeTransactionAsync(realm -> {
-            Message message = new Message();
-            message.setBody(editTextMessage.getText().toString());
-            message.setAuthor(SyncUser.current().getIdentity());
-            if (isPrivate) {
-                PrivateChatRoom privateRoom = realm.where(PrivateChatRoom.class).equalTo("name", chatRoom).findFirst();
-                if (privateRoom != null) {// need to check if this room still visible to this user (maybe permission to read were revoked in the meantime)
-                    privateRoom.getMessages().add(message);
+        findViewById(R.id.send).setOnClickListener(view -> {
+            final String messageBody = editTextMessage.getText().toString();
+            realm.executeTransactionAsync(realm -> {
+                Message message = new Message();
+                message.setBody(messageBody);
+                message.setAuthor(userIdentity);
+                if (isPrivate) {
+                    PrivateChatRoom privateRoom = realm.where(PrivateChatRoom.class).equalTo("name", chatRoom).findFirst();
+                    if (privateRoom != null) {// need to check if this room still visible to this user (maybe permission to read were revoked in the meantime)
+                        privateRoom.getMessages().add(message);
+                    }
+                } else {
+                    realm.where(PublicChatRoom.class).equalTo("name", chatRoom).findFirst().getMessages().add(message);
                 }
-            } else {
-                realm.where(PublicChatRoom.class).equalTo("name", chatRoom).findFirst().getMessages().add(message);
-            }
-        }, () -> editTextMessage.setText("")));
+            }, () -> editTextMessage.setText(""));
+        });
 
         realm = Realm.getDefaultInstance();
         ChatRoom room;

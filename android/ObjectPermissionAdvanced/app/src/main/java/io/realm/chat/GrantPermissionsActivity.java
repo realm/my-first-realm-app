@@ -25,18 +25,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.SyncUser;
-import io.realm.sync.permissions.Permission;
-import io.realm.sync.permissions.PermissionUser;
-import io.realm.sync.permissions.Role;
 import io.realm.chat.model.PrivateChatRoom;
 import io.realm.chat.ui.EditPermissionsRecyclerAdapter;
 import io.realm.chat.ui.GrantPermissionsRecyclerAdapter;
 import io.realm.chat.ui.GrantedPermission;
 import io.realm.chat.util.PermissionHelper;
+import io.realm.sync.permissions.Permission;
+import io.realm.sync.permissions.PermissionUser;
+import io.realm.sync.permissions.Role;
 
 /**
  * Allow the connected user to grant (read/write) permissions to the other users, for the newly created {@link PrivateChatRoom}
@@ -63,22 +64,19 @@ public class GrantPermissionsActivity extends AppCompatActivity {
 
         realm = Realm.getDefaultInstance();
 
-        final EditPermissionsRecyclerAdapter[] permissionsRecyclerAdapter = new EditPermissionsRecyclerAdapter[1];
-        final GrantPermissionsRecyclerAdapter[] usersRecyclerAdapter = new GrantPermissionsRecyclerAdapter[1];
+        final AtomicReference<EditPermissionsRecyclerAdapter> permissionsRecyclerAdapter = new AtomicReference<>();
+        final AtomicReference<GrantPermissionsRecyclerAdapter> usersRecyclerAdapter = new AtomicReference<>();
 
         if (editMode) {
-            PrivateChatRoom room = realm.where(PrivateChatRoom.class)
-                    .equalTo("name", chatRoom).findFirst();
+            PrivateChatRoom room = realm.where(PrivateChatRoom.class).equalTo("name", chatRoom).findFirst();
             // current user role
             Role privateRole = realm.where(PermissionUser.class).equalTo("id", identity).findFirst().getPrivateRole();
 
             RealmResults<Permission> aclFiltered = room.getACL().where().notEqualTo("role.name", privateRole.getName()).findAll();
 
-            permissionsRecyclerAdapter[0] = new EditPermissionsRecyclerAdapter(aclFiltered);
+            permissionsRecyclerAdapter.set(new EditPermissionsRecyclerAdapter(aclFiltered));
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            recyclerView.setAdapter(permissionsRecyclerAdapter[0]);
-
-            // Note: we can add a button to insert/invite a new user but this is outside the scope of this demo
+            recyclerView.setAdapter(permissionsRecyclerAdapter.get());
 
         } else {
             // these are not users existing in ROS, but users already connected using partial sync (exclude current user)
@@ -86,16 +84,16 @@ public class GrantPermissionsActivity extends AppCompatActivity {
                     .notEqualTo("id", identity)
                     .findAllAsync();
 
-            usersRecyclerAdapter[0] = new GrantPermissionsRecyclerAdapter(users);
+            usersRecyclerAdapter.set(new GrantPermissionsRecyclerAdapter(users));
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            recyclerView.setAdapter(usersRecyclerAdapter[0]);
+            recyclerView.setAdapter(usersRecyclerAdapter.get());
         }
 
         findViewById(R.id.save).setOnClickListener(view -> {
             // begin an async transaction to update permissions
             realm.executeTransactionAsync(bgRealm -> {
                 List<GrantedPermission> grantedPermissions =
-                        editMode ? permissionsRecyclerAdapter[0].getGrantedPermission() : usersRecyclerAdapter[0].getGrantedPermission();
+                        editMode ? permissionsRecyclerAdapter.get().getGrantedPermission() : usersRecyclerAdapter.get().getGrantedPermission();
 
                 if (editMode) {
                     PermissionHelper.grantPermissions(bgRealm, grantedPermissions, chatRoom);

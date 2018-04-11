@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package io.realm.chat.ui;
 
 import android.content.Context;

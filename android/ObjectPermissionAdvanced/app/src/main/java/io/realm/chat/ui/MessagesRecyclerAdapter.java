@@ -32,7 +32,7 @@ import io.realm.chat.model.Message;
  * Adapter to display the list of {@link Message}.
  */
 public class MessagesRecyclerAdapter extends RealmRecyclerViewAdapter<Message, MessagesRecyclerAdapter.MyViewHolder> {
-    private final String userIdentity; // used to differentiate visually messages from other users
+    private final String userIdentity; // used to differentiate messages visually from other users
     @ColorInt
     private int primaryColor;
     @ColorInt

@@ -4,14 +4,17 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.chat.model.PrivateChatRoom;
+import io.realm.chat.ui.GrantedPermission;
 import io.realm.sync.permissions.ClassPermissions;
 import io.realm.sync.permissions.Permission;
 import io.realm.sync.permissions.PermissionUser;
 import io.realm.sync.permissions.RealmPermissions;
 import io.realm.sync.permissions.Role;
-import io.realm.chat.model.PrivateChatRoom;
-import io.realm.chat.ui.GrantedPermission;
 
+/**
+ * A helper class defining permission related actions.
+ */
 public class PermissionHelper {
 
     /**
@@ -66,6 +69,14 @@ public class PermissionHelper {
         }
     }
 
+    /**
+     * Defines a set of permissions for the selected {@link PermissionUser}.
+     *
+     * This will grant read and/or modify privileges to the private role associated with the selected {@link PermissionUser}.
+     * @param realm synced Realm.
+     * @param grantedPermissions list of user-id to grant read/write privileges to.
+     * @param chatRoom the {@link PrivateChatRoom} to add permission(s) to.
+     */
     public static void grantPermissions(Realm realm, List<GrantedPermission> grantedPermissions, String chatRoom) {
         PrivateChatRoom privateChatRoom = realm.where(PrivateChatRoom.class).equalTo("name", chatRoom).findFirst();
 
@@ -97,6 +108,15 @@ public class PermissionHelper {
         }
     }
 
+    /**
+     * Update a set of permissions, previously granted via {@link #grantPermissions(Realm, List, String)}.
+     *
+     * This will grant or revoke a read/modify privileges from the permission granted to the user-id's {@link Role}.
+     * @param realm synced Realm.
+     * @param grantedPermissions list of user-id to grant read/write privileges to.
+     * @param chatRoom the {@link PrivateChatRoom} that will update permission(s) to.
+     * @param identity
+     */
     public static void updateGrantedPermissions(Realm realm, List<GrantedPermission> grantedPermissions, String chatRoom, String identity) {
         PrivateChatRoom privateChatRoom = realm.createObject(PrivateChatRoom.class, chatRoom);
 

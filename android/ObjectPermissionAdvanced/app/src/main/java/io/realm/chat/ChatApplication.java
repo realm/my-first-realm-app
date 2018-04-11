@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package io.realm.chat;
 
 import android.app.Application;

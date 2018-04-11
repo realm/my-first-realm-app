@@ -6,7 +6,7 @@ buildscript {
         google()
         jcenter()
         maven {
-            url '/Users/Nabil/.m2/repository/'
+            url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
         }
     }
     dependencies {
@@ -23,7 +23,7 @@ allprojects {
         google()
         jcenter()
         maven {
-            url '/Users/Nabil/.m2/repository/'
+            url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
         }
     }
 }
