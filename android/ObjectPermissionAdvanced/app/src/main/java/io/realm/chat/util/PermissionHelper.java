@@ -115,7 +115,7 @@ public class PermissionHelper {
      * @param realm synced Realm.
      * @param grantedPermissions list of user-id to grant read/write privileges to.
      * @param chatRoom the {@link PrivateChatRoom} that will update permission(s) to.
-     * @param identity
+     * @param identity user identity of the current user.
      */
     public static void updateGrantedPermissions(Realm realm, List<GrantedPermission> grantedPermissions, String chatRoom, String identity) {
         PrivateChatRoom privateChatRoom = realm.createObject(PrivateChatRoom.class, chatRoom);
