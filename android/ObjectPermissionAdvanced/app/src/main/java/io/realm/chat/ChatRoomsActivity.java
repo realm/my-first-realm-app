@@ -59,10 +59,10 @@ public class ChatRoomsActivity extends AppCompatActivity {
             new AlertDialog.Builder(ChatRoomsActivity.this)
                     .setTitle("Add a public Chat Room")
                     .setView(dialogView)
-                    .setPositiveButton("Add", (dialog, which) -> realm.executeTransactionAsync(realm -> {
-                        String name = taskText.getText().toString();
-                        realm.createObject(PublicChatRoom.class, name);
-                    }))
+                    .setPositiveButton("Add", (dialog, which) -> {
+                        final String name = taskText.getText().toString();
+                        realm.executeTransactionAsync(realm -> realm.createObject(PublicChatRoom.class, name));
+                    })
                     .setNegativeButton("Cancel", null)
                     .create()
                     .show();

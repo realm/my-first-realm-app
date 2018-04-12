@@ -96,9 +96,9 @@ public class GrantPermissionsActivity extends AppCompatActivity {
                         editMode ? permissionsRecyclerAdapter.get().getGrantedPermission() : usersRecyclerAdapter.get().getGrantedPermission();
 
                 if (editMode) {
-                    PermissionHelper.grantPermissions(bgRealm, grantedPermissions, chatRoom);
+                    PermissionHelper.updateGrantedPermissions(bgRealm, grantedPermissions, chatRoom);
                 } else {
-                    PermissionHelper.updateGrantedPermissions(bgRealm, grantedPermissions, chatRoom, identity);
+                    PermissionHelper.grantPermissions(bgRealm, grantedPermissions, chatRoom, identity);
                 }
             }, this::finish);
         });

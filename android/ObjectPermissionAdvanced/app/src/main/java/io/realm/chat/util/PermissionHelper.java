@@ -77,7 +77,7 @@ public class PermissionHelper {
      * @param grantedPermissions list of user-id to grant read/write privileges to.
      * @param chatRoom the {@link PrivateChatRoom} to add permission(s) to.
      */
-    public static void grantPermissions(Realm realm, List<GrantedPermission> grantedPermissions, String chatRoom) {
+    public static void updateGrantedPermissions(Realm realm, List<GrantedPermission> grantedPermissions, String chatRoom) {
         PrivateChatRoom privateChatRoom = realm.where(PrivateChatRoom.class).equalTo("name", chatRoom).findFirst();
 
         // update permission which are already part of the ACL
@@ -109,7 +109,7 @@ public class PermissionHelper {
     }
 
     /**
-     * Update a set of permissions, previously granted via {@link #grantPermissions(Realm, List, String)}.
+     * Update a set of permissions, previously granted via {@link #updateGrantedPermissions(Realm, List, String)}.
      *
      * This will grant or revoke a read/modify privileges from the permission granted to the user-id's {@link Role}.
      * @param realm synced Realm.
@@ -117,7 +117,7 @@ public class PermissionHelper {
      * @param chatRoom the {@link PrivateChatRoom} that will update permission(s) to.
      * @param identity user identity of the current user.
      */
-    public static void updateGrantedPermissions(Realm realm, List<GrantedPermission> grantedPermissions, String chatRoom, String identity) {
+    public static void grantPermissions(Realm realm, List<GrantedPermission> grantedPermissions, String chatRoom, String identity) {
         PrivateChatRoom privateChatRoom = realm.createObject(PrivateChatRoom.class, chatRoom);
 
         for (GrantedPermission grantedPermission : grantedPermissions) {
