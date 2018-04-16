@@ -18,14 +18,13 @@ public class PermissionHelper {
      */
     public static void initializePermissions(Runnable postInitialization) {
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<RealmPermissions> realmPermissions = realm.where(RealmPermissions.class).findAllAsync();
-        Permission realmPermission = realmPermissions.first().getPermissions().first();
-        if (realmPermission.canModifySchema()) {// schema is not yet locked
-
-            // Temporary workaround: wait until the permission system is synchronized before applying changes.
+        RealmPermissions realmPermission = realm.where(RealmPermissions.class).findFirst();
+        if (realmPermission == null || realmPermission.getPermissions().first().canModifySchema()) {
+            // Permission schema is not yet locked
+            // Temporary workaround: register an async query to wait until the permission system is synchronized before applying changes.
+            RealmResults<RealmPermissions> realmPermissions = realm.where(RealmPermissions.class).findAllAsync();
             realmPermissions.addChangeListener((permissions, changeSet) -> {
-                switch (changeSet.getState()) {
-                    case UPDATE: {
+                if (changeSet.isCompleteResult()) {
                         realmPermissions.removeAllChangeListeners();
                         // setup and lock the schema
                         realm.executeTransactionAsync(bgRealm -> {
@@ -33,6 +32,7 @@ public class PermissionHelper {
                             // from adding themselves to another user's private role.
                             Permission rolePermission = bgRealm.where(ClassPermissions.class).equalTo("name", "__Role").findFirst().getPermissions().first();
                             rolePermission.setCanUpdate(false);
+                            rolePermission.setCanCreate(false);// we use the user private role, no other roles are allowed to be created
 
                             // Lower "everyone" Role on Item & Project to restrict permission modifications
                             Permission itemPermission = bgRealm.where(ClassPermissions.class).equalTo("name", "Item").findFirst().getPermissions().first();
@@ -50,7 +50,6 @@ public class PermissionHelper {
                             realm.close();
                             postInitialization.run();
                         });
-                    }
                 }
             });
         } else {

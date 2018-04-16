@@ -37,8 +37,6 @@ import io.realm.SyncUser;
 import io.realm.todo.model.Item;
 import io.realm.todo.ui.ItemsRecyclerAdapter;
 
-import static io.realm.todo.Constants.REALM_BASE_URL;
-
 public class ItemsActivity extends AppCompatActivity {
 
     private Realm realm;
@@ -103,10 +101,8 @@ public class ItemsActivity extends AppCompatActivity {
     }
 
     private RealmResults<Item> setUpRealm() {
-        SyncConfiguration configuration = new SyncConfiguration.Builder(
-                SyncUser.current(),
-                REALM_BASE_URL + "/default").build();
-        realm = Realm.getInstance(configuration);
+        Realm.setDefaultConfiguration(SyncConfiguration.automatic());
+        realm = Realm.getDefaultInstance();
 
         return realm
                 .where(Item.class)

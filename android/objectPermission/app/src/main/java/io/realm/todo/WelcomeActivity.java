@@ -49,7 +49,7 @@ public class WelcomeActivity extends AppCompatActivity {
         SyncUser user = SyncUser.current();
         if (user != null) {
             setUpDefaultRealm();
-            navigateToListOfProject();
+            PermissionHelper.initializePermissions(() -> navigateToListOfProject());
         }
 
         // Set up the login form.

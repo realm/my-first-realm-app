@@ -71,18 +71,8 @@ public class ProjectsActivity extends AppCompatActivity {
                         Role role = realm.where(PermissionUser.class)
                                 .equalTo("id", userId)
                                 .findFirst()
-                                .getRoles()
-                                .first();
-                        Permission permission = new Permission(role);
-                        permission.setCanRead(true);
-                        permission.setCanQuery(true);
-                        permission.setCanCreate(true);
-                        permission.setCanUpdate(true);
-                        permission.setCanUpdate(true);
-                        permission.setCanDelete(true);
-                        permission.setCanSetPermissions(true);
-                        permission.setCanModifySchema(true);
-
+                                .getPrivateRole();
+                        Permission permission = new Permission.Builder(role).allPrivileges().build();
                         project.getPermissions().add(permission);
                     }))
                     .setNegativeButton("Cancel", null)
