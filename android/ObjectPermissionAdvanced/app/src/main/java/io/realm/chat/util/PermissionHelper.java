@@ -27,41 +27,41 @@ public class PermissionHelper {
      */
     public static void initializePermissions(Runnable postInitialization) {
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<RealmPermissions> realmPermissions = realm.where(RealmPermissions.class).findAllAsync();
-        Permission realmPermission = realmPermissions.first().getPermissions().first();
-        if (realmPermission.canModifySchema()) {// schema is not yet locked
-
-            // Temporary workaround: wait until the permission system is synchronized before applying changes.
+        RealmPermissions realmPermission = realm.where(RealmPermissions.class).findFirst();
+        if (realmPermission == null || realmPermission.getPermissions().first().canModifySchema()) {
+            // Permission schema is not yet locked
+            // Temporary workaround: register an async query to wait until the permission system is synchronized before applying changes.
+            RealmResults<RealmPermissions> realmPermissions = realm.where(RealmPermissions.class).findAllAsync();
             realmPermissions.addChangeListener((permissions, changeSet) -> {
                 if (changeSet.isCompleteResult()) {
-                        realmPermissions.removeAllChangeListeners();
-                        // setup and lock the schema
-                        realm.executeTransactionAsync(bgRealm -> {
-                            // Remove update permissions from the __Role table to prevent a malicious user
-                            // from adding themselves to another user's private role.
-                            Permission rolePermission = bgRealm.where(ClassPermissions.class).equalTo("name", "__Role").findFirst().getPermissions().first();
-                            rolePermission.setCanUpdate(false);
-                            rolePermission.setCanCreate(false);
+                    realmPermissions.removeAllChangeListeners();
+                    // setup and lock the schema
+                    realm.executeTransactionAsync(bgRealm -> {
+                        // Remove update permissions from the __Role table to prevent a malicious user
+                        // from adding themselves to another user's private role.
+                        Permission rolePermission = bgRealm.where(ClassPermissions.class).equalTo("name", "__Role").findFirst().getPermissions().first();
+                        rolePermission.setCanUpdate(false);
+                        rolePermission.setCanCreate(false);
 
-                            // Lower "everyone" Role on Message & PrivateChatRoom and PublicChatRoom to restrict permission modifications
-                            Permission messagePermission = bgRealm.where(ClassPermissions.class).equalTo("name", "Message").findFirst().getPermissions().first();
-                            Permission publicChatPermission = bgRealm.where(ClassPermissions.class).equalTo("name", "PrivateChatRoom").findFirst().getPermissions().first();
-                            Permission privateChatPermission = bgRealm.where(ClassPermissions.class).equalTo("name", "PublicChatRoom").findFirst().getPermissions().first();
-                            messagePermission.setCanQuery(false); // Message are not queryable since they're accessed via RealmList (from PublicChatRoom or PrivateChatRoom)
-                            messagePermission.setCanSetPermissions(false);
-                            publicChatPermission.setCanSetPermissions(false);
-                            privateChatPermission.setCanSetPermissions(false);
+                        // Lower "everyone" Role on Message & PrivateChatRoom and PublicChatRoom to restrict permission modifications
+                        Permission messagePermission = bgRealm.where(ClassPermissions.class).equalTo("name", "Message").findFirst().getPermissions().first();
+                        Permission publicChatPermission = bgRealm.where(ClassPermissions.class).equalTo("name", "PrivateChatRoom").findFirst().getPermissions().first();
+                        Permission privateChatPermission = bgRealm.where(ClassPermissions.class).equalTo("name", "PublicChatRoom").findFirst().getPermissions().first();
+                        messagePermission.setCanQuery(false); // Message are not queryable since they're accessed via RealmList (from PublicChatRoom or PrivateChatRoom)
+                        messagePermission.setCanSetPermissions(false);
+                        publicChatPermission.setCanSetPermissions(false);
+                        privateChatPermission.setCanSetPermissions(false);
 
-                            // Lock the permission and schema
-                            RealmPermissions permission = bgRealm.where(RealmPermissions.class).equalTo("id", 0).findFirst();
-                            Permission everyonePermission = permission.getPermissions().first();
-                            everyonePermission.setCanModifySchema(false);
-                            everyonePermission.setCanSetPermissions(false);
-                        }, () -> {
-                            realm.close();
-                            postInitialization.run();
-                        });
-                    }
+                        // Lock the permission and schema
+                        RealmPermissions permission = bgRealm.where(RealmPermissions.class).equalTo("id", 0).findFirst();
+                        Permission everyonePermission = permission.getPermissions().first();
+                        everyonePermission.setCanModifySchema(false);
+                        everyonePermission.setCanSetPermissions(false);
+                    }, () -> {
+                        realm.close();
+                        postInitialization.run();
+                    });
+                }
             });
         } else {
             realm.close();

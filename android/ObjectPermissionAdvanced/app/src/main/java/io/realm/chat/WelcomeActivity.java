@@ -39,7 +39,7 @@ import static io.realm.chat.util.Constants.AUTH_URL;
 
 public class WelcomeActivity extends AppCompatActivity {
 
-    private EditText mNicknameTextView;
+    private EditText nicknameTextView;
     private View progressView;
     private View loginFormView;
 
@@ -54,7 +54,7 @@ public class WelcomeActivity extends AppCompatActivity {
         }
 
         // Set up the login form.
-        mNicknameTextView = findViewById(R.id.nickname);
+        nicknameTextView = findViewById(R.id.nickname);
         Button loginButton = findViewById(R.id.login_button);
         loginButton.setOnClickListener(view -> attemptLogin());
         loginFormView = findViewById(R.id.login_form);
@@ -62,10 +62,10 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void attemptLogin() {
-        // Reset mNicknameTextView.
-        mNicknameTextView.setError(null);
+        // Reset nicknameTextView.
+        nicknameTextView.setError(null);
         // Store values at the time of the login attempt.
-        String nickname = mNicknameTextView.getText().toString();
+        String nickname = nicknameTextView.getText().toString();
 
         showProgress(true);
 
@@ -80,8 +80,8 @@ public class WelcomeActivity extends AppCompatActivity {
             @Override
             public void onError(ObjectServerError error) {
                 showProgress(false);
-                mNicknameTextView.setError("Uh oh something went wrong! (check your logcat please)");
-                mNicknameTextView.requestFocus();
+                nicknameTextView.setError("Uh oh something went wrong! (check your logcat please)");
+                nicknameTextView.requestFocus();
                 Log.e("Login error", error.toString());
             }
         });
