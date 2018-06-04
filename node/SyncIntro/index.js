@@ -37,6 +37,7 @@ const ItemSchema = {
 let getopt = require('node-getopt').create([
     [ 'c', 'create=ARG', 'create a new item' ],
     [ 'l', 'list',       'list all items' ],
+    [ 'm', 'mark=ARG',   'mark a item done' ],
     [ 'h', 'help',       'display this text'],
 ]).bindHelp();
 let opt = getopt.parse(process.argv.slice(2));
@@ -53,7 +54,6 @@ Realm.Sync.User.login(`https://${SERVER}`, USERNAME, PASSWORD)
             schema: [ItemSchema],
         })
             .then(realm => {
-                console.log(opt.options);
                 if (opt.options['create']) {
                     console.log('Create item');
                     realm.write(() => {
@@ -66,7 +66,15 @@ Realm.Sync.User.login(`https://${SERVER}`, USERNAME, PASSWORD)
                         console.log(item.itemId, item.body, item.isDone, item.timestamp);
                     });
                 }
+                if (opt.options['mark']) {
+                    realm.write(() => {
+                        let item = realm.objects(ItemSchema.name).filtered(`itemId = "${opt.options['mark']}"`);
+                        item[0].isDone = true;
+                        item[0].timestamp = new Date();
+                    });
+                }
 
+                // wait for data to be uploaded to the server
                 realm.syncSession.addProgressNotification('upload', 'forCurrentlyOutstandingWork', (transferred, transferable) => {
                     if (transferred === transferable) {
                         process.exit(0);
