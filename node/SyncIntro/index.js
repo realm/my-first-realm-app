@@ -16,9 +16,9 @@ const Realm = require('realm');
 const uuidv4 = require('uuid/v4');
 
 // credentials and server settings
-const USERNAME = "test"
-const PASSWORD = "test"
-const SERVER = "kneth.us1.cloud.realm.io"
+const USERNAME = "<USERNAME>"
+const PASSWORD = "<PASSWORD>"
+const SERVER = "<SERVER>"
 
 // the data model
 const ItemSchema = {
