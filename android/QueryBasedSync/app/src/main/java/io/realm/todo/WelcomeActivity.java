@@ -35,7 +35,6 @@ import io.realm.SyncCredentials;
 import io.realm.SyncUser;
 
 import static io.realm.todo.Constants.AUTH_URL;
-import static io.realm.todo.Constants.REALM_BASE_URL;
 
 public class WelcomeActivity extends AppCompatActivity {
 

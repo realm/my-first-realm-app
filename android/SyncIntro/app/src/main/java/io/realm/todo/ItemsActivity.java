@@ -37,8 +37,6 @@ import io.realm.SyncUser;
 import io.realm.todo.model.Item;
 import io.realm.todo.ui.ItemsRecyclerAdapter;
 
-import static io.realm.todo.Constants.REALM_BASE_URL;
-
 public class ItemsActivity extends AppCompatActivity {
 
     private Realm realm;

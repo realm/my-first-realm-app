@@ -64,7 +64,7 @@ public class WelcomeActivity extends AppCompatActivity {
         String nickname = mNicknameTextView.getText().toString();
         showProgress(true);
 
-        SyncCredentials credentials = SyncCredentials.nickname(nickname, true);
+        SyncCredentials credentials = SyncCredentials.nickname(nickname, false);
         SyncUser.logInAsync(credentials, AUTH_URL, new SyncUser.Callback<SyncUser>() {
             @Override
             public void onSuccess(SyncUser user) {
