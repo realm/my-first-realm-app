@@ -110,11 +110,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void setUpRealmAndGoToListTaskActivity() {
-        SyncConfiguration configuration = new SyncConfiguration.Builder(
-                SyncUser.current(),
-                REALM_BASE_URL + "/default")
-                .partialRealm()
-                .build();
+        SyncConfiguration configuration = SyncUser.current().getDefaultConfiguration();
         Realm.setDefaultConfiguration(configuration);
         Intent intent = new Intent(WelcomeActivity.this, ProjectsActivity.class);
         startActivity(intent);

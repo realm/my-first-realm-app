@@ -111,7 +111,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void setUpDefaultRealm() {
-        Realm.setDefaultConfiguration(SyncConfiguration.automatic());
+        Realm.setDefaultConfiguration(SyncUser.current().getDefaultConfiguration());
     }
 
     private void navigateToListOfProject() {
