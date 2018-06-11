@@ -101,8 +101,10 @@ public class ItemsActivity extends AppCompatActivity {
     }
 
     private RealmResults<Item> setUpRealm() {
-        Realm.setDefaultConfiguration(SyncConfiguration.automatic());
-        realm = Realm.getDefaultInstance();
+        SyncConfiguration configuration = SyncUser.current()
+                .createConfiguration(REALM_BASE_URL + "/default")
+                .build();
+        realm = Realm.getInstance(configuration);
 
         return realm
                 .where(Item.class)
