@@ -17,9 +17,9 @@ const uuidv4 = require('uuid/v4');
 const blessed = require('blessed');
 
 // credentials and server settings
-const USERNAME = "<YOUR USERNAME>";
-const PASSWORD = "<YOUR PASSWORD";
-const SERVER = "<YOUR CLOUD INSTANCE>";
+const USERNAME = "your-user-name"; // must be admin user
+const PASSWORD = "your-password";
+const SERVER = "your-instance";
 
 // the data model
 const ItemSchema = {
@@ -182,7 +182,7 @@ Realm.Sync.User.login(`https://${SERVER}`, USERNAME, PASSWORD)
         screen.render();
         Realm.open({
             sync: {
-                url: `realms://${SERVER}/~/todo`,
+                url: `realms://${SERVER}/default`,
                 user: user,
                 fullSynchronization: false,
             },
