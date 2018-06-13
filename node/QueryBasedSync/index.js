@@ -17,9 +17,9 @@ const uuidv4 = require('uuid/v4');
 const blessed = require('blessed');
 
 // credentials and server settings
-const USERNAME = "your-user-name"; // must be admin user
-const PASSWORD = "your-password";
-const SERVER = "your-instance";
+const USERNAME = "test"; // must be admin user
+const PASSWORD = "testtest";
+const SERVER = "kneth.us1.cloud.realm.io";
 
 // the data model
 const ItemSchema = {
@@ -199,9 +199,12 @@ Realm.Sync.User.login(`https://${SERVER}`, USERNAME, PASSWORD)
                     switch (state) {
                     case Realm.Sync.SubscriptionState.Complete:
                         if (projects.isEmpty()) {                            
-                            statusbox.pushLine('No projects found');
+                            statusbox.pushLine('No projects found - creating one');
                             statusbox.scroll(1);
                             screen.render();
+                            realm.write(() => {
+                                let project = realm.create(ProjectSchema.name, { id: uuidv4(), owner: user.identity, timestamp: new Date(), items: [] });
+                            });
                         } else {
                             statusbox.pushLine(`${projects.length} projects found`);
                             statusbox.scroll(1);
