@@ -24,27 +24,53 @@ class Projects extends Component {
                 this.toggleModal();
              }
         }); 
-        
-        Realm.Sync.User.login(AUTH_URL, this.props.username)
+
+        Realm.Sync.User.registerWithProvider(AUTH_URL, { provider: 'nickname', name: this.props.username })
             .then((user) => {
                 Realm.open({
                     schema: [projectSchema],
                     sync: {
                         user: user,
                         url: REALM_URL,
-                        partial: true,
+                        // partial: true,
                     }
                 }).then((realm) => {
+                    // realm.write(() => {
+                    //     realm.create('project', {
+                    //             projectID: '1',
+                    //             owner: this.props.username,
+                    //             name: 'task1',
+                    //             createdAt: 'date',
+                    //         }
+                    //     )
+                    // })
                     let results = realm.objects('project');
                     this.setState({ projects: results })
                 })
             })
+        .catch((error) => {
+            // Realm.Sync.User.register(AUTH_URL, this.props.username, 'password')
+            console.log(error)
+        })
     }
 
     toggleModal = () => {
-        console.log('hit2')
         this.setState({ isModalVisible: !this.state.isModalVisible });
     };
+
+    handleSubmit() {
+        // Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
+        //     .then((user) => {
+        //         Realm.open({
+        //             schema: [projectSchema],
+        //             sync: {
+        //                 user: user,
+        //                 url: REALM_URL,
+        //                 partial: true,
+        //             }
+        //         })
+        //     })
+    }
 
     render() {
         return(
