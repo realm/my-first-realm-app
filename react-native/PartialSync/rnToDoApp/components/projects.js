@@ -14,6 +14,7 @@ class Projects extends Component {
         this.state = {
             isModalVisible: false,
             projectName: '',
+            projects: null,
         }
     }
 
@@ -26,31 +27,18 @@ class Projects extends Component {
         }); 
 
         Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
-            .then((user) => {
-                Realm.open({
-                    schema: [projectSchema],
-                    sync: {
-                        user: user,
-                        url: REALM_URL,
-                        partial: true,
-                    }
-                }).then((realm) => {
-                    realm.write(() => {
-                        realm.create('project', {
-                                projectID: '1',
-                                owner: this.props.username,
-                                name: 'task1',
-                                createdAt: 'date',
-                            }
-                        )
-                    })
-                    let results = realm.objects('project');
-                    this.setState({ projects: results })
-                })
+        .then((user) => {
+            Realm.open({
+                schema: [projectSchema],
+                sync: {
+                    user: user,
+                    url: REALM_URL,
+                }
             })
-        .catch((error) => {
-            // Realm.Sync.User.register(AUTH_URL, this.props.username, 'password');
-            console.log(error);
+            .then((realm) => {
+                let results = realm.objects('project');
+                this.setState({ projects: results });
+            })
         })
     }
 
@@ -59,26 +47,40 @@ class Projects extends Component {
     };
 
     handleSubmit() {
-        // Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
-        //     .then((user) => {
-        //         Realm.open({
-        //             schema: [projectSchema],
-        //             sync: {
-        //                 user: user,
-        //                 url: REALM_URL,
-        //                 partial: true,
-        //             }
-        //         })
-        //     })
+        Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
+        .then((user) => {
+            Realm.open({
+                schema: [projectSchema],
+                sync: {
+                    user: user,
+                    url: REALM_URL,
+                }
+            })
+            .then((realm) => {
+                let date = new Date().now().getTime()
+                realm.write(() => {
+                    realm.create('project', {
+                        projectID: Math.random().toString(36).substr(2, 9),
+                        owner: this.props.username,
+                        name: this.state.projectName,
+                        createdAt: date,
+                    })
+                })
+            })
+        })
+        .catch(error => {
+            console.log(error)
+        })
+        this.setState({ projectName: '' });
     }
 
     render() {
+        console.log(this.state.projects)
         return(
             <View>
                 <Text>
                     Projects Page
                     {this.props.username}
-                    {this.state.projects}
                 </Text>
                 <Modal isVisible={this.state.isModalVisible}>
                     <View style={styles.modalContent}>
@@ -87,7 +89,7 @@ class Projects extends Component {
                             onChangeText={(text) => this.setState({ projectName: text })}
                             value={this.state.projectName}
                         />
-                        <TouchableOpacity onPress={this.handleSubmit}>
+                        <TouchableOpacity onPress={this.handleSubmit.bind(this)}>
                             <View style={styles.button}>
                                 <Text>Confirm</Text>
                             </View>

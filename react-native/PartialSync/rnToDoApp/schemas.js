@@ -4,10 +4,5 @@ export const projectSchema = {
         projectID: 'string',
         owner: 'string',
         name: 'string',
-        createdAt: 'date',
-        tasks: { type: 'list', objectType: 'task' },
-
-
-
     }
 }

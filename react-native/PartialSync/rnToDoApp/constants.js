@@ -8,7 +8,7 @@
 // **** address of your ROS server, e.g.: "http://127.0.0.1:9080" and "realm://127.0.0.1:9080"
     
 
-export const MY_INSTANCE_ADDRESS = "iostestapp.us1.cloud.realm.io" // <- update this
+export const MY_INSTANCE_ADDRESS = 'iostestapp.us1.cloud.realm.io'; // <- update this
 
-export const AUTH_URL  = `https://${MY_INSTANCE_ADDRESS}`
-export const REALM_URL = `realms://${MY_INSTANCE_ADDRESS}/ToDo`
+export const AUTH_URL  = `https://${MY_INSTANCE_ADDRESS}`;
+export const REALM_URL = `realms://${MY_INSTANCE_ADDRESS}/todo-rn`;
