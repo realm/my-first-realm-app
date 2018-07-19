@@ -11,7 +11,7 @@ namespace XamarinToDoApp
         {
             InitializeComponent();
 
-            MainPage = new MainPage();
+            MainPage = new NavigationPage(new ItemEntriesPage());
         }
 
         protected override void OnStart()

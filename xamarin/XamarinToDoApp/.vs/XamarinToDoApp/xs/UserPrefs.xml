@@ -1,8 +1,13 @@
 ﻿<Properties StartupConfiguration="{F6B458A2-4437-4FD6-BC77-D258187A43BC}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="XamarinToDoApp/FodyWeavers.xml">
+  <MonoDevelop.Ide.Workbench ActiveDocument="XamarinToDoApp/ItemEntriesViewModel.cs">
     <Files>
       <File FileName="XamarinToDoApp/MainPage.xaml" Line="7" Column="15" />
-      <File FileName="XamarinToDoApp/FodyWeavers.xml" Line="1" Column="40" />
+      <File FileName="XamarinToDoApp/App.xaml" Line="5" Column="15" />
+      <File FileName="XamarinToDoApp/App.xaml.cs" Line="19" Column="43" />
+      <File FileName="XamarinToDoApp/Item.cs" Line="14" Column="2" />
+      <File FileName="XamarinToDoApp/ItemEntriesPage.xaml" Line="1" Column="1" />
+      <File FileName="XamarinToDoApp/ItemEntriesPage.xaml.cs" Line="11" Column="10" />
+      <File FileName="XamarinToDoApp/ItemEntriesViewModel.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />

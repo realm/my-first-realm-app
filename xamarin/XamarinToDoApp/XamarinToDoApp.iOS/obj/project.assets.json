@@ -2086,12 +2086,6 @@
         }
       }
     },
-    "dependencies": {
-      "Realm.Database": {
-        "target": "Package",
-        "version": "[3.1.0, )"
-      }
-    },
     "frameworks": {
       "xamarinios10": {
         "dependencies": {
@@ -2100,6 +2094,10 @@
             "version": "3.0.0.482510"
           },
           "Realm": {
+            "target": "Package",
+            "version": "3.1.0"
+          },
+          "Realm.Database": {
             "target": "Package",
             "version": "3.1.0"
           }

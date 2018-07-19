@@ -1622,12 +1622,6 @@
         }
       }
     },
-    "dependencies": {
-      "Realm": {
-        "target": "Package",
-        "version": "[3.1.0, )"
-      }
-    },
     "frameworks": {
       "monoandroid81": {
         "dependencies": {
@@ -1656,6 +1650,10 @@
             "version": "27.0.2"
           },
           "Realm.Database": {
+            "target": "Package",
+            "version": "3.1.0"
+          },
+          "Realm": {
             "target": "Package",
             "version": "3.1.0"
           }
