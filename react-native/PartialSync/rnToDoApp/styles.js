@@ -8,12 +8,16 @@ export const styles = StyleSheet.create({
         borderRadius: 4,
         borderColor: "rgba(0, 0, 0, 0.1)"
     },
+    buttonGroup: {
+        flexDirection: 'row',
+    },
     container: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
     },
     modalContent: {
+        flexDirection: 'column',
         backgroundColor: "white",
         padding: 22,
         justifyContent: "center",

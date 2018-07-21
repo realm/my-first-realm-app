@@ -37,11 +37,18 @@ class loginForm extends Component {
                             onChangeText={(text) => this.setState({ username: text })}
                             value={this.state.username}
                         />
-                        <TouchableOpacity onPress={this.handleSubmit}>
-                            <View style={styles.button}>
-                                <Text>Confirm</Text>
-                            </View>
-                        </TouchableOpacity>
+                        <View style={styles.buttonGroup}>
+                            <TouchableOpacity onPress={this.handleSubmit}>
+                                <View style={styles.button}>
+                                    <Text>Confirm</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={this.toggleModal}>
+                                <View style={styles.button}>
+                                    <Text>Cancel</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </Modal>
             </View>
