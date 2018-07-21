@@ -8,7 +8,7 @@ import { styles } from '../styles'
 import { Actions } from '../node_modules/react-native-router-flux';
 import { projectSchema } from '../schemas';
 import { List, ListItem } from 'react-native-elements';
- 
+
 class Projects extends Component {
     constructor(props) {
         super(props);
@@ -18,7 +18,6 @@ class Projects extends Component {
             dataSource: null,
             username: this.props.username,
         }
-        console.log('constructor')
     }
 
     componentWillMount() {
@@ -102,14 +101,21 @@ class Projects extends Component {
         })
     }
 
+    deleteItem = () => {
+        console.log('hit delete')
+    }
+
     renderRow(data) {
-        console.log(data)
+        console.log(this)
         return(
-            <ListItem
-                key={data.projectID}
-                title={data.name}
-                hideChevron
-            />
+            <TouchableOpacity onPress={this.deleteItem}>
+                <ListItem
+                    key={data.projectID}
+                    title={data.name}
+                    // onPress={() => { console.log('hit') }}
+                    hideChevron
+                />
+            </TouchableOpacity>
         );
     }
 
@@ -119,7 +125,7 @@ class Projects extends Component {
                 <List>
                     <ListView
                         enableEmptySections
-                        renderRow={this.renderRow}
+                        renderRow={this.renderRow.bind(this)}
                         dataSource={this.state.dataSource}
                     />
                 </List>
