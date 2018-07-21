@@ -89,11 +89,18 @@ class Projects extends Component {
                             onChangeText={(text) => this.setState({ projectName: text })}
                             value={this.state.projectName}
                         />
-                        <TouchableOpacity onPress={this.handleSubmit.bind(this)}>
-                            <View style={styles.button}>
-                                <Text>Confirm</Text>
-                            </View>
-                        </TouchableOpacity>
+                        <View style={styles.buttonGroup}>
+                            <TouchableOpacity onPress={this.handleSubmit.bind(this)}>
+                                <View style={styles.button}>
+                                    <Text>Confirm</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={this.toggleModal}>
+                                <View style={styles.button}>
+                                    <Text>Cancel</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </Modal>
             </View>
