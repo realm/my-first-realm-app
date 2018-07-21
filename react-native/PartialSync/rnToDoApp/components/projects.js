@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ListView } from 'react-native';
 import Realm from 'realm';
 import Modal from "react-native-modal";
 import { AUTH_URL, REALM_URL } from '../constants';
@@ -15,9 +15,10 @@ class Projects extends Component {
         this.state = {
             isModalVisible: false,
             projectName: '',
-            projects: null,
+            dataSource: null,
             username: this.props.username,
         }
+        console.log('constructor')
     }
 
     componentWillMount() {
@@ -28,6 +29,11 @@ class Projects extends Component {
              }
         });
 
+        this.fetchProjects();
+    }
+
+    fetchProjects() {
+        console.log('hit fetch')
         Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
         .then((user) => {
             Realm.open({
@@ -38,15 +44,30 @@ class Projects extends Component {
                 }
             })
             .then((realm) => {
+                console.log('hit query')
                 let results = realm.objects('project');
-                this.setState({ projects: results });
+                console.log(results)
+                this.createDataSource(results);
             })
+        })
+        .catch(error => {
+            console.log(error)
         })
     }
 
     toggleModal = () => {
         this.setState({ isModalVisible: !this.state.isModalVisible });
     };
+
+    createDataSource(projects) {
+        console.log('hit create datasource')
+        console.log(projects)
+        const data = new ListView.DataSource({
+          rowHasChanged: (r1, r2) => r1 !== r2
+        });
+    
+        this.setState({ dataSource: data.cloneWithRows(projects) });
+    }
 
     handleSubmit() {
         Realm.Sync.User.login(AUTH_URL, this.state.username, 'password')
@@ -72,6 +93,8 @@ class Projects extends Component {
             .then(() => {
                 this.setState({ projectName: '' });
                 this.toggleModal();
+
+                this.fetchProjects();
             })
         })
         .catch(error => {
@@ -79,12 +102,42 @@ class Projects extends Component {
         })
     }
 
+    renderRow(data) {
+        console.log(data)
+        return(
+            <ListItem
+                key={data.projectID}
+                title={data.name}
+                hideChevron
+            />
+        );
+    }
+
+    renderList() {
+        if (this.state.dataSource) {
+            return(
+                <List>
+                    <ListView
+                        enableEmptySections
+                        renderRow={this.renderRow}
+                        dataSource={this.state.dataSource}
+                    />
+                </List>
+            );
+        }
+        return(
+            <Text>
+                Loading
+            </Text>
+        );
+    }
+
     render() {
+        console.log('render', this.state.dataSource)
+
         return(
             <View>
-                <Text>
-                    Projects Page
-                </Text>
+                {this.renderList()}
                 <Modal isVisible={this.state.isModalVisible}>
                     <View style={styles.modalContent}>
                         <TextInput
