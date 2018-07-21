@@ -7,6 +7,7 @@ import { constants } from '../constants';
 import { styles } from '../styles'
 import { Actions } from '../node_modules/react-native-router-flux';
 import { projectSchema } from '../schemas';
+import { List, ListItem } from 'react-native-elements';
  
 class Projects extends Component {
     constructor(props) {
@@ -24,7 +25,7 @@ class Projects extends Component {
             onRight: () => { 
                 this.toggleModal();
              }
-        }); 
+        });
 
         Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
         .then((user) => {
@@ -47,8 +48,10 @@ class Projects extends Component {
     };
 
     handleSubmit() {
+        console.log('hit submit');
         Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
         .then((user) => {
+            console.log('hit open')
             Realm.open({
                 schema: [projectSchema],
                 sync: {
@@ -57,36 +60,38 @@ class Projects extends Component {
                 }
             })
             .then((realm) => {
-                let date = new Date().now().getTime()
+                console.log('hit write')
+                let date = Date.now()
+                console.log(date)
                 realm.write(() => {
                     realm.create('project', {
                         projectID: Math.random().toString(36).substr(2, 9),
-                        owner: this.props.username,
+                        owner: user.identity,
                         name: this.state.projectName,
                         createdAt: date,
                     })
                 })
             })
         })
-        .catch(error => {
-            console.log(error)
-        })
-        this.setState({ projectName: '' });
+        // .catch(error => {
+        //     console.log(error)
+        // })
     }
 
     render() {
-        console.log(this.state.projects)
         return(
             <View>
                 <Text>
                     Projects Page
-                    {this.props.username}
                 </Text>
                 <Modal isVisible={this.state.isModalVisible}>
                     <View style={styles.modalContent}>
                         <TextInput
                             placeholder="Please Enter a Project Name"
-                            onChangeText={(text) => this.setState({ projectName: text })}
+                            onChangeText={(text) => {
+                                this.setState({ projectName: text });
+                                console.log(this)
+                            }}
                             value={this.state.projectName}
                         />
                         <View style={styles.buttonGroup}>
@@ -107,5 +112,6 @@ class Projects extends Component {
         );
     }
 }
+
 
 export default Projects;

@@ -9,8 +9,10 @@
   "dependencies": {
     "react": "16.4.1",
     "react-native": "0.56.0",
+    "react-native-elements": "^0.19.1",
     "react-native-modal": "^6.4.0",
     "react-native-router-flux": "^4.0.0-beta.31",
+    "react-native-vector-icons": "^4.6.0",
     "realm": "^2.13.0"
   },
   "devDependencies": {

@@ -13,20 +13,13 @@ import LoginForm from './components/loginForm';
 import ProjectsList from './components/projects';
 
 export default class App extends Component {
-  state = {
-    username: '',
-  }
-
-  receiveUsername(input) {
-    this.setState({ username: input})
-  }
 
   render() {
     return (
       <Router>
-        <Scene>
+        <Scene key="root">
           <Scene key="auth">
-            <Scene key="login" component={LoginForm} title="Please Login" />
+            <Scene key="login" component={LoginForm} title="Please Login"  titleStyle={{flex :1}}/>
           </Scene>
 
           <Scene key="main">
@@ -40,22 +33,3 @@ export default class App extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
