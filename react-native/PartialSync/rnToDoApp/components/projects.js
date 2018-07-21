@@ -16,6 +16,7 @@ class Projects extends Component {
             isModalVisible: false,
             projectName: '',
             projects: null,
+            username: this.props.username,
         }
     }
 
@@ -48,10 +49,8 @@ class Projects extends Component {
     };
 
     handleSubmit() {
-        console.log('hit submit');
-        Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
+        Realm.Sync.User.login(AUTH_URL, this.state.username, 'password')
         .then((user) => {
-            console.log('hit open')
             Realm.open({
                 schema: [projectSchema],
                 sync: {
@@ -60,9 +59,7 @@ class Projects extends Component {
                 }
             })
             .then((realm) => {
-                console.log('hit write')
                 let date = Date.now()
-                console.log(date)
                 realm.write(() => {
                     realm.create('project', {
                         projectID: Math.random().toString(36).substr(2, 9),
@@ -72,10 +69,14 @@ class Projects extends Component {
                     })
                 })
             })
+            .then(() => {
+                this.setState({ projectName: '' });
+                this.toggleModal();
+            })
         })
-        // .catch(error => {
-        //     console.log(error)
-        // })
+        .catch(error => {
+            console.log(error)
+        })
     }
 
     render() {
@@ -90,7 +91,7 @@ class Projects extends Component {
                             placeholder="Please Enter a Project Name"
                             onChangeText={(text) => {
                                 this.setState({ projectName: text });
-                                console.log(this)
+                                console.log(this.state)
                             }}
                             value={this.state.projectName}
                         />
