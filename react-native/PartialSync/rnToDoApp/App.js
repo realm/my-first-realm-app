@@ -15,8 +15,8 @@ import ProjectsList from './components/projects';
 export default class App extends Component {
   render() {
     return (
-        <Router sceneStyle={{paddingTop: Navigator.NavigationBar.Styles.General.NavBarHeight}}>
-          <Scene key="root">
+        <Router>
+          <Scene hideNavBar key="root">
             <Scene key="auth">
               <Scene key="login" component={LoginForm} title="Please Login"  titleStyle={{flex :1}}/>
             </Scene>
