@@ -32,7 +32,6 @@ class Projects extends Component {
     }
 
     fetchProjects() {
-        console.log('hit fetch')
         Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
         .then((user) => {
             Realm.open({
@@ -43,9 +42,7 @@ class Projects extends Component {
                 }
             })
             .then((realm) => {
-                console.log('hit query')
                 let results = realm.objects('project');
-                console.log(results)
                 this.createDataSource(results);
             })
         })
@@ -59,8 +56,6 @@ class Projects extends Component {
     };
 
     createDataSource(projects) {
-        console.log('hit create datasource')
-        console.log(projects)
         const data = new ListView.DataSource({
           rowHasChanged: (r1, r2) => r1 !== r2
         });
@@ -112,7 +107,6 @@ class Projects extends Component {
                 <ListItem
                     key={data.projectID}
                     title={data.name}
-                    // onPress={() => { console.log('hit') }}
                     hideChevron
                 />
             </TouchableOpacity>
@@ -139,7 +133,6 @@ class Projects extends Component {
     }
 
     render() {
-        console.log('render', this.state.dataSource)
 
         return(
             <View>
@@ -150,7 +143,6 @@ class Projects extends Component {
                             placeholder="Please Enter a Project Name"
                             onChangeText={(text) => {
                                 this.setState({ projectName: text });
-                                console.log(this.state)
                             }}
                             value={this.state.projectName}
                         />
