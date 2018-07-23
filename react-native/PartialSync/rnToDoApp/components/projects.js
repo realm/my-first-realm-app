@@ -34,6 +34,7 @@ class Projects extends Component {
     fetchProjects() {
         Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
         .then((user) => {
+            console.log('hit open')
             Realm.open({
                 schema: [projectSchema],
                 sync: {
@@ -42,6 +43,7 @@ class Projects extends Component {
                 }
             })
             .then((realm) => {
+                console.log('hit query')
                 let results = realm.objects('project');
                 this.createDataSource(results);
             })
@@ -101,7 +103,6 @@ class Projects extends Component {
     }
 
     renderRow(data) {
-        console.log(this)
         return(
             <TouchableOpacity onPress={this.deleteItem}>
                 <ListItem
@@ -117,8 +118,9 @@ class Projects extends Component {
         if (this.state.dataSource) {
             return(
                 <List>
-                    <ListView
-                        enableEmptySections
+                    <ListView 
+                        // style={{flex: 1}}
+                        // enableEmptySections
                         renderRow={this.renderRow.bind(this)}
                         dataSource={this.state.dataSource}
                     />
@@ -133,7 +135,6 @@ class Projects extends Component {
     }
 
     render() {
-
         return(
             <View>
                 {this.renderList()}
