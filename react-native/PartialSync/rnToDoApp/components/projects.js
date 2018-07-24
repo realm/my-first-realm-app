@@ -29,9 +29,8 @@ class Projects extends Component {
              }
         });
 
-        Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
+        Realm.Sync.User.registerWithProvider(AUTH_URL, { provider: 'nickname', providerToken: this.props.username, userInfo: { is_admin: true }})
         .then((user) => {
-            console.log('hit login')
             this.setState({ user: user });
         })
         .then(() => {
@@ -40,7 +39,6 @@ class Projects extends Component {
     }
 
     fetchProjects(user) {
-        // Realm.Sync.User.registerWithProvider(AUTH_URL, { provider: 'nickname', providerToken: this.props.username, userInfo: { IsAdmin: true }})
         Realm.open({
             schema: [projectSchema],
             sync: {
@@ -49,7 +47,6 @@ class Projects extends Component {
             }
         })
         .then((realm) => {
-            console.log('hit query')
             let results = realm.objects('project');
             this.createDataSource(results);
         })
@@ -70,7 +67,8 @@ class Projects extends Component {
         this.setState({ dataSource: data.cloneWithRows(projects) });
     }
 
-    handleSubmit(user) {
+    handleSubmit() {
+        const { user } = this.state;
         Realm.open({
             schema: [projectSchema],
             sync: {
@@ -81,6 +79,7 @@ class Projects extends Component {
         .then((realm) => {
             let date = Date.now()
             realm.write(() => {
+                console.log('hit write')
                 realm.create('project', {
                     projectID: Math.random().toString(36).substr(2, 9),
                     owner: user.identity,
