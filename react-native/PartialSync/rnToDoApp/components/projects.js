@@ -32,7 +32,8 @@ class Projects extends Component {
     }
 
     fetchProjects() {
-        Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
+        Realm.Sync.User.registerWithProvider(AUTH_URL, { provider: 'nickname', providerToken: this.props.username })
+        // Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
         .then((user) => {
             console.log('hit open')
             Realm.open({
