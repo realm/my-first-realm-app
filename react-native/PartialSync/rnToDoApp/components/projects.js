@@ -17,6 +17,7 @@ class Projects extends Component {
             projectName: '',
             dataSource: null,
             username: this.props.username,
+            user: null,
         }
     }
 
@@ -28,26 +29,29 @@ class Projects extends Component {
              }
         });
 
-        this.fetchProjects();
+        Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
+        .then((user) => {
+            console.log('hit login')
+            this.setState({ user: user });
+        })
+        .then(() => {
+            this.fetchProjects(this.state.user);
+        })
     }
 
-    fetchProjects() {
-        Realm.Sync.User.registerWithProvider(AUTH_URL, { provider: 'nickname', providerToken: this.props.username })
-        // Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
-        .then((user) => {
-            console.log('hit open')
-            Realm.open({
-                schema: [projectSchema],
-                sync: {
-                    user: user,
-                    url: REALM_URL,
-                }
-            })
-            .then((realm) => {
-                console.log('hit query')
-                let results = realm.objects('project');
-                this.createDataSource(results);
-            })
+    fetchProjects(user) {
+        // Realm.Sync.User.registerWithProvider(AUTH_URL, { provider: 'nickname', providerToken: this.props.username, userInfo: { IsAdmin: true }})
+        Realm.open({
+            schema: [projectSchema],
+            sync: {
+                user: user,
+                url: REALM_URL,
+            }
+        })
+        .then((realm) => {
+            console.log('hit query')
+            let results = realm.objects('project');
+            this.createDataSource(results);
         })
         .catch(error => {
             console.log(error)
@@ -66,46 +70,60 @@ class Projects extends Component {
         this.setState({ dataSource: data.cloneWithRows(projects) });
     }
 
-    handleSubmit() {
-        Realm.Sync.User.login(AUTH_URL, this.state.username, 'password')
-        .then((user) => {
-            Realm.open({
-                schema: [projectSchema],
-                sync: {
-                    user: user,
-                    url: REALM_URL,
-                }
-            })
-            .then((realm) => {
-                let date = Date.now()
-                realm.write(() => {
-                    realm.create('project', {
-                        projectID: Math.random().toString(36).substr(2, 9),
-                        owner: user.identity,
-                        name: this.state.projectName,
-                        createdAt: date,
-                    })
+    handleSubmit(user) {
+        Realm.open({
+            schema: [projectSchema],
+            sync: {
+                user: user,
+                url: REALM_URL,
+            }
+        })
+        .then((realm) => {
+            let date = Date.now()
+            realm.write(() => {
+                realm.create('project', {
+                    projectID: Math.random().toString(36).substr(2, 9),
+                    owner: user.identity,
+                    name: this.state.projectName,
+                    createdAt: date,
                 })
             })
-            .then(() => {
-                this.setState({ projectName: '' });
-                this.toggleModal();
+        })
+        .then(() => {
+            this.setState({ projectName: '' });
+            this.toggleModal();
 
-                this.fetchProjects();
-            })
+            this.fetchProjects(user);
         })
         .catch(error => {
             console.log(error)
         })
     }
 
-    deleteItem = () => {
+    deleteItem = (id) => {
         console.log('hit delete')
+        console.log(id)
+        Realm.open({
+            schema: [projectSchema],
+            sync: {
+                user: this.state.user,
+                url: REALM_URL,
+            }
+        })
+        .then(realm => {
+            realm.write(() => {
+              const projectToDelete = realm.objects('project').filtered(`projectID = "${id}"`);
+              realm.delete(projectToDelete);
+            })
+        })
+        .then(() => {
+            this.fetchProjects(this.state.user);
+        })
     }
 
     renderRow(data) {
         return(
-            <TouchableOpacity onPress={this.deleteItem}>
+            <TouchableOpacity onPress={() => { this.deleteItem(data.projectID) }}>
                 <ListItem
                     key={data.projectID}
                     title={data.name}
