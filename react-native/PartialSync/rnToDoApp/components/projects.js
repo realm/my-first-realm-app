@@ -18,6 +18,7 @@ class Projects extends Component {
             dataSource: null,
             username: this.props.username,
             user: null,
+            realm: null,
         }
     }
 
@@ -31,8 +32,18 @@ class Projects extends Component {
 
         Realm.Sync.User.registerWithProvider(AUTH_URL, { provider: 'nickname', providerToken: this.props.username, userInfo: { is_admin: true }})
         .then((user) => {
-            this.setState({ user });
-            this.fetchProjects(user);
+            Realm.open({
+                schema: [projectSchema],
+                sync: {
+                    user: user,
+                    url: REALM_URL,
+                    partial: true,
+                }
+            })
+            .then((realm) => {
+                this.setState({ realm, user })
+                this.fetchProjects(realm);
+            })
         })
     }
 
@@ -40,39 +51,26 @@ class Projects extends Component {
     //     this.fetchProjects(nextProps.user);
     // }
 
-    fetchProjects(user) {
+    fetchProjects(realm) {
         // Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
-        Realm.open({
-            schema: [projectSchema],
-            sync: {
-                user: user,
-                url: REALM_URL,
-                partial: true,
+        let results = realm.objects('project').filtered(`owner = "${this.state.user.identity}"`)
+        let subscription = results.subscribe();
+        results.addListener(() => {
+            switch (subscription.state) {
+            case Realm.Sync.SubscriptionState.Creating:
+                break;
+            case Realm.Sync.SubscriptionState.Complete:
+                console.log('hit sub complete')
+                let partialResults = realm.objects('project');
+                this.createDataSource(partialResults);
+                break;
+            case Realm.Sync.SubscriptionState.Error:
+                console.log('An error occurred: ', results.error);
+                break;
+            default:
+                console.log(state)
+                break;
             }
-        })
-        .then((realm) =>{
-            let results = realm.objects('project').filtered(`owner = "${user.identity}"`)
-            let subscription = results.subscribe();
-            results.addListener(() => {
-                switch (subscription.state) {
-                case Realm.Sync.SubscriptionState.Creating:
-                    break;
-                case Realm.Sync.SubscriptionState.Complete:
-                    console.log('hit sub complete')
-                    let partialResults = realm.objects('project');
-                    this.createDataSource(partialResults);
-                    break;
-                case Realm.Sync.SubscriptionState.Error:
-                    console.log('An error occurred: ', results.error);
-                    break;
-                default:
-                    console.log(state)
-                    break;
-                }
-            })
-        })
-        .catch(error => {
-            console.log(error)
         })
         // .catch(() => {
         //     Realm.Sync.User.register(AUTH_URL, this.props.username, 'password')
@@ -115,54 +113,23 @@ class Projects extends Component {
     }
 
     handleSubmit() {
-        const { user } = this.state;
-        console.log('hit create open')
-        Realm.open({
-            schema: [projectSchema],
-            sync: {
-                user: user,
-                url: REALM_URL,
-            }
-        })
-        .then((realm) => {
-            let date = Date.now()
-            realm.write(() => {
-                console.log('hit write')
-                realm.create('project', {
-                    projectID: Math.random().toString(36).substr(2, 9),
-                    owner: user.identity,
-                    name: this.state.projectName,
-                    createdAt: date,
-                })
+        const { user, realm } = this.state;
+        realm.write(() => {
+            realm.create('project', {
+                projectID: Math.random().toString(36).substr(2, 9),
+                owner: user.identity,
+                name: this.state.projectName,
             })
         })
-        .then(() => {
-            this.setState({ projectName: '' });
-            this.toggleModal();
-
-            this.fetchProjects(user);
-        })
-        .catch(error => {
-            console.log(error)
-        })
+        this.setState({ projectName: '' });
+        this.toggleModal();
     }
 
     deleteItem = (id) => {
-        Realm.open({
-            schema: [projectSchema],
-            sync: {
-                user: this.state.user,
-                url: REALM_URL,
-            }
-        })
-        .then(realm => {
-            realm.write(() => {
-              const projectToDelete = realm.objects('project').filtered(`projectID = "${id}"`);
-              realm.delete(projectToDelete);
-            })
-        })
-        .then(() => {
-            this.fetchProjects(this.state.user);
+        const { realm } = this.state;
+        realm.write(() => {
+            let projectToDelete = realm.objects('project').filtered(`projectID = "${id}"`);
+            realm.delete(projectToDelete);
         })
     }
 
