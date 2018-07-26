@@ -3,20 +3,18 @@ import { View, Text, TextInput, TouchableOpacity, ListView } from 'react-native'
 import Realm from 'realm';
 import Modal from "react-native-modal";
 import { AUTH_URL, REALM_URL } from '../constants';
-import { constants } from '../constants';
 import { styles } from '../styles'
 import { Actions } from '../node_modules/react-native-router-flux';
-import { projectSchema } from '../schemas';
+import { taskSchema } from '../schemas';
 import { List, ListItem } from 'react-native-elements';
 
-class Projects extends Component {
+class Tasks extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isModalVisible: false,
-            projectName: '',
+            taskName: '',
             dataSource: null,
-            username: this.props.username,
             user: null,
             realm: null,
         }
@@ -33,7 +31,7 @@ class Projects extends Component {
         Realm.Sync.User.registerWithProvider(AUTH_URL, { provider: 'nickname', providerToken: this.props.username, userInfo: { is_admin: true }})
         .then((user) => {
             Realm.open({
-                schema: [projectSchema],
+                schema: [taskSchema],
                 sync: {
                     user: user,
                     url: REALM_URL,
@@ -42,18 +40,13 @@ class Projects extends Component {
             })
             .then((realm) => {
                 this.setState({ realm, user })
-                this.fetchProjects(realm);
+                this.fetchTasks(realm);
             })
         })
     }
 
-    // componentWillReceiveProps(nextProps) {
-    //     this.fetchProjects(nextProps.user);
-    // }
-
-    fetchProjects(realm) {
-        // Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
-        let results = realm.objects('project').filtered(`owner = "${this.state.user.identity}"`)
+    fetchTasks(realm) {
+        let results = realm.objects('task').filtered(`owner = "${this.state.user.identity}"`)
         let subscription = results.subscribe();
         results.addListener(() => {
             switch (subscription.state) {
@@ -61,7 +54,7 @@ class Projects extends Component {
                 break;
             case Realm.Sync.SubscriptionState.Complete:
                 console.log('hit sub complete')
-                let partialResults = realm.objects('project');
+                let partialResults = realm.objects('task');
                 this.createDataSource(partialResults);
                 break;
             case Realm.Sync.SubscriptionState.Error:
@@ -72,72 +65,51 @@ class Projects extends Component {
                 break;
             }
         })
-        // .catch(() => {
-        //     Realm.Sync.User.register(AUTH_URL, this.props.username, 'password')
-        //     .then(() => {
-        //         this.fetchProjects();
-        //     })
-        //     .catch(error => {
-        //         console.log(error)
-        //     })
-        // })
     }
 
-    // fetchProjects(user) {
-    //     Realm.open({
-    //         schema: [projectSchema],
-    //         sync: {
-    //             user: user,
-    //             url: REALM_URL,
-    //         }
-    //     })
-    //     .then((realm) => {
-    //         let results = realm.objects('project');
-    //         this.createDataSource(results);
-    //     })
-    //     .catch(error => {
-    //         console.log(error)
-    //     })
+    // fetchTasks(realm) {
+    //     let results = realm.objects('task');
+    //     this.createDataSource(results);
     // }
 
     toggleModal = () => {
         this.setState({ isModalVisible: !this.state.isModalVisible });
     };
 
-    createDataSource(projects) {
+    createDataSource(tasks) {
         const data = new ListView.DataSource({
           rowHasChanged: (r1, r2) => r1 !== r2
         });
     
-        this.setState({ dataSource: data.cloneWithRows(projects) });
+        this.setState({ dataSource: data.cloneWithRows(tasks) });
     }
 
     handleSubmit() {
         const { user, realm } = this.state;
         realm.write(() => {
-            realm.create('project', {
-                projectID: Math.random().toString(36).substr(2, 9),
+            realm.create('task', {
+                taskID: Math.random().toString(36).substr(2, 9),
                 owner: user.identity,
-                name: this.state.projectName,
+                name: this.state.taskName,
             })
         })
-        this.setState({ projectName: '' });
+        this.setState({ taskName: '' });
         this.toggleModal();
     }
 
     deleteItem = (id) => {
         const { realm } = this.state;
         realm.write(() => {
-            let projectToDelete = realm.objects('project').filtered(`projectID = "${id}"`);
-            realm.delete(projectToDelete);
+            let taskToDelete = realm.objects('task').filtered(`taskID = "${id}"`);
+            realm.delete(taskToDelete);
         })
     }
 
     renderRow(data) {
         return(
-            <TouchableOpacity onPress={() => { this.deleteItem(data.projectID) }}>
+            <TouchableOpacity onPress={() => { this.deleteItem(data.taskID) }}>
                 <ListItem
-                    key={data.projectID}
+                    key={data.taskID}
                     title={data.name}
                     hideChevron
                 />
@@ -150,7 +122,6 @@ class Projects extends Component {
             return(
                 <List>
                     <ListView 
-                        // style={{flex: 1}}
                         enableEmptySections
                         renderRow={this.renderRow.bind(this)}
                         dataSource={this.state.dataSource}
@@ -160,7 +131,7 @@ class Projects extends Component {
         }
         return(
             <View>
-                <Text style={styles.text}>
+                <Text>
                     Create a Task!
                 </Text>
             </View>
@@ -174,11 +145,11 @@ class Projects extends Component {
                 <Modal isVisible={this.state.isModalVisible}>
                     <View style={styles.modalContent}>
                         <TextInput
-                            placeholder="Please Enter a Project Name"
+                            placeholder="Please Enter a task Name"
                             onChangeText={(text) => {
-                                this.setState({ projectName: text });
+                                this.setState({ taskName: text });
                             }}
-                            value={this.state.projectName}
+                            value={this.state.taskName}
                         />
                         <View style={styles.buttonGroup}>
                             <TouchableOpacity onPress={this.handleSubmit.bind(this)}>
@@ -200,4 +171,4 @@ class Projects extends Component {
 }
 
 
-export default Projects;
+export default Tasks;

@@ -7,10 +7,9 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
-import { Actions, Scene, Router } from 'react-native-router-flux';
+import { Scene, Router } from 'react-native-router-flux';
 import LoginForm from './components/loginForm';
-import ProjectsList from './components/projects';
+import TasksList from './components/tasks';
 
 export default class App extends Component {
   render() {
@@ -18,14 +17,14 @@ export default class App extends Component {
         <Router>
           <Scene hideNavBar key="root">
             <Scene key="auth">
-              <Scene key="login" component={LoginForm} title="Please Login"  titleStyle={{flex :1}}/>
+              <Scene key="login" component={LoginForm} title="Please Login"/>
             </Scene>
 
             <Scene key="main">
               <Scene 
-                key="projects" 
-                component={ProjectsList} 
-                title="Projects" />
+                key="tasks" 
+                component={TasksList} 
+                title="Tasks" />
             </Scene> 
           </Scene>
         </Router>

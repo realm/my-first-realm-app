@@ -1,7 +1,7 @@
-export const projectSchema = {
-    name: 'project',
+export const taskSchema = {
+    name: 'task',
     properties: {
-        projectID: 'string',
+        taskID: 'string',
         owner: 'string',
         name: 'string',
     }
