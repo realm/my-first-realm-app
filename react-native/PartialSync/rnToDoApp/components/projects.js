@@ -31,29 +31,76 @@ class Projects extends Component {
 
         Realm.Sync.User.registerWithProvider(AUTH_URL, { provider: 'nickname', providerToken: this.props.username, userInfo: { is_admin: true }})
         .then((user) => {
-            this.setState({ user: user });
-        })
-        .then(() => {
-            this.fetchProjects(this.state.user);
+            this.setState({ user });
+            this.fetchProjects(user);
         })
     }
 
+    // componentWillReceiveProps(nextProps) {
+    //     this.fetchProjects(nextProps.user);
+    // }
+
     fetchProjects(user) {
+        // Realm.Sync.User.login(AUTH_URL, this.props.username, 'password')
         Realm.open({
             schema: [projectSchema],
             sync: {
                 user: user,
                 url: REALM_URL,
+                partial: true,
             }
         })
-        .then((realm) => {
-            let results = realm.objects('project');
-            this.createDataSource(results);
+        .then((realm) =>{
+            let results = realm.objects('project').filtered(`owner = "${user.identity}"`)
+            let subscription = results.subscribe();
+            results.addListener(() => {
+                switch (subscription.state) {
+                case Realm.Sync.SubscriptionState.Creating:
+                    break;
+                case Realm.Sync.SubscriptionState.Complete:
+                    console.log('hit sub complete')
+                    let partialResults = realm.objects('project');
+                    this.createDataSource(partialResults);
+                    break;
+                case Realm.Sync.SubscriptionState.Error:
+                    console.log('An error occurred: ', results.error);
+                    break;
+                default:
+                    console.log(state)
+                    break;
+                }
+            })
         })
         .catch(error => {
             console.log(error)
         })
+        // .catch(() => {
+        //     Realm.Sync.User.register(AUTH_URL, this.props.username, 'password')
+        //     .then(() => {
+        //         this.fetchProjects();
+        //     })
+        //     .catch(error => {
+        //         console.log(error)
+        //     })
+        // })
     }
+
+    // fetchProjects(user) {
+    //     Realm.open({
+    //         schema: [projectSchema],
+    //         sync: {
+    //             user: user,
+    //             url: REALM_URL,
+    //         }
+    //     })
+    //     .then((realm) => {
+    //         let results = realm.objects('project');
+    //         this.createDataSource(results);
+    //     })
+    //     .catch(error => {
+    //         console.log(error)
+    //     })
+    // }
 
     toggleModal = () => {
         this.setState({ isModalVisible: !this.state.isModalVisible });
@@ -69,6 +116,7 @@ class Projects extends Component {
 
     handleSubmit() {
         const { user } = this.state;
+        console.log('hit create open')
         Realm.open({
             schema: [projectSchema],
             sync: {
@@ -100,8 +148,6 @@ class Projects extends Component {
     }
 
     deleteItem = (id) => {
-        console.log('hit delete')
-        console.log(id)
         Realm.open({
             schema: [projectSchema],
             sync: {
@@ -138,7 +184,7 @@ class Projects extends Component {
                 <List>
                     <ListView 
                         // style={{flex: 1}}
-                        // enableEmptySections
+                        enableEmptySections
                         renderRow={this.renderRow.bind(this)}
                         dataSource={this.state.dataSource}
                     />
@@ -146,9 +192,11 @@ class Projects extends Component {
             );
         }
         return(
-            <Text>
-                Loading
-            </Text>
+            <View>
+                <Text style={styles.text}>
+                    Create a Task!
+                </Text>
+            </View>
         );
     }
 
