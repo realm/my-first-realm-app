@@ -67,11 +67,6 @@ class Tasks extends Component {
         })
     }
 
-    // fetchTasks(realm) {
-    //     let results = realm.objects('task');
-    //     this.createDataSource(results);
-    // }
-
     toggleModal = () => {
         this.setState({ isModalVisible: !this.state.isModalVisible });
     };
@@ -87,11 +82,15 @@ class Tasks extends Component {
     handleSubmit() {
         const { user, realm } = this.state;
         realm.write(() => {
-            realm.create('task', {
+            let task = realm.create('task', {
                 taskID: Math.random().toString(36).substr(2, 9),
                 owner: user.identity,
                 name: this.state.taskName,
             })
+            let role = realm.create('__Role', { name: user.identity });
+            role.members.push(user);
+            let permission = realm.create('__Permission', { canRead: true, canUpdate: true, canQuery: true, canCreate: true, canDelete: true, role: role });
+            task.permission.push(permission);
         })
         this.setState({ taskName: '' });
         this.toggleModal();
