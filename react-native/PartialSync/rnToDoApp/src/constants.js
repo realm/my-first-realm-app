@@ -11,4 +11,4 @@
 export const MY_INSTANCE_ADDRESS = 'iostestapp.us1.cloud.realm.io'; // <- update this
 
 export const AUTH_URL  = `https://${MY_INSTANCE_ADDRESS}`;
-export const REALM_URL = `realms://${MY_INSTANCE_ADDRESS}/todo-react-native3`;
+export const REALM_URL = `realms://${MY_INSTANCE_ADDRESS}/todo-react-native`;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text, TouchableOpacity, View, TextInput } from 'react-native';
 import { Actions } from 'react-native-router-flux';
-import Modal from "react-native-modal";
+import Modal from 'react-native-modal';
 import { styles } from '../styles';
 
 class loginForm extends Component {

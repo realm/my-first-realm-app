@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ListView } from 'react-native';
 import Realm from 'realm';
-import Modal from "react-native-modal";
+import Modal from 'react-native-modal';
 import { AUTH_URL, REALM_URL } from '../constants';
 import { styles } from '../styles'
-import { Actions } from '../node_modules/react-native-router-flux';
+import { Actions } from 'react-native-router-flux';
 import { taskSchema } from '../schemas';
 import { List, ListItem } from 'react-native-elements';
 
@@ -22,7 +22,7 @@ class Tasks extends Component {
 
     componentWillMount() {
         Actions.refresh({
-            rightTitle: "Create",
+            rightTitle: 'Create',
             onRight: () => { 
                 this.toggleModal();
              }
@@ -66,12 +66,6 @@ class Tasks extends Component {
             }
         })
     }
-
-    // fetchTasks(realm) {
-    //     let results = realm.objects('task');
-    //     this.createDataSource(results);
-    // }
-
     toggleModal = () => {
         this.setState({ isModalVisible: !this.state.isModalVisible });
     };

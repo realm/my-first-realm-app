@@ -8,8 +8,8 @@
 
 import React, {Component} from 'react';
 import { Scene, Router } from 'react-native-router-flux';
-import LoginForm from './components/loginForm';
-import TasksList from './components/tasks';
+import LoginForm from './src/components/loginForm';
+import TasksList from './src/components/tasks';
 
 export default class App extends Component {
   render() {
