@@ -9,16 +9,15 @@ import ModalView from './modalView';
 class loginForm extends Component {
     state = {
         isModalVisible: false,
-        username: '',
     };
     
     toggleModal = () => {
         this.setState({ isModalVisible: !this.state.isModalVisible });
     };
 
-    handleSubmit = () => {
+    handleSubmit = (text) => {
         this.toggleModal();
-        Actions.main({ username: this.state.username});
+        Actions.main({ username: text});
     }
 
     render() {
@@ -35,6 +34,7 @@ class loginForm extends Component {
                     placeholder='Please Enter a Username'
                     isModalVisible={isModalVisible}
                     toggleModal={this.toggleModal}
+                    handleSubmit={this.handleSubmit}
                 />
             </View>
         );
@@ -44,25 +44,3 @@ class loginForm extends Component {
 
 
 export default loginForm;
-
-{/* <Modal isVisible={this.state.isModalVisible}>
-                    <View style={styles.modalContent}>
-                        <TextInput
-                            placeholder="Please Enter a Username"
-                            onChangeText={(text) => this.setState({ username: text })}
-                            value={this.state.username}
-                        />
-                        <View style={styles.buttonGroup}>
-                            <TouchableOpacity onPress={this.handleSubmit}>
-                                <View style={styles.button}>
-                                    <Text>Confirm</Text>
-                                </View>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={this.toggleModal}>
-                                <View style={styles.button}>
-                                    <Text>Cancel</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </Modal> */}

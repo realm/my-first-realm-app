@@ -10,6 +10,11 @@ class ModalView extends Component {
         text: '',
     }
 
+    onConfirm() {
+        // console.log(this.props)
+        this.props.handleSubmit(this.state.text)
+    }
+
     render() {
         const { isModalVisible, placeholder, toggleModal } = this.props;
 
@@ -24,7 +29,7 @@ class ModalView extends Component {
                         value={this.state.text}
                     />
                     <View style={styles.buttonGroup}>
-                        <TouchableOpacity onPress={this.props.handleSubmit}>
+                        <TouchableOpacity onPress={this.onConfirm.bind(this)}>
                             <View style={styles.button}>
                                 <Text>
                                     Confirm
