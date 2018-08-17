@@ -8,7 +8,7 @@ import { Actions } from 'react-native-router-flux';
 import { taskSchema } from '../schemas';
 import { List, ListItem } from 'react-native-elements';
 
-class Tasks extends Component {
+class ProjectList extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -165,4 +165,4 @@ class Tasks extends Component {
 }
 
 
-export default Tasks;
+export default ProjectList;

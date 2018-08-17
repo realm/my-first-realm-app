@@ -9,7 +9,7 @@
 import React, {Component} from 'react';
 import { Scene, Router } from 'react-native-router-flux';
 import LoginForm from './src/components/loginForm';
-import TasksList from './src/components/tasks';
+import ProjectList from './src/components/projectList';
 
 export default class App extends Component {
   render() {
@@ -23,7 +23,7 @@ export default class App extends Component {
             <Scene key="main">
               <Scene 
                 key="tasks" 
-                component={TasksList} 
+                component={ProjectList} 
                 title="Tasks" />
             </Scene> 
           </Scene>

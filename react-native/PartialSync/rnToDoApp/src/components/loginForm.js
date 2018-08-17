@@ -4,14 +4,13 @@ import { Actions } from 'react-native-router-flux';
 import Modal from 'react-native-modal';
 import { styles } from '../styles';
 
+import ModalView from './modalView';
+
 class loginForm extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            isModalVisible: false,
-            username: '',
-        };
-    }
+    state = {
+        isModalVisible: false,
+        username: '',
+    };
     
     toggleModal = () => {
         this.setState({ isModalVisible: !this.state.isModalVisible });
@@ -23,6 +22,8 @@ class loginForm extends Component {
     }
 
     render() {
+        const { isModalVisible } = this.state
+
         return(
             <View style={styles.container}>
                 <TouchableOpacity onPress={this.toggleModal}>
@@ -30,7 +31,21 @@ class loginForm extends Component {
                         <Text>Login</Text>
                     </View>
                 </TouchableOpacity>
-                <Modal isVisible={this.state.isModalVisible}>
+                <ModalView 
+                    placeholder='Please Enter a Username'
+                    isModalVisible={isModalVisible}
+                    toggleModal={this.toggleModal}
+                />
+            </View>
+        );
+    }
+}
+
+
+
+export default loginForm;
+
+{/* <Modal isVisible={this.state.isModalVisible}>
                     <View style={styles.modalContent}>
                         <TextInput
                             placeholder="Please Enter a Username"
@@ -50,12 +65,4 @@ class loginForm extends Component {
                             </TouchableOpacity>
                         </View>
                     </View>
-                </Modal>
-            </View>
-        );
-    }
-}
-
-
-
-export default loginForm;
+                </Modal> */}
