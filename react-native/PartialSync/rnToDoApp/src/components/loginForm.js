@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Text, TouchableOpacity, View, TextInput } from 'react-native';
 import { Actions } from 'react-native-router-flux';
-import Modal from 'react-native-modal';
 import { styles } from '../styles';
 
 import ModalView from './modalView';
@@ -15,9 +14,9 @@ class loginForm extends Component {
         this.setState({ isModalVisible: !this.state.isModalVisible });
     };
 
-    handleSubmit = (text) => {
+    handleSubmit = (username) => {
         this.toggleModal();
-        Actions.main({ username: text});
+        Actions.main({ username });
     }
 
     render() {
@@ -34,7 +33,7 @@ class loginForm extends Component {
                     placeholder='Please Enter a Username'
                     isModalVisible={isModalVisible}
                     toggleModal={this.toggleModal}
-                    handleSubmit={this.handleSubmit}
+                    handleSubmit={this.handleSubmit.bind(this)}
                 />
             </View>
         );

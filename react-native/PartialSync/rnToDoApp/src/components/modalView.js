@@ -11,7 +11,6 @@ class ModalView extends Component {
     }
 
     onConfirm() {
-        // console.log(this.props)
         this.props.handleSubmit(this.state.text)
     }
 
