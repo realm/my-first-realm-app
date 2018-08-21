@@ -10,7 +10,7 @@
     }
   }, {
     "name": "Project",
-    "primaryKey": "itemId",
+    "primaryKey": "projectId",
     "properties": {
       "projectId": "string",
       "owner": "string",
