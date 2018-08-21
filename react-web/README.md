@@ -13,10 +13,20 @@ The Realm Object Server GraphQL service is still in its young and as of the time
 
 ## Scripts
 
-### Build
+### Start
+
+When developing on the app, run the `start` script to start the `webpack-serve` development server.
 
 ```
-npm run build
+npm start
+```
+
+### Lint
+
+Run the linter on the projects code, to check if the code complies with the recommended code-style
+
+```
+npm run lint
 ```
 
 ### Create Realm
@@ -35,3 +45,11 @@ The script takes a `--schema` parameter which can be either `simple` or `advance
 - `advanced`: Both the `Item` and `Project` schemas
 
 You can run with "advanced" schema after you've already created a Realm with the "simple" schema, without loosing data.
+
+### Build
+
+To build the app into a production ready bundle, run
+
+```
+npm run build
+```
