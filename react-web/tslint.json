@@ -3,5 +3,8 @@
     "tslint:latest",
     "tslint-react",
     "tslint-eslint-rules"
-  ]
+  ],
+  "rules": {
+    "jsx-no-multiline-js": false
+  }
 }

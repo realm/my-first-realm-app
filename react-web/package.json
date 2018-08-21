@@ -33,7 +33,15 @@
     "webpack-serve": "^2.0.2"
   },
   "dependencies": {
+    "apollo-client-preset": "^1.0.8",
+    "apollo-link-ws": "^1.0.8",
+    "apollo-utilities": "^1.0.19",
+    "graphql": "^0.13.2",
+    "graphql-tag": "^2.9.2",
     "react": "^16.4.2",
-    "react-dom": "^16.4.2"
+    "react-apollo": "^2.1.11",
+    "react-dom": "^16.4.2",
+    "realm-graphql-client": "^1.2.0",
+    "subscriptions-transport-ws": "^0.9.14"
   }
 }
