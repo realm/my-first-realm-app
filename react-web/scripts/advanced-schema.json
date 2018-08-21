@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Item",
+    "primaryKey": "itemId",
+    "properties": {
+      "itemId": "string",
+      "body": "string",
+      "isDone": "bool",
+      "timestamp": "date"
+    }
+  }, {
+    "name": "Project",
+    "primaryKey": "itemId",
+    "properties": {
+      "projectId": "string",
+      "owner": "string",
+      "name": "string",
+      "timestamp": "date",
+      "items": "Item[]"
+    }
+  }
+]

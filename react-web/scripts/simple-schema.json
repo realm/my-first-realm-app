@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Item",
+    "primaryKey": "itemId",
+    "properties": {
+      "itemId": "string",
+      "body": "string",
+      "isDone": "bool",
+      "timestamp": "date"
+    }
+  }
+]

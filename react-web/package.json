@@ -1,0 +1,22 @@
+{
+  "name": "react-web",
+  "version": "0.1.0",
+  "description": "ToDo demo app using Realm Object Server, GraphQL and React for the Web.",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "create-realm": "node scripts/create-realm.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "realm"
+  ],
+  "author": "Realm Inc. <info@realm.io>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "commander": "^2.17.1",
+    "fs-extra": "^7.0.0",
+    "realm": "^2.14.2",
+    "uuid": "^3.3.2"
+  }
+}
