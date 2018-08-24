@@ -6,7 +6,6 @@ import Realm from "realm";
 import { SERVER_URL } from "../constants";
 import { Project, Item } from "../schemas";
 
-import { Button } from "./Button";
 import { ModalView } from "./ModalView";
 
 export const styles = StyleSheet.create({

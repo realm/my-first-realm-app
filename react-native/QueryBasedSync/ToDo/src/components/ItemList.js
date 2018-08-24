@@ -12,6 +12,16 @@ export const styles = StyleSheet.create({
   }
 });
 
+const checkedIcon = {
+  name: "check-box",
+  color: "#555"
+};
+
+const uncheckedIcon = {
+  name: "check-box-outline-blank",
+  color: "#555"
+};
+
 const itemKeyExtractor = item => item.itemId;
 
 import { ModalView } from "./ModalView";
@@ -95,7 +105,14 @@ export class ItemList extends Component {
   }
 
   renderItem = ({ item }) => (
-    <ListItem key={item.itemId} title={item.body} hideChevron={true} />
+    <ListItem
+      key={item.itemId}
+      title={item.body}
+      rightIcon={item.isDone ? checkedIcon : uncheckedIcon}
+      onPressRightIcon={() => {
+        this.onItemPress(item);
+      }}
+    />
   );
 
   onSubscriptionChange = () => {
@@ -123,5 +140,14 @@ export class ItemList extends Component {
     });
     // Reset the state
     this.setState({ isModalVisible: false });
+  };
+
+  onItemPress = item => {
+    const { realm } = this.props;
+    // Open a write transaction
+    realm.write(() => {
+      // Toggle the item isDone
+      item.isDone = !item.isDone;
+    });
   };
 }
