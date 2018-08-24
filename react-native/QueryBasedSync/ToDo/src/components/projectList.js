@@ -41,7 +41,8 @@ export class ProjectList extends Component {
     // Get a result containing all projects
     const projects = realm
       .objects("Project")
-      .filtered("owner == $0", this.props.user.identity);
+      .filtered("owner == $0", this.props.user.identity)
+      .sorted("timestamp", true);
 
     // When the list of projects change, React won't know about it because the Result object itself did not change.
     projects.addListener(() => {
@@ -132,6 +133,6 @@ export class ProjectList extends Component {
 
   onProjectPress = project => {
     const { user, realm } = this.props;
-    Actions.items({ project, realm, user });
+    Actions.items({ project, realm, user, title: project.name });
   };
 }

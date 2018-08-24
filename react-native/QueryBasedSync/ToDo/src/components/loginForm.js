@@ -22,12 +22,20 @@ export class LoginForm extends Component {
     isModalVisible: false
   };
 
+  componentDidMount() {
+    // Check if we're already authenticated
+    if (Realm.Sync.User.current) {
+      this.onAuthenticated(Realm.Sync.User.current);
+    } else {
+      this.setState({ isModalVisible: true });
+    }
+  }
+
   render() {
     const { isModalVisible } = this.state;
 
     return (
       <View style={styles.container}>
-        <Button onPress={this.toggleModal}>Login</Button>
         <ModalView
           placeholder="Please Enter a Username"
           isModalVisible={isModalVisible}
@@ -37,6 +45,17 @@ export class LoginForm extends Component {
         />
       </View>
     );
+  }
+
+  async onAuthenticated(user) {
+    // Create a configuration to open the default Realm
+    const config = user.createConfiguration({
+      schema: [Project, Item]
+    });
+    // Open the Realm
+    const realm = await Realm.open(config);
+    // Navigate to the main scene
+    Actions.authenticated({ user, realm });
   }
 
   toggleModal = () => {
@@ -58,14 +77,7 @@ export class LoginForm extends Component {
       });
       // Hide the modal
       this.setState({ isModalVisible: false });
-      // Create a configuration to open the default Realm
-      const config = user.createConfiguration({
-        schema: [Project, Item]
-      });
-      // Open the Realm
-      const realm = await Realm.open(config);
-      // Navigate to the main scene
-      Actions.authenticated({ user, realm });
+      this.onAuthenticated(user);
     } catch (error) {
       this.setState({ isModalVisible: true, error });
     }

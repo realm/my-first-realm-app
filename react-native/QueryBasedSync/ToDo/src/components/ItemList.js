@@ -33,7 +33,7 @@ export class ItemList extends Component {
 
     // Register an action to create an item
     Actions.refresh({
-      title: `Items of "${project.name}"`,
+      title: project.name,
       rightTitle: " Create",
       onRight: () => {
         this.toggleModal();
@@ -41,7 +41,7 @@ export class ItemList extends Component {
     });
 
     // Get a result containing all items
-    const items = project.items;
+    const items = project.items.sorted("timestamp");
 
     // When the list of items change, React won't know about it because the Result object itself did not change.
     items.addListener(() => {
