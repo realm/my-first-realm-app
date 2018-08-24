@@ -1,119 +1,137 @@
-import React, { Component } from 'react';
-import { View, ListView } from 'react-native';
-import Realm from 'realm';
-import ModalView from './modalView';
-import { AUTH_URL, REALM_URL } from '../constants';
-import { Actions } from 'react-native-router-flux';
-import { taskSchema } from '../schemas';
+import PropTypes from "prop-types";
+import React, { Component } from "react";
+import { View, FlatList, Text, StyleSheet } from "react-native";
+import { Actions } from "react-native-router-flux";
+import { List, ListItem } from "react-native-elements";
+import { v4 as uuid } from "uuid";
 
-import PageView from './pageView';
+const projectKeyExtractor = project => project.projectId;
 
-class ProjectList extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isModalVisible: false,
-            taskName: '',
-            dataSource: null,
-            user: null,
-            realm: null,
-        }
-    }
+export const styles = StyleSheet.create({
+  placeholder: {
+    textAlign: "center",
+    padding: 10
+  }
+});
 
-    componentWillMount() {
-        Actions.refresh({
-            rightTitle: 'Create',
-            onRight: () => { 
-                this.toggleModal();
-             }
-        });
+import { ModalView } from "./ModalView";
 
-        Realm.Sync.User.registerWithProvider(AUTH_URL, { provider: 'nickname', providerToken: this.props.username, userInfo: { is_admin: true }})
-        .then((user) => {
-            console.log('being login')
-            // Application will not open realm in debugger
-            Realm.open({
-                schema: [taskSchema],
-                sync: {
-                    user: user,
-                    url: REALM_URL,
-                    partial: true,
-                }
-            })
-            .then((realm) => {
-                console.log('finish config')
-                this.setState({ realm, user })
-                this.fetchTasks(realm);
-            })
-        })
-        .catch(e => {
-            console.log(e)
-        })
-    }
+export class ProjectList extends Component {
+  static propTypes = {
+    user: PropTypes.object,
+    realm: PropTypes.object
+  };
 
-    fetchTasks(realm) {
-        let results = realm.objects('task').filtered(`owner = "${this.state.user.identity}"`)
-        let subscription = results.subscribe();
-        results.addListener(() => {
-            switch (subscription.state) {
-            case Realm.Sync.SubscriptionState.Complete:
-                console.log('hit sub complete')
-                console.log(subscription.state)
-                let partialResults = realm.objects('task');
-                this.createDataSource(partialResults);
-                break;
-            case Realm.Sync.SubscriptionState.Error:
-                // console.log('An error occurred: ', results.error);
-                break;
-            default:
-                console.log(subscription.state)
-                break;
-            }
-        })
-    }
-    toggleModal = () => {
-        this.setState({ isModalVisible: !this.state.isModalVisible });
-    };
+  state = {
+    dataVersion: 0,
+    isModalVisible: false
+  };
 
-    createDataSource(tasks) {
-        const data = new ListView.DataSource({
-          rowHasChanged: (r1, r2) => r1 !== r2
-        });
-        this.setState({ dataSource: data.cloneWithRows(tasks) });
-    }
+  componentDidMount() {
+    const { realm } = this.props;
 
-    handleSubmit(projectName) {
-        const { user, realm } = this.state;
-        realm.write(() => {
-            realm.create('task', {
-                taskID: Math.random().toString(36).substr(2, 9),
-                owner: user.identity,
-                name: projectName,
-            })
-        })
-        this.setState({ taskName: '' });
+    // Register an action to create a project
+    Actions.refresh({
+      rightTitle: " Create",
+      onRight: () => {
         this.toggleModal();
-    }
+      }
+    });
 
-    render() {
-        const { isModalVisible, dataSource } = this.state;
+    // Get a result containing all projects
+    const projects = realm
+      .objects("Project")
+      .filtered("owner == $0", this.props.user.identity);
 
-        return(
-            <View>
-                <PageView
-                    dataSource={dataSource}
-                    placeholder='Create a project!'
-                />
-                <ModalView 
-                    placeholder='Please Enter a Project Name'
-                    isModalVisible={isModalVisible}
-                    toggleModal={this.toggleModal}
-                    handleSubmit={this.handleSubmit.bind(this)}
-                />
-            </View>
-        );
+    // When the list of projects change, React won't know about it because the Result object itself did not change.
+    projects.addListener(() => {
+      // Bump a data version counter that we'll pass to components that should update when the projects change.
+      this.setState({ dataVersion: this.state.dataVersion + 1 });
+    });
+
+    // Create a subscription and add a listener
+    // Remember to remove the listener when component unmounts
+    this.subscription = projects.subscribe();
+    this.subscription.addListener(this.onSubscriptionChange);
+
+    // Update the state with the projects
+    this.setState({ projects });
+  }
+
+  componentWillUnmount() {
+    const { projects } = this.state;
+    if (this.subscription) {
+      // Remove all listeners from the subscription
+      this.subscription.removeAllListeners();
     }
+    if (projects) {
+      projects.removeAllListeners();
+    }
+  }
+
+  render() {
+    const { dataVersion, isModalVisible, projects } = this.state;
+    return (
+      <View>
+        {!projects || projects.length === 0 ? (
+          <Text style={styles.placeholder}>Create your first project</Text>
+        ) : (
+          <List>
+            <FlatList
+              data={projects}
+              extraData={dataVersion}
+              renderItem={this.renderProject}
+              keyExtractor={projectKeyExtractor}
+            />
+          </List>
+        )}
+        <ModalView
+          placeholder="Please Enter a Project Name"
+          isModalVisible={isModalVisible}
+          toggleModal={this.toggleModal}
+          handleSubmit={this.onProjectCreation}
+        />
+      </View>
+    );
+  }
+
+  renderProject = ({ item }) => (
+    <ListItem
+      key={item.projectId}
+      title={item.name}
+      onPress={() => {
+        this.onProjectPress(item);
+      }}
+    />
+  );
+
+  onSubscriptionChange = () => {
+    // Realm.Sync.SubscriptionState.Complete
+    // Realm.Sync.SubscriptionState.Error
+  };
+
+  toggleModal = () => {
+    this.setState({ isModalVisible: !this.state.isModalVisible });
+  };
+
+  onProjectCreation = projectName => {
+    const { user, realm } = this.props;
+    // Open a write transaction
+    realm.write(() => {
+      // Create a project
+      realm.create("Project", {
+        projectId: uuid(),
+        owner: user.identity,
+        name: projectName,
+        timestamp: new Date()
+      });
+    });
+    // Reset the state
+    this.setState({ isModalVisible: false });
+  };
+
+  onProjectPress = project => {
+    const { user, realm } = this.props;
+    Actions.items({ project, realm, user });
+  };
 }
-
-
-export default ProjectList;

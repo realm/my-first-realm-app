@@ -1,50 +1,73 @@
-import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import Modal from 'react-native-modal';
+import PropTypes from "prop-types";
+import React, { Component } from "react";
+import { View, Text, TextInput } from "react-native";
+import Modal from "react-native-modal";
+import { StyleSheet } from "react-native";
 
-import { styles } from '../styles'
+const white = "white";
 
+export const styles = StyleSheet.create({
+  content: {
+    flexDirection: "column",
+    backgroundColor: white,
+    padding: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4
+  },
+  input: {
+    width: "100%",
+    textAlign: "center"
+  },
+  buttons: {
+    flexDirection: "row",
+    marginTop: 10
+  }
+});
 
-class ModalView extends Component {
-    state = {
-        text: '',
-    }
+import { Button } from "./Button";
 
-    onConfirm() {
-        this.props.handleSubmit(this.state.text)
-    }
+export class ModalView extends Component {
+  static propTypes = {
+    isModalVisible: PropTypes.bool,
+    placeholder: PropTypes.string,
+    toggleModal: PropTypes.func,
+    handleSubmit: PropTypes.func,
+    error: PropTypes.object
+  };
 
-    render() {
-        const { isModalVisible, placeholder, toggleModal } = this.props;
+  state = {
+    text: ""
+  };
 
-        return(
-            <Modal isVisible={isModalVisible}>
-                <View style={styles.modalContent}>
-                    <TextInput
-                        placeholder={placeholder}
-                        onChangeText={(text) => {
-                            this.setState({ text })
-                        }}
-                        value={this.state.text}
-                    />
-                    <View style={styles.buttonGroup}>
-                        <TouchableOpacity onPress={this.onConfirm.bind(this)}>
-                            <View style={styles.button}>
-                                <Text>
-                                    Confirm
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={toggleModal}>
-                            <View style={styles.button}>
-                                <Text>Cancel</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
-        );
-    }
+  render() {
+    const { isModalVisible, placeholder, toggleModal, error } = this.props;
+
+    return (
+      <Modal isVisible={isModalVisible}>
+        <View style={styles.content}>
+          {error && <Text>{error.message}</Text>}
+          <TextInput
+            style={styles.input}
+            autoFocus={true}
+            placeholder={placeholder}
+            onChangeText={this.onChangeText}
+            value={this.state.text}
+          />
+          <View style={styles.buttons}>
+            <Button onPress={this.onConfirm}>Confirm</Button>
+            <Button onPress={toggleModal}>Cancel</Button>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
+
+  onChangeText = text => {
+    this.setState({ text });
+  };
+
+  onConfirm = () => {
+    this.props.handleSubmit(this.state.text);
+  };
 }
-
-export default ModalView;

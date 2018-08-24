@@ -1,4 +1,4 @@
-package com.rntodo;
+package io.realm.todo.reactnative;
 
 import android.app.Application;
 
