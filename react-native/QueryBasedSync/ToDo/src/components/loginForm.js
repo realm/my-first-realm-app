@@ -44,7 +44,6 @@ export class LoginForm extends Component {
           placeholder="Please Enter a Username"
           confirmLabel="Login"
           isModalVisible={isModalVisible}
-          toggleModal={this.toggleModal}
           handleSubmit={this.handleSubmit}
           error={this.state.error}
         />

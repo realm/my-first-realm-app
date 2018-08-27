@@ -73,7 +73,7 @@ export class ModalView extends Component {
             <Button onPress={this.onConfirm}>
               {confirmLabel || "Confirm"}
             </Button>
-            <Button onPress={toggleModal}>Cancel</Button>
+            {toggleModal ? <Button onPress={toggleModal}>Cancel</Button> : null}
           </View>
         </View>
       </Modal>
