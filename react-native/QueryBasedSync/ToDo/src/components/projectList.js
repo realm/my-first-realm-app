@@ -101,6 +101,10 @@ export class ProjectList extends Component {
     <ListItem
       key={item.projectId}
       title={item.name}
+      badge={{
+        value: item.items.length
+      }}
+      hideChevron={true}
       onPress={() => {
         this.onProjectPress(item);
       }}
