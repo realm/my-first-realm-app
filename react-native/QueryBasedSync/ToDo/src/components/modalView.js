@@ -41,6 +41,13 @@ export class ModalView extends Component {
     text: ""
   };
 
+  componentDidUpdate(prevProps) {
+    // Reset the text state when the modal becomes visible
+    if (!prevProps.isModalVisible && this.props.isModalVisible) {
+      this.setState({ text: "" });
+    }
+  }
+
   render() {
     const {
       confirmLabel,
