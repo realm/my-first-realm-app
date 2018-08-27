@@ -52,7 +52,7 @@ export class LoginForm extends Component {
       schema: [Project, Item]
     });
     // Open the Realm
-    const realm = await Realm.open(config);
+    const realm = new Realm(config);
     // Navigate to the main scene
     Actions.authenticated({ user, realm });
   }
