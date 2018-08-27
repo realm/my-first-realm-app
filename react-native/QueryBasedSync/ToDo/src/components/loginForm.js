@@ -8,7 +8,7 @@ import { Project, Item } from "../schemas";
 
 import { ModalView } from "./ModalView";
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",

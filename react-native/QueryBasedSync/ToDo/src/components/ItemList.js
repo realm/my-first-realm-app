@@ -5,7 +5,7 @@ import { Actions } from "react-native-router-flux";
 import { List, ListItem } from "react-native-elements";
 import { v4 as uuid } from "uuid";
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   placeholder: {
     textAlign: "center",
     padding: 10

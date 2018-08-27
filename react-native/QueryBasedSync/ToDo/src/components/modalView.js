@@ -6,7 +6,7 @@ import { StyleSheet } from "react-native";
 
 const white = "white";
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   content: {
     flexDirection: "column",
     backgroundColor: white,

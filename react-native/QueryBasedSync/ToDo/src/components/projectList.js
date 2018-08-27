@@ -7,7 +7,7 @@ import { v4 as uuid } from "uuid";
 
 const projectKeyExtractor = project => project.projectId;
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   placeholder: {
     textAlign: "center",
     padding: 10
