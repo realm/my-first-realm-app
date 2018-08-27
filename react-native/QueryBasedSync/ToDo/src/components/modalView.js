@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: "column",
     backgroundColor: white,
-    padding: 22,
+    padding: 16,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 4
@@ -20,7 +20,8 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   buttons: {
-    flexDirection: "row"
+    flexDirection: "row",
+    marginTop: 10
   }
 });
 

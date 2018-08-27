@@ -13,6 +13,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
+  },
+  buttons: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
 
