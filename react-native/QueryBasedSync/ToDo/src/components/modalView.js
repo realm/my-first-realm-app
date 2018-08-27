@@ -20,8 +20,7 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   buttons: {
-    flexDirection: "row",
-    marginTop: 10
+    flexDirection: "row"
   }
 });
 
@@ -67,6 +66,7 @@ export class ModalView extends Component {
             placeholder={placeholder}
             onChangeText={this.onChangeText}
             value={this.state.text}
+            onSubmitEditing={this.onConfirm}
           />
           <View style={styles.buttons}>
             <Button onPress={this.onConfirm}>
