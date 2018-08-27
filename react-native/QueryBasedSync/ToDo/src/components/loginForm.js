@@ -6,6 +6,7 @@ import Realm from "realm";
 import { SERVER_URL } from "../constants";
 import { Project, Item } from "../schemas";
 
+import { Button } from "./Button";
 import { ModalView } from "./ModalView";
 
 const styles = StyleSheet.create({
@@ -22,9 +23,7 @@ const styles = StyleSheet.create({
 });
 
 export class LoginForm extends Component {
-  state = {
-    isModalVisible: false
-  };
+  state = {};
 
   componentDidMount() {
     // Check if we're already authenticated
@@ -36,22 +35,29 @@ export class LoginForm extends Component {
   }
 
   render() {
-    const { isModalVisible } = this.state;
+    // Show the modal if the user is not authenticated
+    const isAuthenticated = !!Realm.Sync.User.current;
 
     return (
       <View style={styles.container}>
         <ModalView
           placeholder="Please Enter a Username"
           confirmLabel="Login"
-          isModalVisible={isModalVisible}
+          isModalVisible={!isAuthenticated}
           handleSubmit={this.handleSubmit}
           error={this.state.error}
         />
+        {isAuthenticated && (
+          <View style={styles.buttons}>
+            <Button onPress={this.onLogout}>Logout</Button>
+            <Button onPress={this.onOpenProjects}>Go to projects</Button>
+          </View>
+        )}
       </View>
     );
   }
 
-  async onAuthenticated(user) {
+  onAuthenticated(user) {
     // Create a configuration to open the default Realm
     const config = user.createConfiguration({
       schema: [Project, Item]
@@ -62,12 +68,17 @@ export class LoginForm extends Component {
     Actions.authenticated({ user, realm });
   }
 
-  toggleModal = () => {
-    this.setState({
-      isModalVisible: !this.state.isModalVisible,
-      // Reset the error when toggling the modal
-      error: undefined
-    });
+  onLogout = () => {
+    if (Realm.Sync.User.current) {
+      Realm.Sync.User.current.logout();
+      this.forceUpdate();
+    }
+  };
+
+  onOpenProjects = () => {
+    if (Realm.Sync.User.current) {
+      this.onAuthenticated(Realm.Sync.User.current);
+    }
   };
 
   handleSubmit = async nickname => {
