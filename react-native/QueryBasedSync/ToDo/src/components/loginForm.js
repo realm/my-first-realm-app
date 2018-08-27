@@ -37,6 +37,7 @@ export class LoginForm extends Component {
       <View style={styles.container}>
         <ModalView
           placeholder="Please Enter a Username"
+          confirmLabel="Login"
           isModalVisible={isModalVisible}
           toggleModal={this.toggleModal}
           handleSubmit={this.handleSubmit}

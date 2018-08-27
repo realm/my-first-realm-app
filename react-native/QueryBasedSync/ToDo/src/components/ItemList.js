@@ -96,6 +96,7 @@ export class ItemList extends Component {
         )}
         <ModalView
           placeholder="Please enter a description"
+          confirmLabel="Create Item"
           isModalVisible={isModalVisible}
           toggleModal={this.toggleModal}
           handleSubmit={this.onItemCreation}

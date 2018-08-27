@@ -29,11 +29,12 @@ import { Button } from "./Button";
 
 export class ModalView extends Component {
   static propTypes = {
+    confirmLabel: PropTypes.string,
+    error: PropTypes.object,
+    handleSubmit: PropTypes.func,
     isModalVisible: PropTypes.bool,
     placeholder: PropTypes.string,
-    toggleModal: PropTypes.func,
-    handleSubmit: PropTypes.func,
-    error: PropTypes.object
+    toggleModal: PropTypes.func
   };
 
   state = {
@@ -41,7 +42,13 @@ export class ModalView extends Component {
   };
 
   render() {
-    const { isModalVisible, placeholder, toggleModal, error } = this.props;
+    const {
+      confirmLabel,
+      error,
+      isModalVisible,
+      placeholder,
+      toggleModal
+    } = this.props;
 
     return (
       <Modal isVisible={isModalVisible}>
@@ -55,7 +62,9 @@ export class ModalView extends Component {
             value={this.state.text}
           />
           <View style={styles.buttons}>
-            <Button onPress={this.onConfirm}>Confirm</Button>
+            <Button onPress={this.onConfirm}>
+              {confirmLabel || "Confirm"}
+            </Button>
             <Button onPress={toggleModal}>Cancel</Button>
           </View>
         </View>

@@ -88,6 +88,7 @@ export class ProjectList extends Component {
         )}
         <ModalView
           placeholder="Please Enter a Project Name"
+          confirmLabel="Create Project"
           isModalVisible={isModalVisible}
           toggleModal={this.toggleModal}
           handleSubmit={this.onProjectCreation}
