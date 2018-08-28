@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { View, FlatList, Text, StyleSheet } from "react-native";
 import { Actions } from "react-native-router-flux";
-import { List, ListItem } from "react-native-elements";
+import { List } from "react-native-elements";
 import { v4 as uuid } from "uuid";
 
 const styles = StyleSheet.create({
@@ -12,18 +12,9 @@ const styles = StyleSheet.create({
   }
 });
 
-const checkedIcon = {
-  name: "check-box",
-  color: "#555"
-};
-
-const uncheckedIcon = {
-  name: "check-box-outline-blank",
-  color: "#555"
-};
-
 const itemKeyExtractor = item => item.itemId;
 
+import { ItemListItem } from "./ItemListItem";
 import { ModalView } from "./ModalView";
 
 export class ItemList extends Component {
@@ -106,13 +97,11 @@ export class ItemList extends Component {
   }
 
   renderItem = ({ item }) => (
-    <ListItem
+    <ItemListItem
       key={item.itemId}
-      title={item.body}
-      rightIcon={item.isDone ? checkedIcon : uncheckedIcon}
-      onPressRightIcon={() => {
-        this.onItemPress(item);
-      }}
+      item={item}
+      onToggleDone={this.onToggleDone}
+      onDeleted={this.onDeleted}
     />
   );
 
@@ -143,12 +132,21 @@ export class ItemList extends Component {
     this.setState({ isModalVisible: false });
   };
 
-  onItemPress = item => {
+  onToggleDone = item => {
     const { realm } = this.props;
     // Open a write transaction
     realm.write(() => {
       // Toggle the item isDone
       item.isDone = !item.isDone;
+    });
+  };
+
+  onDeleted = item => {
+    const { realm } = this.props;
+    // Open a write transaction
+    realm.write(() => {
+      // Delete the item
+      realm.delete(item);
     });
   };
 }
