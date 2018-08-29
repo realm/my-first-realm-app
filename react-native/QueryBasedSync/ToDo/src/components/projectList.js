@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
 });
 
 import { ModalView } from "./ModalView";
+import { SwipeDeleteable } from "./SwipeDeleteable";
 
 export class ProjectList extends Component {
   static propTypes = {
@@ -98,17 +99,23 @@ export class ProjectList extends Component {
   }
 
   renderProject = ({ item }) => (
-    <ListItem
+    <SwipeDeleteable
       key={item.projectId}
-      title={item.name}
-      badge={{
-        value: item.items.length
-      }}
-      hideChevron={true}
       onPress={() => {
         this.onProjectPress(item);
       }}
-    />
+      onDeletion={() => {
+        this.onProjectDeletion(item);
+      }}
+    >
+      <ListItem
+        title={item.name}
+        badge={{
+          value: item.items.length
+        }}
+        hideChevron={true}
+      />
+    </SwipeDeleteable>
   );
 
   onSubscriptionChange = () => {
@@ -139,5 +146,14 @@ export class ProjectList extends Component {
   onProjectPress = project => {
     const { user, realm } = this.props;
     Actions.items({ project, realm, user, title: project.name });
+  };
+
+  onProjectDeletion = project => {
+    const { realm } = this.props;
+    // Open a write transaction
+    realm.write(() => {
+      // Delete the project
+      realm.delete(project);
+    });
   };
 }

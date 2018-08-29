@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { View, FlatList, Text, StyleSheet } from "react-native";
 import { Actions } from "react-native-router-flux";
-import { List } from "react-native-elements";
+import { List, ListItem } from "react-native-elements";
 import { v4 as uuid } from "uuid";
 
 const styles = StyleSheet.create({
@@ -14,8 +14,18 @@ const styles = StyleSheet.create({
 
 const itemKeyExtractor = item => item.itemId;
 
-import { ItemListItem } from "./ItemListItem";
 import { ModalView } from "./ModalView";
+import { SwipeDeleteable } from "./SwipeDeleteable";
+
+const checkedIcon = {
+  name: "check-box",
+  color: "#555"
+};
+
+const uncheckedIcon = {
+  name: "check-box-outline-blank",
+  color: "#555"
+};
 
 export class ItemList extends Component {
   static propTypes = {
@@ -97,12 +107,20 @@ export class ItemList extends Component {
   }
 
   renderItem = ({ item }) => (
-    <ItemListItem
+    <SwipeDeleteable
       key={item.itemId}
-      item={item}
-      onToggleDone={this.onToggleDone}
-      onDeleted={this.onDeleted}
-    />
+      onDeletion={() => {
+        this.onDeletion(item);
+      }}
+    >
+      <ListItem
+        title={item.body}
+        rightIcon={item.isDone ? checkedIcon : uncheckedIcon}
+        onPressRightIcon={() => {
+          this.onToggleDone(item);
+        }}
+      />
+    </SwipeDeleteable>
   );
 
   onSubscriptionChange = () => {
@@ -141,7 +159,7 @@ export class ItemList extends Component {
     });
   };
 
-  onDeleted = item => {
+  onDeletion = item => {
     const { realm } = this.props;
     // Open a write transaction
     realm.write(() => {
