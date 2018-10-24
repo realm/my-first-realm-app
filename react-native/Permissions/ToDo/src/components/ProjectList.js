@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
+import Realm from "realm";
 import { View, FlatList, Text, StyleSheet } from "react-native";
 import { Actions } from "react-native-router-flux";
 import { List, ListItem } from "react-native-elements";
@@ -132,12 +133,28 @@ export class ProjectList extends Component {
     // Open a write transaction
     realm.write(() => {
       // Create a project
-      realm.create("Project", {
+      const project = realm.create("Project", {
         projectId: uuid(),
         owner: user.identity,
         name: projectName,
         timestamp: new Date()
       });
+
+      // "Missing value for property '__Role.name'"
+      // const role = realm.objects(Realm.Permissions.Role).filtered(`name == "__User:${user.identity}"`)
+      // const role = realm.objects(Realm.Permissions.Role).filtered(`name == $0`, "__User:8a1a04c1e8f93b77e9f1878bed81507c")
+
+      // Create permission
+      const permission = realm.create(Realm.Permissions.Permission, {
+        role,
+        canRead: true,
+        canUpdate: true,
+        canDelete: true,
+      })
+
+      // Add permission to project
+      project.permissions.push(permission);
+
     });
     // Reset the state
     this.setState({ isModalVisible: false });

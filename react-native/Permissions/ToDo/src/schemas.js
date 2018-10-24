@@ -6,7 +6,8 @@ export const Project = {
     owner: "string",
     name: "string",
     timestamp: "date",
-    items: "Item[]"
+    items: "Item[]",
+    permissions: "__Permission[]"
   }
 };
 
