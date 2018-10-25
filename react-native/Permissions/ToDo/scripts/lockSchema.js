@@ -1,11 +1,11 @@
 const Realm = require("realm");
 
-const MY_INSTANCE_ADDRESS = "YOUR-INSTANCE-ID.cloud.realm.i"; // <- update this
+const MY_INSTANCE_ADDRESS = "YOUR-INSTANCE-ID.cloud.realm.io"; // <- update this
 
 const SERVER_URL = `https://${MY_INSTANCE_ADDRESS}`;
 
-const username = 'ADMIN_USER'; // <- update this
-const password = 'ADMIN_PASS'; // <- update this
+const username = "ADMIN_USER"; // <- update this
+const password = "ADMIN_PASS"; // <- update this
 
 const Project = {
   name: "Project",
@@ -56,9 +56,6 @@ function lockSchema() {
             const itemPermissions = realm.objects("__Class").filtered("name == 'Item'")[0].permissions[0];
             itemPermissions.canSetPermissions = false;
             itemPermissions.canQuery = false;
-
-            // console.log(realm.objects("__Class"))
-            console.log(Realm.Permissions.Realm.schema)
 
             // Lock the permissions and schema
             const everyonePermission = realm.objects("__Realm")[0].permissions[0]

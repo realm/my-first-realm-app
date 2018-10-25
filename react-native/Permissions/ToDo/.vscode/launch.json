@@ -8,7 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "/Users/realm/Documents/node_test/permission.js"
+            "program": "${workspaceFolder}/start"
         }
     ]
 }
