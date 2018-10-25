@@ -140,11 +140,12 @@ export class ProjectList extends Component {
         timestamp: new Date()
       });
 
-      const systemUser = realm.objects(Realm.Permissions.User.schema.name).filtered(`id = '${user.identity}'`)[0];
+      // Fetches the system 
+      const permissionUser = realm.objects("__User").filtered(`id == '${user.identity}'`)[0];
 
       // Create permission
       const permission = realm.create(Realm.Permissions.Permission, {
-        role: systemUser.role,
+        role: permissionUser.role,
         canRead: true,
         canUpdate: true,
         canDelete: true,
