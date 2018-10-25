@@ -140,13 +140,11 @@ export class ProjectList extends Component {
         timestamp: new Date()
       });
 
-      // "Missing value for property '__Role.name'"
-      // const role = realm.objects(Realm.Permissions.Role).filtered(`name == "__User:${user.identity}"`)
-      // const role = realm.objects(Realm.Permissions.Role).filtered(`name == $0`, "__User:8a1a04c1e8f93b77e9f1878bed81507c")
+      const systemUser = realm.objects(Realm.Permissions.User.schema.name).filtered(`id = '${user.identity}'`)[0];
 
       // Create permission
       const permission = realm.create(Realm.Permissions.Permission, {
-        role,
+        role: systemUser.role,
         canRead: true,
         canUpdate: true,
         canDelete: true,
