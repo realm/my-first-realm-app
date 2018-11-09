@@ -1,4 +1,0 @@
-# Version: 12.1.0.15 (xcode10.1: cbfb047a)
-# [first argument, ignore] # @/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp.iOS/obj/iPhoneSimulator/Debug/device-builds/iphone11.4-12.1/response-file.rsp
-/Library/Frameworks/Xamarin.iOS.framework/Versions/12.1.0.15/lib/mtouch/mtouch.exe \
-	'--gcc_flags=-L/Users/ianward/.nuget/packages/realm/3.2.1/build/../native/ios/universal -lrealm-wrappers -lz -framework Security' \
