@@ -114,3 +114,7 @@ xamarin/XamarinToDoApp/.vs
 xamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp.Android/obj
 xamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp.iOS/obj
 xamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/obj
+xamarin/XamarinToDoApp/Tools
+xamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp.iOS/bin
+xamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/bin
+xamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp.Android/bin

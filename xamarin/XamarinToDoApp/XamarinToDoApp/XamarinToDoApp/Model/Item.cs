@@ -6,9 +6,16 @@ namespace XamarinToDoApp
     public class Item : RealmObject
     {
         [PrimaryKey]
-        public string itemId { get; set; } = Guid.NewGuid().ToString(); 
-        public string body { get; set; }
-        public bool isDone { get; set; }
-        public DateTimeOffset timestamp { get; set; }
+        [MapTo("itemId")]
+        public string ItemId { get; set; } = Guid.NewGuid().ToString();
+
+        [MapTo("body")]
+        public string Body { get; set; }
+
+        [MapTo("isDone")]
+        public bool IsDone { get; set; }
+
+        [MapTo("timestamp")]
+        public DateTimeOffset Timestamp { get; set; }
     }
 }

@@ -7,7 +7,7 @@
         <ToolbarItem Text="Add" Command="{Binding AddEntryCommand}" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <ListView ItemsSource="{Binding Entries}" x:Name="EntriesListView" ItemTapped="OnItemTapped" ItemSelected="OnItemSelected">
+        <ListView ItemsSource="{Binding Entries}" x:Name="EntriesListView" ItemSelected="OnItemSelected">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <TextCell Text="{Binding Body}">
