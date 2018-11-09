@@ -1,0 +1,14 @@
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/obj/Debug/netstandard2.0/App.xaml.g.cs
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/obj/Debug/netstandard2.0/View/ItemEntriesPage.xaml.g.cs
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/obj/Debug/netstandard2.0/XamarinToDoApp.csproj.CoreCompileInputs.cache
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/obj/Debug/netstandard2.0/XamarinToDoApp.AssemblyInfoInputs.cache
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/obj/Debug/netstandard2.0/XamarinToDoApp.AssemblyInfo.cs
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/bin/Debug/netstandard2.0/FodyWeavers.xml
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/bin/Debug/netstandard2.0/XamarinToDoApp.deps.json
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/bin/Debug/netstandard2.0/XamarinToDoApp.dll
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/bin/Debug/netstandard2.0/XamarinToDoApp.pdb
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/obj/Debug/netstandard2.0/XamlC.stamp
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/obj/Debug/netstandard2.0/XamarinToDoApp.dll
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/obj/Debug/netstandard2.0/XamarinToDoApp.pdb
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/obj/Debug/netstandard2.0/XamarinToDoApp.csprojAssemblyReference.cache
+/Users/ianward/Documents/GitHub/RealmOnXamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/obj/Debug/netstandard2.0/View/LoginScreen.xaml.g.cs
