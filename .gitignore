@@ -113,3 +113,4 @@ fastlane/test_output
 xamarin/XamarinToDoApp/.vs
 xamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp.Android/obj
 xamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp.iOS/obj
+xamarin/XamarinToDoApp/XamarinToDoApp/XamarinToDoApp/obj
