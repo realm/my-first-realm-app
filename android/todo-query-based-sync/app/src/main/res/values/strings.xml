@@ -14,5 +14,9 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="nickname_hint">Select a username</string>
+
+    <!-- Other strings -->
+    <string name="project_description">Project description</string>
 
 </resources>

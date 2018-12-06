@@ -51,6 +51,7 @@ public class ProjectsActivity extends AppCompatActivity {
 
         findViewById(R.id.fab).setOnClickListener(view -> {
             View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_task, null);
+            ((EditText) dialogView.findViewById(R.id.task)).setHint(R.string.project_description);
             EditText taskText = dialogView.findViewById(R.id.task);
             new AlertDialog.Builder(ProjectsActivity.this)
                     .setTitle("Add a new project")
