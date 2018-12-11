@@ -16,7 +16,7 @@
 
 package io.realm.todo;
 
-final class Constants {
+public final class Constants {
     // **** Realm Cloud Users:
     // **** Replace INSTANCE_ADDRESS with the hostname of your cloud instance
     // **** e.g., "mycoolapp.us1.cloud.realm.io"
@@ -26,7 +26,7 @@ final class Constants {
     // **** Replace the INSTANCE_ADDRESS with the fully qualified version of
     // **** address of your ROS server, e.g.: INSTANCE_ADDRESS = "192.168.1.65:9080" and "http://" + INSTANCE_ADDRESS + "/auth"
     // **** (remember to use 'http/realm' instead of 'https/realms' if you didn't setup SSL on ROS yet)
-    private static final String INSTANCE_ADDRESS = "YOUR_INSTANCE.cloud.realm.io";
-    static final String AUTH_URL = "https://" + INSTANCE_ADDRESS + "/auth";
-    static final String REALM_URL = "realms://" + INSTANCE_ADDRESS + "/todo";
+    private static final String INSTANCE_ADDRESS = "172.24.112.189:9080";
+    public static final String AUTH_URL = "http://" + INSTANCE_ADDRESS + "/auth";
+    public static final String REALM_URL = "realm://" + INSTANCE_ADDRESS;
 }

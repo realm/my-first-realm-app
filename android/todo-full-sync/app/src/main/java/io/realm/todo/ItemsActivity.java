@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -35,13 +36,16 @@ import io.realm.Sort;
 import io.realm.SyncConfiguration;
 import io.realm.SyncUser;
 import io.realm.todo.model.Item;
+import io.realm.todo.model.Project;
 import io.realm.todo.ui.ItemsRecyclerAdapter;
-
-import static io.realm.todo.Constants.REALM_URL;
 
 public class ItemsActivity extends AppCompatActivity {
 
+    public static final String INTENT_EXTRA_PROJECT_URL = "ItemsActivity.projectUrl";
+
     private Realm realm;
+    private TextView statusView;
+    private RealmResults<Item> tasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,9 @@ public class ItemsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_items);
 
         setSupportActionBar(findViewById(R.id.toolbar));
+        statusView = findViewById(R.id.status);
+
+        String projectUrl = getIntent().getStringExtra(INTENT_EXTRA_PROJECT_URL);
 
         findViewById(R.id.fab).setOnClickListener(view -> {
             View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_task, null);
@@ -57,21 +64,33 @@ public class ItemsActivity extends AppCompatActivity {
                     .setTitle("Add a new task")
                     .setMessage("What do you want to do next?")
                     .setView(dialogView)
-                    .setPositiveButton("Add", (dialog, which) -> {
-                        realm.executeTransactionAsync(realm -> {
-                            Item item = new Item();
-                            item.setBody(taskText.getText().toString());
-                            realm.insert(item);
-                        });
-                    })
+                    .setPositiveButton("Add", (dialog, which) -> realm.executeTransactionAsync(realm -> {
+                        Item item = new Item();
+                        item.setBody(taskText.getText().toString());
+                        realm.where(Project.class).findFirst().getTasks().add(item);
+                    }))
                     .setNegativeButton("Cancel", null)
                     .create()
                     .show();
         });
 
-        RealmResults<Item> items = setUpRealm();
+        SyncConfiguration config = SyncUser.current()
+                .createConfiguration(projectUrl)
+                .fullSynchronization()
+                .build();
+        realm = Realm.getInstance(config);
+        Project project = realm.where(Project.class).findFirst();
 
-        final ItemsRecyclerAdapter itemsRecyclerAdapter = new ItemsRecyclerAdapter(items);
+        setTitle(project.getName());
+        tasks = project.getTasks().where().sort("timestamp", Sort.ASCENDING).findAllAsync();
+        tasks.addChangeListener(tasks -> {
+            if (tasks.isEmpty()) {
+                setStatus("Press + to add a new task");
+            } else {
+                setStatus("");
+            }
+        });
+        final ItemsRecyclerAdapter itemsRecyclerAdapter = new ItemsRecyclerAdapter(tasks);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(itemsRecyclerAdapter);
@@ -88,9 +107,7 @@ public class ItemsActivity extends AppCompatActivity {
                 int position = viewHolder.getAdapterPosition();
                 String id = itemsRecyclerAdapter.getItem(position).getItemId();
                 realm.executeTransactionAsync(realm -> {
-                    Item item = realm.where(Item.class)
-                            .equalTo("itemId", id)
-                            .findFirst();
+                    Item item = realm.where(Item.class).equalTo("itemId", id).findFirst();
                     if (item != null) {
                         item.deleteFromRealm();
                     }
@@ -102,17 +119,8 @@ public class ItemsActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private RealmResults<Item> setUpRealm() {
-        SyncConfiguration configuration = SyncUser.current()
-                .createConfiguration(REALM_URL)
-                .fullSynchronization()
-                .build();
-        realm = Realm.getInstance(configuration);
-
-        return realm
-                .where(Item.class)
-                .sort("timestamp", Sort.DESCENDING)
-                .findAllAsync();
+    private void setStatus(String str) {
+        statusView.setText(str);
     }
 
     @Override

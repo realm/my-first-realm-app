@@ -38,9 +38,9 @@ import static io.realm.todo.Constants.AUTH_URL;
 
 public class WelcomeActivity extends AppCompatActivity {
 
-    private EditText mNicknameTextView;
-    private View mProgressView;
-    private View mLoginFormView;
+    private EditText nicknameView;
+    private View progressView;
+    private View loginFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,18 +52,18 @@ public class WelcomeActivity extends AppCompatActivity {
         }
 
         // Set up the login form.
-        mNicknameTextView = findViewById(R.id.nickname);
+        nicknameView = findViewById(R.id.nickname);
         Button loginButton = findViewById(R.id.login_button);
         loginButton.setOnClickListener(view -> attemptLogin());
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        loginFormView = findViewById(R.id.login_form);
+        progressView = findViewById(R.id.login_progress);
     }
 
     private void attemptLogin() {
         // Reset errors.
-        mNicknameTextView.setError(null);
+        nicknameView.setError(null);
         // Store values at the time of the login attempt.
-        String nickname = mNicknameTextView.getText().toString();
+        String nickname = nicknameView.getText().toString();
         showProgress(true);
 
         SyncCredentials credentials = SyncCredentials.nickname(nickname, true);
@@ -77,8 +77,8 @@ public class WelcomeActivity extends AppCompatActivity {
             @Override
             public void onError(ObjectServerError error) {
                 showProgress(false);
-                mNicknameTextView.setError("Uh oh something went wrong! (check your logcat please)");
-                mNicknameTextView.requestFocus();
+                nicknameView.setError("Uh oh something went wrong! (check your logcat please)");
+                nicknameView.requestFocus();
                 Log.e("Login error", error.toString());
             }
         });
@@ -90,20 +90,20 @@ public class WelcomeActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+        loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        loginFormView.animate().setDuration(shortAnimTime).alpha(
                 show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             }
         });
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mProgressView.animate().setDuration(shortAnimTime).alpha(
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        progressView.animate().setDuration(shortAnimTime).alpha(
                 show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                progressView.setVisibility(show ? View.VISIBLE : View.GONE);
             }
         });
     }

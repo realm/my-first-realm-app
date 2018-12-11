@@ -2,6 +2,7 @@
     <string name="app_name">ToDo</string>
     <string name="action_settings">Logout</string>
     <string name="title_activity_items">Things ToDo!</string>
+    <string name="title_select_projects">My Projects</string>
 
     <!-- Strings related to login -->
     <string name="action_sign_in">Sign in or register</string>
@@ -13,5 +14,9 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="nickname_hint">Select a username</string>
+
+    <!-- Other strings -->
+    <string name="project_description">Project description</string>
 
 </resources>
