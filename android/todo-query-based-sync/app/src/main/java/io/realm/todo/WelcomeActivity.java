@@ -48,7 +48,7 @@ public class WelcomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
 
         if (SyncUser.current() != null) {
-            setUpRealmAndGoToListTaskActivity();
+            setUpRealmAndGoToTaskListActivity();
         }
 
         // Set up the login form.
@@ -71,7 +71,7 @@ public class WelcomeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(SyncUser user) {
                 showProgress(false);
-                setUpRealmAndGoToListTaskActivity();
+                setUpRealmAndGoToTaskListActivity();
             }
 
             @Override
@@ -108,7 +108,7 @@ public class WelcomeActivity extends AppCompatActivity {
         });
     }
 
-    private void setUpRealmAndGoToListTaskActivity() {
+    private void setUpRealmAndGoToTaskListActivity() {
         SyncConfiguration configuration = SyncUser.current().getDefaultConfiguration();
         Realm.setDefaultConfiguration(configuration);
         Intent intent = new Intent(WelcomeActivity.this, ProjectsActivity.class);

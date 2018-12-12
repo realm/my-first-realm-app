@@ -27,11 +27,9 @@ import android.widget.TextView;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
-import io.realm.SyncUser;
 import io.realm.permissions.Permission;
 import io.realm.todo.Constants;
-import io.realm.todo.ItemsActivity;
-import io.realm.todo.model.Project;
+import io.realm.todo.TasksActivity;
 
 public class ProjectsRecyclerAdapter extends RealmRecyclerViewAdapter<Permission, ProjectsRecyclerAdapter.MyViewHolder> {
     private final Context context;
@@ -55,8 +53,8 @@ public class ProjectsRecyclerAdapter extends RealmRecyclerViewAdapter<Permission
             String title =  extractProjectName(project.getPath());
             holder.textView.setText(title);
             holder.textView.setOnClickListener(v -> {
-                Intent intent = new Intent(context, ItemsActivity.class);
-                intent.putExtra(ItemsActivity.INTENT_EXTRA_PROJECT_URL, Constants.REALM_URL + project.getPath());
+                Intent intent = new Intent(context, TasksActivity.class);
+                intent.putExtra(TasksActivity.INTENT_EXTRA_PROJECT_URL, Constants.REALM_URL + project.getPath());
                 context.startActivity(intent);
             });
         }

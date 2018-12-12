@@ -57,10 +57,10 @@ public class ProjectsActivity extends AppCompatActivity {
                     .setTitle("Add a new project")
                     .setView(dialogView)
                     .setPositiveButton("Add", (dialog, which) -> realm.executeTransactionAsync(realm -> {
-                        Project project = new Project();
                         String userId = SyncUser.current().getIdentity();
                         String name = taskText.getText().toString();
 
+                        Project project = new Project();
                         project.setId(UUID.randomUUID().toString());
                         project.setOwner(userId);
                         project.setName(name);
@@ -73,8 +73,7 @@ public class ProjectsActivity extends AppCompatActivity {
                     .show();
         });
 
-        // using the current SyncUser#id, perform a partial query to obtain
-        // only projects belonging to this SyncUser.
+        // Create a  subscription that only download the  users projects from the server.
         realm = Realm.getDefaultInstance();
         RealmResults<Project> projects = realm
                 .where(Project.class)

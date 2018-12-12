@@ -29,9 +29,9 @@ import io.realm.RealmRecyclerViewAdapter;
 import io.realm.todo.R;
 import io.realm.todo.model.Item;
 
-public class ItemsRecyclerAdapter extends RealmRecyclerViewAdapter<Item, ItemsRecyclerAdapter.MyViewHolder> {
+public class TasksRecyclerAdapter extends RealmRecyclerViewAdapter<Item, TasksRecyclerAdapter.MyViewHolder> {
 
-    public ItemsRecyclerAdapter(OrderedRealmCollection<Item> data) {
+    public TasksRecyclerAdapter(OrderedRealmCollection<Item> data) {
         super(data, true);
     }
 
@@ -51,7 +51,7 @@ public class ItemsRecyclerAdapter extends RealmRecyclerViewAdapter<Item, ItemsRe
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView textView;
         CheckBox checkBox;
-        Item mItem;
+        Item item;
 
         MyViewHolder(View itemView) {
             super(itemView);
@@ -61,16 +61,16 @@ public class ItemsRecyclerAdapter extends RealmRecyclerViewAdapter<Item, ItemsRe
         }
 
         void setItem(Item item){
-            this.mItem = item;
+            this.item = item;
             this.textView.setText(item.getBody());
             this.checkBox.setChecked(item.getIsDone());
         }
 
         @Override
         public void onClick(View v) {
-            String itemId = mItem.getItemId();
-            boolean isDone = this.mItem.getIsDone();
-            this.mItem.getRealm().executeTransactionAsync(realm -> {
+            String itemId = item.getItemId();
+            boolean isDone = this.item.getIsDone();
+            this.item.getRealm().executeTransactionAsync(realm -> {
                 Item item = realm.where(Item.class).equalTo("itemId", itemId).findFirst();
                 if (item != null) {
                     item.setIsDone(!isDone);

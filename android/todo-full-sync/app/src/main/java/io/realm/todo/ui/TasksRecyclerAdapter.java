@@ -29,9 +29,9 @@ import io.realm.RealmRecyclerViewAdapter;
 import io.realm.todo.R;
 import io.realm.todo.model.Item;
 
-public class ItemsRecyclerAdapter extends RealmRecyclerViewAdapter<Item, ItemsRecyclerAdapter.MyViewHolder> {
+public class TasksRecyclerAdapter extends RealmRecyclerViewAdapter<Item, TasksRecyclerAdapter.MyViewHolder> {
 
-    public ItemsRecyclerAdapter(OrderedRealmCollection<Item> data) {
+    public TasksRecyclerAdapter(OrderedRealmCollection<Item> data) {
         super(data, true);
     }
 
