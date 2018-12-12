@@ -86,10 +86,8 @@ export class LoginForm extends Component {
       // Reset any previous errors that might have happened
       this.setState({ error: undefined });
       // Attempt to authenticate towards the server
-      const user = await Realm.Sync.User.registerWithProvider(SERVER_URL, {
-        provider: "nickname",
-        providerToken: nickname
-      });
+      const credentials = Realm.Sync.Credentials.nickname(nickname);
+      const user = await Realm.Sync.User.login(SERVER_URL, credentials);
       // Hide the modal
       this.setState({ isModalVisible: false });
       this.onAuthenticated(user);
