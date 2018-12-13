@@ -30,6 +30,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.concurrent.TimeUnit;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -45,7 +47,7 @@ public class TasksActivity extends AppCompatActivity {
 
     private Realm realm;
     private TextView statusView;
-    private RealmResults<Item> tasks;
+    private TasksRecyclerAdapter tasksRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +56,6 @@ public class TasksActivity extends AppCompatActivity {
 
         setSupportActionBar(findViewById(R.id.toolbar));
         statusView = findViewById(R.id.status);
-
-        String projectUrl = getIntent().getStringExtra(INTENT_EXTRA_PROJECT_URL);
 
         findViewById(R.id.fab).setOnClickListener(view -> {
             View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_task, null);
@@ -74,26 +74,39 @@ public class TasksActivity extends AppCompatActivity {
                     .show();
         });
 
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        setTitle("Loading");
+
+        String projectUrl = getIntent().getStringExtra(INTENT_EXTRA_PROJECT_URL);
         SyncConfiguration config = SyncUser.current()
                 .createConfiguration(projectUrl)
                 .fullSynchronization()
+                .waitForInitialRemoteData(30, TimeUnit.SECONDS)
                 .build();
-        realm = Realm.getInstance(config);
-        Project project = realm.where(Project.class).findFirst();
 
-        setTitle(project.getName());
-        tasks = project.getTasks().where().sort("timestamp", Sort.ASCENDING).findAllAsync();
-        tasks.addChangeListener(tasks -> {
-            if (tasks.isEmpty()) {
-                setStatus("Press + to add a new task");
-            } else {
-                setStatus("");
+        Realm.getInstanceAsync(config, new Realm.Callback() {
+            @Override
+            public void onSuccess(Realm realm) {
+                TasksActivity.this.realm = realm;
+                Project project = realm.where(Project.class).findFirst();
+                if (project != null) {
+                    setTitle(project.getName());
+                    RealmResults<Item> tasks = project.getTasks().where().sort("timestamp", Sort.ASCENDING).findAllAsync();
+                    tasks.addChangeListener(list -> {
+                        if (list.isEmpty()) {
+                            setStatus("Press + to add a new task");
+                        } else {
+                            setStatus("");
+                        }
+                    });
+                    tasksRecyclerAdapter = new TasksRecyclerAdapter(tasks);
+                    recyclerView.setAdapter(tasksRecyclerAdapter);
+                } else {
+                    setStatus("Could not load project");
+                }
             }
         });
-        final TasksRecyclerAdapter itemsRecyclerAdapter = new TasksRecyclerAdapter(tasks);
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(itemsRecyclerAdapter);
 
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -105,7 +118,7 @@ public class TasksActivity extends AppCompatActivity {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = viewHolder.getAdapterPosition();
-                String id = itemsRecyclerAdapter.getItem(position).getItemId();
+                String id = tasksRecyclerAdapter.getItem(position).getItemId();
                 realm.executeTransactionAsync(realm -> {
                     Item item = realm.where(Item.class).equalTo("itemId", id).findFirst();
                     if (item != null) {

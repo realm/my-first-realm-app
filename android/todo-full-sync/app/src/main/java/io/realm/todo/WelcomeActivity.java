@@ -29,8 +29,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import io.realm.ObjectServerError;
-import io.realm.Realm;
-import io.realm.SyncConfiguration;
 import io.realm.SyncCredentials;
 import io.realm.SyncUser;
 
@@ -48,7 +46,7 @@ public class WelcomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
 
         if (SyncUser.current() != null) {
-            setUpRealmAndGoToListTaskActivity();
+            gotoListActivity();
         }
 
         // Set up the login form.
@@ -71,7 +69,7 @@ public class WelcomeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(SyncUser user) {
                 showProgress(false);
-                setUpRealmAndGoToListTaskActivity();
+                gotoListActivity();
             }
 
             @Override
@@ -108,9 +106,7 @@ public class WelcomeActivity extends AppCompatActivity {
         });
     }
 
-    private void setUpRealmAndGoToListTaskActivity() {
-        SyncConfiguration configuration = SyncUser.current().getDefaultConfiguration();
-        Realm.setDefaultConfiguration(configuration);
+    private void gotoListActivity() {
         Intent intent = new Intent(WelcomeActivity.this, ProjectsActivity.class);
         startActivity(intent);
     }
