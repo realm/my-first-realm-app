@@ -1,0 +1,34 @@
+{
+  "parser": "babel-eslint",
+  "plugins": [
+    "prettier",
+    "react",
+    "react-native"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-native/all",
+    "plugin:prettier/recommended",
+    "prettier/react"
+  ],
+  "env": {
+    "react-native/react-native": true
+  },
+  "settings": {
+    "react": {
+      "version": "16.4"
+    }
+  },
+  "parserOptions": {
+    "ecmaVersion": "2018",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true
+    }
+  },
+  "rules": {
+    "prettier/prettier": "error"
+  }
+}
