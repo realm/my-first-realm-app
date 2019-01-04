@@ -28,6 +28,6 @@ public final class Constants {
      * (remember to use 'http/realm' instead of 'https/realms' if you didn't setup SSL on ROS yet)
      */
     private static final String INSTANCE_ADDRESS = "<REPLACE_WITH_INSTANCE>";
-    public static final String AUTH_URL = "http://" + INSTANCE_ADDRESS + "/auth";
-    public static final String REALM_URL = "realm://" + INSTANCE_ADDRESS;
+    public static final String AUTH_URL = "https://" + INSTANCE_ADDRESS + "/auth";
+    public static final String REALM_URL = "realms://" + INSTANCE_ADDRESS;
 }
