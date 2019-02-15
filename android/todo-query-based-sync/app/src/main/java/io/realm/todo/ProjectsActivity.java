@@ -36,6 +36,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import io.realm.SyncUser;
+import io.realm.log.RealmLog;
 import io.realm.todo.model.Project;
 import io.realm.todo.ui.ProjectsRecyclerAdapter;
 
@@ -67,7 +68,7 @@ public class ProjectsActivity extends AppCompatActivity {
                         project.setTimestamp(new Date());
 
                         realm.insert(project);
-                    }))
+                    }, error -> RealmLog.error(error) ))
                     .setNegativeButton("Cancel", null)
                     .create()
                     .show();
