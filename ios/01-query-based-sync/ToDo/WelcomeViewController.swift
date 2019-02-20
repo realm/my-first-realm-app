@@ -55,8 +55,8 @@ func initializeRealmPermissions(_ realm: Realm) {
 // This is done asynchronously, as we must first wait for the Realm to download from the server
 // to ensure that we don't end up with the same user being added to a role multiple times.
 func initializePermissions(_ user: SyncUser, completion: @escaping (Error?) -> Void) {
-    let config = SyncUser.current?.configuration()
-    Realm.asyncOpen(configuration: config!) { (realm, error) in
+    let config = SyncUser.current!.configuration()
+    Realm.asyncOpen(configuration: config) { (realm, error) in
         guard let realm = realm else {
             completion(error)
             return

@@ -31,8 +31,7 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     let activityIndicator = UIActivityIndicatorView()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        let config = SyncUser.current?.configuration()
-        realm = try! Realm(configuration: config!)
+        realm = try! Realm(configuration: SyncUser.current!.configuration())
 
         // Display all projects that the user has permissions to see.
         projects = realm.objects(Project.self).sorted(byKeyPath: "timestamp", ascending: false)
