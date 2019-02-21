@@ -31,7 +31,8 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     let activityIndicator = UIActivityIndicatorView()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        realm = try! Realm(configuration: SyncConfiguration.automatic())
+        let config = SyncUser.current?.configuration()
+        realm = try! Realm(configuration: config!)
         
         projects = realm.objects(Project.self).filter("owner = %@", SyncUser.current!.identity!).sorted(byKeyPath: "timestamp", ascending: false)
         

@@ -3,5 +3,5 @@ platform :ios, '11.0'
 
 target 'ToDo' do
   use_frameworks!
-  pod 'RealmSwift', '~> 3.3.0'
+  pod 'RealmSwift', '~> 3.13.0'
 end

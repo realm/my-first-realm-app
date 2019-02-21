@@ -31,7 +31,7 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
     let activityIndicator = UIActivityIndicatorView()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        realm = try! Realm(configuration: SyncConfiguration.automatic())
+        realm = try! Realm(configuration: SyncUser.current!.configuration())
 
         // Display all projects that the user has permissions to see.
         projects = realm.objects(Project.self).sorted(byKeyPath: "timestamp", ascending: false)
@@ -157,7 +157,7 @@ class ProjectsViewController: UIViewController, UITableViewDelegate, UITableView
         self.navigationController?.pushViewController(itemsVC, animated: true)
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         guard editingStyle == .delete else { return }
         let project = projects[indexPath.row]
         if project.items.count > 0 {

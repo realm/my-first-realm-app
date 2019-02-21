@@ -21,13 +21,16 @@ import RealmSwift
 
 class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    var items: List<Item>?
-    var project: Project?
-
+    let realm: Realm
+    let items: Results<Item>
+    
     var notificationToken: NotificationToken?
     var tableView = UITableView()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        let config = SyncUser.current?.configuration(realmURL: Constants.REALM_URL, fullSynchronization: true)
+        self.realm = try! Realm(configuration: config!)
+        self.items = realm.objects(Item.self).sorted(byKeyPath: "timestamp", ascending: false)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -37,21 +40,17 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.items = project?.items // get the list of items from the project
-
-        title = project?.name ?? "Unnamed Project"
+        title = "Things ToDo!"
         view.addSubview(tableView)
         tableView.frame = self.view.frame
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        // Do any additional setup after loading the view, typically from a nib.
         
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButtonDidClick))
-        let logoutButton = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutButtonDidClick))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(leftBarButtonDidClick))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(rightBarButtonDidClick))
         
-        navigationItem.rightBarButtonItems = [logoutButton, addButton]
-        
-        notificationToken = items?.observe { [weak self] (changes) in
+        notificationToken = items.observe { [weak self] (changes) in
             guard let tableView = self?.tableView else { return }
             switch changes {
             case .initial:
@@ -78,7 +77,7 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         notificationToken?.invalidate()
     }
     
-    @objc func addItemButtonDidClick() {
+    @objc func leftBarButtonDidClick() {
         let alertController = UIAlertController(title: "Add Item", message: "", preferredStyle: .alert)
         
         alertController.addAction(UIAlertAction(title: "Save", style: .default, handler: {
@@ -86,9 +85,8 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             let textField = alertController.textFields![0] as UITextField
             let item = Item()
             item.body = textField.text ?? ""
-
-            try! self.project?.realm?.write {
-                self.project?.items.append(item)
+            try! self.realm.write {
+                self.realm.add(item)
             }
             // do something with textField
         }))
@@ -99,7 +97,7 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.present(alertController, animated: true, completion: nil)
     }
     
-    @objc func logoutButtonDidClick() {
+    @objc func rightBarButtonDidClick() {
         let alertController = UIAlertController(title: "Logout", message: "", preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "Yes, Logout", style: .destructive, handler: {
             alert -> Void in
@@ -111,30 +109,30 @@ class ItemsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items?.count ?? 0
+        return items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") ?? UITableViewCell(style: .default, reuseIdentifier: "Cell")
         cell.selectionStyle = .none
-        let item = items?[indexPath.row]
-        cell.textLabel?.text = item?.body
-        cell.accessoryType = item!.isDone ? UITableViewCellAccessoryType.checkmark : UITableViewCellAccessoryType.none
+        let item = items[indexPath.row]
+        cell.textLabel?.text = item.body
+        cell.accessoryType = item.isDone ? UITableViewCell.AccessoryType.checkmark : UITableViewCell.AccessoryType.none
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = items?[indexPath.row]
-        try! self.project?.realm?.write {
-            item!.isDone = !(item!.isDone)
+        let item = items[indexPath.row]
+        try! realm.write {
+            item.isDone = !item.isDone
         }
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         guard editingStyle == .delete else { return }
-        let item = items?[indexPath.row]
-        try! self.project?.realm?.write {
-            self.project?.realm?.delete(item!)
+        let item = items[indexPath.row]
+        try! realm.write {
+            realm.delete(item)
         }
     }
 
