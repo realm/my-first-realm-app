@@ -4,18 +4,19 @@ import {
   HttpLink,
   InMemoryCache,
   split,
+  NormalizedCacheObject,
 } from "apollo-client-preset";
 import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
 import * as React from "react";
 import { Credentials, GraphQLConfig, User } from "realm-graphql-client";
+import gql from "graphql-tag";
 
-import { SERVER_URL } from "../constants";
+
+import { SERVER_URL, REALM_PATH } from "../constants";
 
 import { AuthenticatedScene } from "./AuthenticatedScene";
 import { LoginScene } from "./LoginScene";
-
-const REALM_PATH = "/~/todo";
 
 interface IIdleState {
   status: "idle";
@@ -44,6 +45,7 @@ class AppContainer extends React.Component<{}, IAppContainerState> {
   private onAuthentication = async (nickname: string) => {
     const user = await this.authenticate(nickname);
     const client = await this.createClient(user, REALM_PATH);
+    const subscription = this.createSubscription(client)
     this.setState({ status: "authenticated", client });
   }
 
@@ -60,7 +62,7 @@ class AppContainer extends React.Component<{}, IAppContainerState> {
 
   private async createClient(user: User, path: string) {
     // Create a configuration from the user
-    const config = await GraphQLConfig.create(user, path);
+    const config = await GraphQLConfig.create(user, path, null, true);
     // Construct an HTTP link that knows how to authenticate against ROS
     const httpLink = concat(
       config.authLink,
@@ -91,6 +93,45 @@ class AppContainer extends React.Component<{}, IAppContainerState> {
       link,
     });
   }
+
+  private async createSubscription(client: ApolloClient<NormalizedCacheObject>) {
+    const response = await client.mutate({
+      mutation: gql`
+        mutation {
+          createItemSubscription(query: "body = 'Buy milk'") {
+            body
+          }
+        }
+      `
+    })
+    console.log(`createItemSubscription response:`);
+    console.log(response)
+
+    const queryResponse = await client.query({
+      query: gql`
+        query {
+          items {
+            body
+          }
+        }
+      `
+    })
+    console.log("query response:")
+    console.log(queryResponse);
+
+    const subResponse = await client.query({
+      query: gql`
+        query {
+          queryBasedSubscriptions {
+            name
+          }
+        }
+      `
+    })
+
+    console.log(subResponse)
+  }
+
 }
 
 export { AppContainer as App };
