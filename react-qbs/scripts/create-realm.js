@@ -29,10 +29,8 @@ async function run(url, nickname, schemaName) {
   const schema = require(schemaPath);
   // Open up a Realm
   // const syncUrl = url.replace(/^http/, "realm") + "/";
-  const user = await Realm.Sync.User.registerWithProvider(url, {
-    provider: "nickname",
-    providerToken: nickname,
-  });
+  const credentials = Realm.Sync.Credentials.nickname(nickname, true);
+  const user = await Realm.Sync.User.login(url, credentials);
 
   /*
   // TODO: Use this way of creating a configuration, once the ROS GraphQL Service can open query-based realms.
@@ -45,8 +43,8 @@ async function run(url, nickname, schemaName) {
     schema,
     sync: {
       user,
-      url: url.replace(/^http/, "realm") + "/~/todo",
-      fullSynchronization: true,
+      url: url.replace(/^http/, "realm") + "/~/todo-reference",
+      fullSynchronization: false,
     }
   };
   // Open the Realm
