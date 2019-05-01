@@ -35,9 +35,14 @@ import java.util.Date;
 
 import io.realm.ObjectServerError;
 import io.realm.PermissionManager;
+import io.realm.Progress;
+import io.realm.ProgressListener;
+import io.realm.ProgressMode;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.SyncConfiguration;
+import io.realm.SyncManager;
+import io.realm.SyncSession;
 import io.realm.SyncUser;
 import io.realm.log.RealmLog;
 import io.realm.permissions.Permission;
@@ -89,7 +94,21 @@ public class ProjectsActivity extends AppCompatActivity {
                                     })
                                     .build();
                             RealmLog.info("Connecting to " +  config.getServerUrl().toString());
-                            Realm.getInstance(config).close();
+                            Realm.getInstanceAsync(config, new Realm.Callback() {
+                                @Override
+                                public void onSuccess(Realm realm) {
+                                    SyncSession session = SyncManager.getSession((SyncConfiguration) realm.getConfiguration());
+                                    session.addUploadProgressListener(ProgressMode.CURRENT_CHANGES, new ProgressListener() {
+                                        @Override
+                                        public void onChange(Progress progress) {
+                                            if (progress.isTransferComplete()) {
+                                                session.removeProgressListener(this);
+                                                runOnUiThread(() -> realm.close());
+                                            }
+                                        }
+                                    });
+                                }
+                            });
                         }
                     })
                     .setNegativeButton("Cancel", null)
