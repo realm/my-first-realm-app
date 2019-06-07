@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
-import React, { Component } from "react";
+import React from "react";
 import { View, FlatList, Text, StyleSheet } from "react-native";
 import { Actions } from "react-native-router-flux";
-import { List, ListItem } from "react-native-elements";
+import { ListItem } from "react-native-elements";
 import { v4 as uuid } from "uuid";
 
 const projectKeyExtractor = project => project.projectId;
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
 import { ModalView } from "./ModalView";
 import { SwipeDeleteable } from "./SwipeDeleteable";
 
-export class ProjectList extends Component {
+export class ProjectList extends React.Component {
   static propTypes = {
     user: PropTypes.object,
     realm: PropTypes.object
@@ -25,22 +25,16 @@ export class ProjectList extends Component {
 
   state = {
     dataVersion: 0,
-    isModalVisible: false
+    isModalVisible: false,
+    ready: false,
+    projects: null
   };
 
   componentDidMount() {
     const { realm } = this.props;
 
-    // Register an action to create a project
-    Actions.refresh({
-      rightTitle: " Create",
-      onRight: () => {
-        this.toggleModal();
-      }
-    });
-
     // Get a result containing all projects
-    const projects = realm
+    projects = realm
       .objects("Project")
       .filtered("owner == $0", this.props.user.identity)
       .sorted("timestamp", true);
@@ -57,11 +51,22 @@ export class ProjectList extends Component {
     this.subscription.addListener(this.onSubscriptionChange);
 
     // Update the state with the projects
-    this.setState({ projects });
+    this.setState({ projects: projects });
+
+    // Register an action to create a project
+    setTimeout(() => { // setTimeout is a work-around: https://github.com/aksonov/react-native-router-flux/issues/2791#issuecomment-358157174
+      Actions.refresh({
+        title: 'Projects',
+        rightTitle: " Create",
+        onRight: () => {
+          this.toggleModal();
+        }
+      });
+    });
   }
 
   componentWillUnmount() {
-    const { projects } = this.state;
+    const { dataVersion, isModalVisible, ready, projects } = this.state;
     if (this.subscription) {
       // Remove all listeners from the subscription
       this.subscription.removeAllListeners();
@@ -72,20 +77,18 @@ export class ProjectList extends Component {
   }
 
   render() {
-    const { dataVersion, isModalVisible, projects } = this.state;
+    const { dataVersion, isModalVisible, ready, projects } = this.state;
     return (
       <View>
-        {!projects || projects.length === 0 ? (
+        {!ready || !projects || projects.length === 0 ? (
           <Text style={styles.placeholder}>Create your first project</Text>
         ) : (
-          <List>
-            <FlatList
-              data={projects}
-              extraData={dataVersion}
-              renderItem={this.renderProject}
-              keyExtractor={projectKeyExtractor}
-            />
-          </List>
+          <FlatList
+            data={projects}
+            extraData={dataVersion}
+            renderItem={this.renderProject}
+            keyExtractor={projectKeyExtractor}
+          />
         )}
         <ModalView
           placeholder="Please Enter a Project Name"
@@ -118,9 +121,8 @@ export class ProjectList extends Component {
     </SwipeDeleteable>
   );
 
-  onSubscriptionChange = () => {
-    // Realm.Sync.SubscriptionState.Complete
-    // Realm.Sync.SubscriptionState.Error
+  onSubscriptionChange = (sub, substate) => {
+    this.setState({ ready: substate === Realm.Sync.SubscriptionState.Complete });
   };
 
   toggleModal = () => {
@@ -144,6 +146,7 @@ export class ProjectList extends Component {
   };
 
   onProjectPress = project => {
+    console.log('ProjectPress', JSON.stringify(project));
     const { user, realm } = this.props;
     Actions.items({ project, realm, user, title: project.name });
   };

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Actions } from "react-native-router-flux";
 import Realm from "realm";
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export class LoginForm extends Component {
+export class LoginForm extends React.Component {
   state = {};
 
   componentDidMount() {
@@ -86,10 +86,8 @@ export class LoginForm extends Component {
       // Reset any previous errors that might have happened
       this.setState({ error: undefined });
       // Attempt to authenticate towards the server
-      const user = await Realm.Sync.User.registerWithProvider(SERVER_URL, {
-        provider: "nickname",
-        providerToken: nickname
-      });
+      const creds = Realm.Sync.Credentials.nickname(nickname);
+      const user = await Realm.Sync.User.login(SERVER_URL, creds);
       // Hide the modal
       this.setState({ isModalVisible: false });
       this.onAuthenticated(user);

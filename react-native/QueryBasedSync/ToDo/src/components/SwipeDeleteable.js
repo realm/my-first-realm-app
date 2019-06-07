@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
-import React, { Component } from "react";
+import React from "react";
 import { Animated, PanResponder } from "react-native";
 
-export class SwipeDeleteable extends Component {
+export class SwipeDeleteable extends React.Component {
   static propTypes = {
     onDeletion: PropTypes.func.isRequired,
     onPress: PropTypes.func
