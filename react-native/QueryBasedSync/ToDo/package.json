@@ -12,7 +12,7 @@
     "react-native-elements": "^1.1.0",
     "react-native-modal": "^11.0.1",
     "react-native-router-flux": "^4.0.6",
-    "react-native-vector-icons": "^6.4.2",
+    "react-native-vector-icons": "^6.5.0",
     "realm": "^2.28.1"
   },
   "devDependencies": {
