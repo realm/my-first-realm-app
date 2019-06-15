@@ -10,4 +10,13 @@
     <PackageReference Include="Acr.UserDialogs" Version="7.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="View\ItemEntriesPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
+
 </Project>
