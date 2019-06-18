@@ -15,9 +15,6 @@ namespace ToDoApp
 {
     public class ItemEntriesViewModel : INotifyPropertyChanged
     {
-        public static string AuthUrl = "https://mdbw19.us1.cloud.realm.io";
-        public static string RealmPath = "/~/ToDo";
-
         public IEnumerable<Item> Entries { get; private set; }
 
         private Realm _realm;
@@ -67,15 +64,7 @@ namespace ToDoApp
 
         private async Task<Realm> OpenRealm()
         {
-            var user = User.Current;
-            if (user == null)
-            {
-                var credentials = Credentials.Nickname("Peter");
-                user = await User.LoginAsync(credentials, new Uri(AuthUrl));
-            }
-
-            var configuration = new FullSyncConfiguration(new Uri(RealmPath, UriKind.Relative), user);
-            return Realm.GetInstance(configuration);
+            return Realm.GetInstance();
         }
     }
 }
