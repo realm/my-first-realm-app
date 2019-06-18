@@ -10,11 +10,9 @@
         <ListView ItemsSource="{Binding Entries}" x:Name="EntriesListView" ItemSelected="OnItemSelected">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextCell Text="{Binding Body}">
+                    <TextCell>
                         <TextCell.ContextActions>
-                            <MenuItem Text="Delete" IsDestructive="true" 
- Command="{Binding BindingContext.DeleteEntryCommand, Source={x:Reference EntriesListView}" 
- CommandParameter="{Binding .}" />
+                            <MenuItem Text="Delete" IsDestructive="true" Command="{Binding BindingContext.DeleteEntryCommand, Source={x:Reference EntriesListView}" CommandParameter="{Binding .}" />
                         </TextCell.ContextActions>
                     </TextCell>
                 </DataTemplate>
