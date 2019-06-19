@@ -146,7 +146,6 @@ export class ProjectList extends React.Component {
   };
 
   onProjectPress = project => {
-    console.log('ProjectPress', JSON.stringify(project));
     const { user, realm } = this.props;
     Actions.items({ project, realm, user, title: project.name });
   };
