@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
-import React, { Component } from "react";
+import React from "react";
 import { View, FlatList, Text, StyleSheet } from "react-native";
 import { Actions } from "react-native-router-flux";
-import { List, ListItem } from "react-native-elements";
+import { ListItem } from "react-native-elements";
 import { v4 as uuid } from "uuid";
 
 const styles = StyleSheet.create({
@@ -27,7 +27,7 @@ const uncheckedIcon = {
   color: "#555"
 };
 
-export class ItemList extends Component {
+export class ItemList extends React.Component {
   static propTypes = {
     user: PropTypes.object,
     realm: PropTypes.object,
@@ -36,23 +36,15 @@ export class ItemList extends Component {
 
   state = {
     dataVersion: 0,
-    isModalVisible: false
+    isModalVisible: false,
+    items: null
   };
 
   componentDidMount() {
     const { project } = this.props;
 
-    // Register an action to create an item
-    Actions.refresh({
-      title: project.name,
-      rightTitle: " Create",
-      onRight: () => {
-        this.toggleModal();
-      }
-    });
-
     // Get a result containing all items
-    const items = project.items.sorted("timestamp");
+    items = project.items.sorted("timestamp");
 
     // When the list of items change, React won't know about it because the Result object itself did not change.
     items.addListener(() => {
@@ -64,15 +56,23 @@ export class ItemList extends Component {
     // We assume another subscription is created for all the users projects already.
 
     // Update the state with the items
-    this.setState({ items });
+    this.setState({ items: items });
+
+    // Register an action to create an item
+    setTimeout(() => { // setTimeout is a work-around: https://github.com/aksonov/react-native-router-flux/issues/2791#issuecomment-358157174
+      Actions.refresh({
+        title: project.name,
+        rightTitle: " Create",
+        onRight: () => {
+          this.toggleModal();
+        }
+      });
+    }, 0);
   }
 
   componentWillUnmount() {
-    const { items } = this.state;
-    // Remove all listeners from the subscription
-    if (this.subscription) {
-      this.subscription.removeAllListeners();
-    }
+    const items = this.state.items;
+
     // Remove all listeners from the items
     if (items) {
       items.removeAllListeners();
@@ -86,14 +86,12 @@ export class ItemList extends Component {
         {!items || items.length === 0 ? (
           <Text style={styles.placeholder}>Create your first item</Text>
         ) : (
-          <List>
-            <FlatList
-              data={items}
-              extraData={dataVersion}
-              renderItem={this.renderItem}
-              keyExtractor={itemKeyExtractor}
-            />
-          </List>
+          <FlatList
+            data={items}
+            extraData={dataVersion}
+            renderItem={this.renderItem}
+            keyExtractor={itemKeyExtractor}
+          />
         )}
         <ModalView
           placeholder="Please enter a description"
@@ -116,17 +114,12 @@ export class ItemList extends Component {
       <ListItem
         title={item.body}
         rightIcon={item.isDone ? checkedIcon : uncheckedIcon}
-        onPressRightIcon={() => {
+        onPress={() => {
           this.onToggleDone(item);
         }}
       />
     </SwipeDeleteable>
   );
-
-  onSubscriptionChange = () => {
-    // Realm.Sync.SubscriptionState.Complete
-    // Realm.Sync.SubscriptionState.Error
-  };
 
   toggleModal = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });

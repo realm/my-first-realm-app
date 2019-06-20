@@ -13,7 +13,7 @@ import { LoginForm } from "./LoginForm";
 import { ProjectList } from "./ProjectList";
 import { ItemList } from "./ItemList";
 
-export const App = () => (
+export default App = () => (
   <Router>
     <Scene hideNavBar={true}>
       <Scene key="login" component={LoginForm} title="Please Login" />

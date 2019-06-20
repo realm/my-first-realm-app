@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { Component } from "react";
+import React from "react";
 import { View, Text, TextInput } from "react-native";
 import Modal from "react-native-modal";
 import { StyleSheet } from "react-native";
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
 
 import { Button } from "./Button";
 
-export class ModalView extends Component {
+export class ModalView extends React.Component {
   static propTypes = {
     confirmLabel: PropTypes.string,
     error: PropTypes.object,
