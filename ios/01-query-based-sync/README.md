@@ -9,7 +9,7 @@ This is a complement to the Realm Cloud _ToDo List_ tutorial https://docs.realm.
 
 ## Setup
 
-1. **Important:** This project uses the [nickname authentication provider](https://docs.realm.io/server/configure/authentication/nickname-authentication), which you must opt-in to use. To opt in,
+1. **Important:** This project uses the deprecated [nickname authentication provider](https://docs.realm.io/server/configure/authentication/nickname-authentication), which you must opt-in to use. To opt in,
    - Log in to https://cloud.realm.io.
    - Select your instance.
    - Go to the "Settings" tab.
@@ -19,6 +19,8 @@ This is a complement to the Realm Cloud _ToDo List_ tutorial https://docs.realm.
 ![Enable Nickname auth on the Cloud console](Graphics/Cloud-nickname-opt-in.png "Enable Nickname auth on the Cloud console")
 
 If you forget to enable nickname authentication and run the app anyway, you will see the following fatal error: "Your request parameters did not validate. provider: Invalid parameter 'provider'!".
+
+Please note that the nickname authentication provider is only intended for development purposes. If you intend to use the same instance for production, you should disable the nickname authentication provider after you are done with this sample app.
 
 2. In a new terminal window, run `pod install --repo-update` to update and install the required Realm SDK.
 3. Open `ToDo.xcworkspace` with Xcode.
