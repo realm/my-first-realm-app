@@ -2,8 +2,10 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
          xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
          x:Class="ToDoApp.ItemEntriesPage"
-         Title="ToDo">
+         Title="ToDo"
+         NavigationPage.HasBackButton="False" >
     <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Sign Out" Command="{Binding SignOutCommand}" />
         <ToolbarItem Text="Add" Command="{Binding AddEntryCommand}" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
@@ -12,9 +14,7 @@
                 <DataTemplate>
                     <TextCell Text="{Binding Body}">
                         <TextCell.ContextActions>
-                            <MenuItem Text="Delete" IsDestructive="true" 
- Command="{Binding BindingContext.DeleteEntryCommand, Source={x:Reference EntriesListView}" 
- CommandParameter="{Binding .}" />
+                            <MenuItem Text="Delete" IsDestructive="true" Command="{Binding BindingContext.DeleteEntryCommand, Source={x:Reference EntriesListView}}" CommandParameter="{Binding .}" />
                         </TextCell.ContextActions>
                     </TextCell>
                 </DataTemplate>

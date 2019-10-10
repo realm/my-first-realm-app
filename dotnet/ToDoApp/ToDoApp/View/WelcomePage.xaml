@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ToDoApp.WelcomePage">
+    <ContentPage.Content>
+        <StackLayout VerticalOptions="StartAndExpand">
+            <Label Text="Username" />
+            <Entry x:Name="Username" Placeholder="Username" Text="{Binding Username}" IsEnabled="{Binding IsFormEnabled}" />
+            <Label Text="Password" />
+            <Entry x:Name="Password" Placeholder="Password" Text="{Binding Password}" IsEnabled="{Binding IsFormEnabled}" IsPassword="true" />
+            <Button Text="Sign In" IsEnabled="{Binding IsFormEnabled}" Command="{Binding SignInCommand}" />
+            <Button Text="Sign Up" IsEnabled="{Binding IsFormEnabled}" Command="{Binding SignUpCommand}" />
+            <Label x:Name="Message" Text="{Binding Message, Mode=TwoWay}" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

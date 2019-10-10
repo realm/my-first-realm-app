@@ -30,6 +30,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
@@ -82,6 +83,14 @@ public class TasksActivity extends AppCompatActivity {
         SyncConfiguration config = SyncUser.current()
                 .createConfiguration(projectUrl)
                 .fullSynchronization()
+                .initialData(realm -> {
+                    Project project = new Project();
+                    String userId = SyncUser.current().getIdentity();
+                    project.setOwner(userId);
+                    project.setName("My ToDo List");
+                    project.setTimestamp(new Date());
+                    realm.insert(project);
+                })
                 .waitForInitialRemoteData(30, TimeUnit.SECONDS)
                 .build();
 

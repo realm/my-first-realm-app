@@ -10,7 +10,7 @@ namespace ToDoApp
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new ItemEntriesPage());
+            MainPage = new NavigationPage(new WelcomePage());
         }
     }
 }
