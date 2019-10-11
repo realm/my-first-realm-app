@@ -2,10 +2,9 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
          xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
          x:Class="ToDoApp.ItemEntriesPage"
-         Title="ToDo"
-         NavigationPage.HasBackButton="False" >
+         Title="ToDo" >
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Sign Out" Command="{Binding SignOutCommand}" />
+        <ToolbarItem Text="Log Out" Command="{Binding LogOutCommand}" />
         <ToolbarItem Text="Add" Command="{Binding AddEntryCommand}" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>

@@ -8,11 +8,11 @@ namespace ToDoApp
     public partial class ItemEntriesPage : ContentPage
     {
 
-        public ItemEntriesPage(Realm realm)
+        public ItemEntriesPage()
         {
             InitializeComponent();
 
-            BindingContext = new ItemEntriesViewModel(Navigation, realm);
+            BindingContext = new ItemEntriesViewModel();
         }
 
         protected override bool OnBackButtonPressed()
