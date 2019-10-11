@@ -60,10 +60,12 @@ namespace ToDoApp
 
         private async Task StartLoginCycle()
         {
+            // Yield first in case this is called from the constructor, when not
+            // everything will be loaded and the dialog may not show.
             do
             {
                 await Task.Yield();
-            } while (await LogIn() == false);
+            } while (!await LogIn());
         }
 
         private async Task<bool> LogIn()
@@ -74,8 +76,7 @@ namespace ToDoApp
                 if (user == null)
                 {
                     // Not already logged in.
-                    LoginResult loginResult;
-                    loginResult = await UserDialogs.Instance.LoginAsync("Log in", "Enter a username and password");
+                    var loginResult = await UserDialogs.Instance.LoginAsync("Log in", "Enter a username and password");
 
                     if (!loginResult.Ok)
                     {
@@ -83,7 +84,8 @@ namespace ToDoApp
                     }
 
                     // Create credentials with the given username and password.
-                    // Specify whether we are registering a new user or not with `createUser`.
+                    // Leaving the third parameter null allows a user to be registered
+                    // if one does not already exist for this username.
                     var credentials = Realms.Sync.Credentials.UsernamePassword(loginResult.LoginText, loginResult.Password);
 
                     // Log in as the user.
