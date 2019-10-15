@@ -25,10 +25,6 @@
             android:name=".TasksActivity"
             android:label="@string/title_activity_items"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".ProjectsActivity"
-            android:label="@string/title_select_projects"
-            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

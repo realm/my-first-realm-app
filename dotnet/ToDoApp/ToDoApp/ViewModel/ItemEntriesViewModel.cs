@@ -1,43 +1,115 @@
-﻿using Acr.UserDialogs;
+using Acr.UserDialogs;
 using Realms;
 using Realms.Sync;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
-using Credentials = Realms.Sync.Credentials;
-
 namespace ToDoApp
 {
     public class ItemEntriesViewModel : INotifyPropertyChanged
     {
-        public IEnumerable<Item> Entries { get; private set; }
-
         private Realm _realm;
+        private IEnumerable<Item> _entries;
+        public IEnumerable<Item> Entries
+        {
+            get { return _entries; }
+            private set
+            {
+                if (_entries == value)
+                {
+                    return;
+                }
+                _entries = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(Entries)));
+            }
+        }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public ICommand LogOutCommand { get; private set; }
 
         public ICommand DeleteEntryCommand { get; private set; }
 
         public ICommand AddEntryCommand { get; private set; }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public ItemEntriesViewModel()
         {
+            LogOutCommand = new Command(() =>
+            {
+                if (User.Current == null)
+                {
+                    return;
+                }
+                User.Current.LogOutAsync().IgnoreResult();
+                _realm = null;
+                Entries = null;
+                StartLoginCycle().IgnoreResult();
+            });
+
             DeleteEntryCommand = new Command<Item>(DeleteEntry);
             AddEntryCommand = new Command(() => AddEntry().IgnoreResult());
-            Initialize().IgnoreResult();
+
+            StartLoginCycle().IgnoreResult();
         }
 
-        private async Task Initialize()
+        private async Task StartLoginCycle()
         {
-            _realm = await OpenRealm();
-            Entries = _realm.All<Item>().OrderBy(i => i.Timestamp);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Entries)));
+            // Yield first in case this is called from the constructor, when not
+            // everything will be loaded and the dialog may not show.
+            do
+            {
+                await Task.Yield();
+            } while (!await LogIn());
+        }
 
+        private async Task<bool> LogIn()
+        {
+            try
+            {
+                var user = User.Current;
+                if (user == null)
+                {
+                    // Not already logged in.
+                    var loginResult = await UserDialogs.Instance.LoginAsync("Log in", "Enter a username and password");
+
+                    if (!loginResult.Ok)
+                    {
+                        return false;
+                    }
+
+                    // Create credentials with the given username and password.
+                    // Leaving the third parameter null allows a user to be registered
+                    // if one does not already exist for this username.
+                    var credentials = Realms.Sync.Credentials.UsernamePassword(loginResult.LoginText, loginResult.Password);
+
+                    // Log in as the user.
+                    user = await User.LoginAsync(credentials, new Uri(Constants.AuthUrl));
+                }
+
+                Debug.Assert(user != null);
+
+                var configuration = new FullSyncConfiguration(new Uri(Constants.RealmPath, UriKind.Relative), user);
+                _realm = await Realm.GetInstanceAsync(configuration);
+
+                // Get the list of items.
+                Entries = _realm.All<Item>().OrderBy(i => i.Timestamp);
+
+                Console.WriteLine("Login successful.");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Display the error message.
+                await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+                return false;
+            }
         }
 
         private async Task AddEntry()
@@ -62,60 +134,5 @@ namespace ToDoApp
         }
 
         private void DeleteEntry(Item entry) => _realm.Write(() => _realm.Remove(entry));
-
-        private async Task<Realm> OpenRealm()
-        {
-            var user = User.Current;
-            if (user != null)
-            {
-                var configuration = new FullSyncConfiguration(new Uri(Constants.RealmPath, UriKind.Relative), user);
-
-                // User has already logged in, so we can just load the existing data in the Realm.
-                return Realm.GetInstance(configuration);
-            }
-
-            // When that is called in the page constructor, we need to allow the UI operation
-            // to complete before we can display a dialog prompt.
-            await Task.Yield();
-
-            var response = await UserDialogs.Instance.PromptAsync(new PromptConfig
-            {
-                Title = "Login",
-                Message = "Please enter your nickname",
-                OkText = "Login",
-                IsCancellable = false,
-            });
-            var credentials = Credentials.Nickname(response.Value, isAdmin: true);
-
-            try
-            {
-                UserDialogs.Instance.ShowLoading("Logging in...");
-
-                user = await User.LoginAsync(credentials, new Uri(Constants.AuthUrl));
-
-                UserDialogs.Instance.ShowLoading("Loading data");
-
-                var configuration = new FullSyncConfiguration(new Uri(Constants.RealmPath, UriKind.Relative), user);
-
-                // First time the user logs in, let's use GetInstanceAsync so we fully download the Realm
-                // before letting them interract with the UI.
-                var realm = await Realm.GetInstanceAsync(configuration);
-
-                UserDialogs.Instance.HideLoading();
-
-                return realm;
-            }
-            catch (Exception ex)
-            {
-                await UserDialogs.Instance.AlertAsync(new AlertConfig
-                {
-                    Title = "An error has occurred",
-                    Message = $"An error occurred while trying to open the Realm: {ex.Message}"
-                });
-
-                // Try again
-                return await OpenRealm();
-            }
-        }
     }
 }

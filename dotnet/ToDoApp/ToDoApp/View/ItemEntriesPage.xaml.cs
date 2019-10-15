@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+using Realms;
+using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace ToDoApp
@@ -11,7 +12,13 @@ namespace ToDoApp
         {
             InitializeComponent();
 
-            BindingContext = new ItemEntriesViewModel(); 
+            BindingContext = new ItemEntriesViewModel();
+        }
+
+        protected override bool OnBackButtonPressed()
+        {
+            // Ignore hardware back button. There is a "log out" button instead.
+            return true;
         }
 
         private void OnItemSelected(object sender, SelectedItemChangedEventArgs e)

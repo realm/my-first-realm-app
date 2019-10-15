@@ -36,7 +36,8 @@ import static io.realm.todo.Constants.AUTH_URL;
 
 public class WelcomeActivity extends AppCompatActivity {
 
-    private EditText nicknameView;
+    private EditText usernameView;
+    private EditText passwordView;
     private View progressView;
     private View loginFormView;
 
@@ -50,21 +51,25 @@ public class WelcomeActivity extends AppCompatActivity {
         }
 
         // Set up the login form.
-        nicknameView = findViewById(R.id.nickname);
-        Button loginButton = findViewById(R.id.login_button);
-        loginButton.setOnClickListener(view -> attemptLogin());
+        usernameView = findViewById(R.id.username);
+        passwordView = findViewById(R.id.password);
+        Button signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setOnClickListener(view -> attemptLogin(false));
+        Button signUpButton = findViewById(R.id.sign_up_button);
+        signUpButton.setOnClickListener(view -> attemptLogin(true));
         loginFormView = findViewById(R.id.login_form);
         progressView = findViewById(R.id.login_progress);
     }
 
-    private void attemptLogin() {
+    private void attemptLogin(boolean createUser) {
         // Reset errors.
-        nicknameView.setError(null);
+        usernameView.setError(null);
         // Store values at the time of the login attempt.
-        String nickname = nicknameView.getText().toString();
+        String username = usernameView.getText().toString();
+        String password = passwordView.getText().toString();
         showProgress(true);
 
-        SyncCredentials credentials = SyncCredentials.nickname(nickname, false);
+        SyncCredentials credentials = SyncCredentials.usernamePassword(username, password, createUser);
         SyncUser.logInAsync(credentials, AUTH_URL, new SyncUser.Callback<SyncUser>() {
             @Override
             public void onSuccess(SyncUser user) {
@@ -75,8 +80,8 @@ public class WelcomeActivity extends AppCompatActivity {
             @Override
             public void onError(ObjectServerError error) {
                 showProgress(false);
-                nicknameView.setError("Uh oh something went wrong! (check your logcat please)");
-                nicknameView.requestFocus();
+                usernameView.setError("Uh oh something went wrong! (check your logcat please)");
+                usernameView.requestFocus();
                 Log.e("Login error", error.toString());
             }
         });
@@ -107,7 +112,8 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void gotoListActivity() {
-        Intent intent = new Intent(WelcomeActivity.this, ProjectsActivity.class);
+        Intent intent = new Intent(WelcomeActivity.this, TasksActivity.class);
+        intent.putExtra(TasksActivity.INTENT_EXTRA_PROJECT_URL, Constants.REALM_URL + "/~/project");
         startActivity(intent);
     }
 }
