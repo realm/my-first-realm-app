@@ -1,6 +1,6 @@
 # Realm Cloud ToDo List - iOS
 
-This is a complement to the Realm Cloud _ToDo List_ tutorial https://docs.realm.io/cloud/ios-todo-app
+This is a complement to the Realm Cloud _ToDo List_ tutorial https://docs.realm.io/sync/getting-started-1/step-1-my-first-realm-app
 
 ## Requirements:
 
