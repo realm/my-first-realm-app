@@ -21,7 +21,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.realm.*
 import io.realm.kotlin.where
-import io.realm.log.RealmLog
 import io.realm.todo.model.Project
 import io.realm.todo.model.Task
 import java.util.*
@@ -42,7 +41,6 @@ class TasksViewModel(user: SyncUser, url: String) : ViewModel() {
                 .createConfiguration(url)
                 .fullSynchronization()
                 .initialData { realm: Realm ->
-                    // Temporary fix for not detecting Client Resync correctly
                     if (realm.isEmpty) {
                         val project = Project()
                         project.owner = user.identity
@@ -92,7 +90,6 @@ class TasksViewModel(user: SyncUser, url: String) : ViewModel() {
     private fun registerProgressListeners() {
         // Only report when data is being downloaded to avoid too much noise if offline
         SyncManager.getSession(config).addDownloadProgressListener(ProgressMode.INDEFINITELY) { progress ->
-            RealmLog.error(progress.toString())
             _syncInProgress.postValue(!progress.isTransferComplete)
         }
     }

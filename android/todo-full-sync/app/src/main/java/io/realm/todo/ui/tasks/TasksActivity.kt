@@ -56,7 +56,7 @@ class TasksActivity : AppCompatActivity() {
         progressView = findViewById(R.id.progressbar)
         progressView.visibility = View.INVISIBLE
         statusView = findViewById(R.id.status)
-        fabView = findViewById<View>(R.id.fab)
+        fabView = findViewById(R.id.fab)
         fabView.visibility = View.INVISIBLE
         fabView.setOnClickListener { view: View? ->
             val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_task, null)
