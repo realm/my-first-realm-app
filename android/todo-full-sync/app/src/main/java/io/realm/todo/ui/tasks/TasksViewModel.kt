@@ -19,11 +19,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.realm.Realm
-import io.realm.RealmResults
-import io.realm.Sort
-import io.realm.SyncUser
+import io.realm.*
 import io.realm.kotlin.where
+import io.realm.log.RealmLog
 import io.realm.todo.model.Project
 import io.realm.todo.model.Task
 import java.util.*
@@ -31,14 +29,16 @@ import java.util.concurrent.TimeUnit
 
 class TasksViewModel(user: SyncUser, url: String) : ViewModel() {
 
+    private val config: SyncConfiguration
     private lateinit var realm: Realm
     private lateinit var taskResults: RealmResults<Task>
     private val _tasks = MutableLiveData<RealmResults<Task>?>(null)
     private val _title = MutableLiveData<String>("Loading")
     private val _status = MutableLiveData<String>("")
+    private val _syncInProgress = MutableLiveData<Boolean>(false)
 
     init {
-        val config = SyncUser.current()
+        config = SyncUser.current()
                 .createConfiguration(url)
                 .fullSynchronization()
                 .initialData { realm: Realm ->
@@ -54,8 +54,10 @@ class TasksViewModel(user: SyncUser, url: String) : ViewModel() {
                 .waitForInitialRemoteData(30, TimeUnit.SECONDS)
                 .build()
 
+        _syncInProgress.postValue(true)
         Realm.getInstanceAsync(config, object : Realm.Callback() {
             override fun onSuccess(realm: Realm) {
+                _syncInProgress.postValue(false)
                 this@TasksViewModel.realm = realm
                 val project = realm.where<Project>().findFirst()
                 if (project != null) {
@@ -71,6 +73,7 @@ class TasksViewModel(user: SyncUser, url: String) : ViewModel() {
                         }
                     }
                     _tasks.postValue(taskResults)
+                    registerProgressListeners()
                 } else {
                     throw IllegalStateException("Project has been deleted")
                 }
@@ -78,10 +81,20 @@ class TasksViewModel(user: SyncUser, url: String) : ViewModel() {
 
             override fun onError(error: Throwable) {
                 super.onError(error)
+                _syncInProgress.postValue(false)
                 Log.e(TAG, error.toString())
                 _status.postValue("Could not open the Realm. See Logcat.")
             }
         })
+
+    }
+
+    private fun registerProgressListeners() {
+        // Only report when data is being downloaded to avoid too much noise if offline
+        SyncManager.getSession(config).addDownloadProgressListener(ProgressMode.INDEFINITELY) { progress ->
+            RealmLog.error(progress.toString())
+            _syncInProgress.postValue(!progress.isTransferComplete)
+        }
     }
 
     /**
@@ -103,6 +116,12 @@ class TasksViewModel(user: SyncUser, url: String) : ViewModel() {
      */
     val status: LiveData<String>
         get() = _status
+
+    /**
+     * Observe if data is being uploaded or downloaded
+     */
+    val syncProgress: LiveData<Boolean>
+        get() = _syncInProgress
 
     /**
      * Create a new task

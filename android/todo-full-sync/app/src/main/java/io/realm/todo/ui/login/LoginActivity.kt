@@ -22,6 +22,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -74,7 +75,8 @@ class LoginActivity : AppCompatActivity() {
                 }
                 is LoginError -> {
                     showProgress(false)
-                    usernameView.error = state.error
+                    usernameView.error = state.reason
+                    Toast.makeText(this, state.error.errorCode.toString(), Toast.LENGTH_SHORT).show()
                 }
                 else -> throw UnsupportedOperationException("Unsupported state: $state")
             }

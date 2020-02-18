@@ -43,6 +43,8 @@ class TasksActivity : AppCompatActivity() {
 
     private lateinit var vm: TasksViewModel
     private lateinit var statusView: TextView
+    private lateinit var fabView: View
+    private lateinit var progressView: View
     private var tasksRecyclerAdapter: TasksRecyclerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,8 +53,12 @@ class TasksActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
 
         // Setup views and UI listeners
+        progressView = findViewById(R.id.progressbar)
+        progressView.visibility = View.INVISIBLE
         statusView = findViewById(R.id.status)
-        findViewById<View>(R.id.fab).setOnClickListener { view: View? ->
+        fabView = findViewById<View>(R.id.fab)
+        fabView.visibility = View.INVISIBLE
+        fabView.setOnClickListener { view: View? ->
             val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_task, null)
             val taskText = dialogView.findViewById<EditText>(R.id.task)
             AlertDialog.Builder(this@TasksActivity)
@@ -98,6 +104,7 @@ class TasksActivity : AppCompatActivity() {
             val adapter = if (data != null) TasksRecyclerAdapter(vm, data) else null
             tasksRecyclerAdapter = adapter
             recyclerView.adapter = adapter
+            fabView.visibility = if (adapter != null) View.VISIBLE else View.INVISIBLE
         })
         vm.status.observe(this, Observer { status: String ->
             statusView.text = status
@@ -105,6 +112,9 @@ class TasksActivity : AppCompatActivity() {
         vm.title.observe(this, Observer { screenTitle: String ->
             title = screenTitle
         })
+        vm.syncProgress.observe(this, Observer {
+            progressView.visibility = if (it) View.VISIBLE else View.INVISIBLE
+         })
     }
 
     private fun gotoLoginActivity() {

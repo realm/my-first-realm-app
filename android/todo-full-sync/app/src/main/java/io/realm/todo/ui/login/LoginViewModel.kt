@@ -33,11 +33,11 @@ object WaitingForUser : LoginState()
 data class InvalidInput(val usernameError: String?, val passwordError: String?) : LoginState()
 object LoginPending : LoginState()
 data class LoginSuccess(val user: SyncUser) : LoginState()
-data class LoginError(val error: String) : LoginState()
+data class LoginError(val reason: String, val error: ObjectServerError) : LoginState()
 
 class LoginViewModel : ViewModel() {
 
-    private val _state = MutableLiveData<LoginState>(
+    private val state = MutableLiveData<LoginState>(
         when(SyncUser.current() != null) {
             true ->  LoginSuccess(SyncUser.current())
             false -> WaitingForUser
@@ -48,27 +48,27 @@ class LoginViewModel : ViewModel() {
      * Observe the state of the login
      */
     val loginState: LiveData<LoginState>
-        get() = _state
+        get() = state
 
     fun attemptLogin(userName: String, password: String, createUser: Boolean) { // Reset errors.
         if (userName.isEmpty() || password.isEmpty()) {
             val userError: String? = if (userName.isEmpty()) "Missing username" else null
             val passwordError : String? = if (password.isEmpty()) "Missing password" else null
-            _state.postValue(InvalidInput(userError, passwordError))
+            state.postValue(InvalidInput(userError, passwordError))
             return
         }
 
-        _state.postValue(LoginPending)
+        state.postValue(LoginPending)
         val credentials = SyncCredentials.usernamePassword(userName, password, createUser)
 
         SyncUser.logInAsync(credentials, Constants.AUTH_URL, object : SyncUser.Callback<SyncUser?> {
             override fun onSuccess(user: SyncUser?) {
-                _state.postValue(LoginSuccess(user!!))
+                state.postValue(LoginSuccess(user!!))
             }
 
             override fun onError(error: ObjectServerError) {
                 Log.e(TAG, error.toString())
-                _state.postValue(LoginError("Uh oh something went wrong! (check your logcat please)"))
+                state.postValue(LoginError("Uh oh something went wrong! (check your logcat please)", error))
             }
         })
     }
