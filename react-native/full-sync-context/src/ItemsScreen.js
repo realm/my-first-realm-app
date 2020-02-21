@@ -1,17 +1,11 @@
-import React, {
-  Component,
-  useMemo,
-  useEffect,
-  useState,
-  useCallback,
-} from 'react';
-import {Button, StyleSheet, FlatList} from 'react-native';
-import Realm from 'realm';
-import {RealmConsumer, RealmProvider, RealmQuery} from 'react-realm-context';
+import React, {useEffect, useState, useCallback} from 'react';
+import {StyleSheet, FlatList} from 'react-native';
+import {RealmQuery} from 'react-realm-context';
 import {v4 as uuid} from 'uuid';
 
 import {ItemView} from './ItemView';
-import {AddItemModal} from './AddItemModal.js';
+import {AddItemModal} from './AddItemModal';
+import {HeaderButton} from './HeaderButton';
 
 export const ItemsScreen = ({navigation, realm}) => {
   const [addItemModalVisible, setAddItemModalVisible] = useState(false);
@@ -60,7 +54,7 @@ export const ItemsScreen = ({navigation, realm}) => {
   // Setup the button to add items
   useEffect(() => {
     navigation.setOptions({
-      headerLeft: () => <Button onPress={showAddItemModal} title="＋" />,
+      headerLeft: () => <HeaderButton onPress={showAddItemModal} title="＋" />,
     });
   }, [navigation]);
 

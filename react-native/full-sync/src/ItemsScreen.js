@@ -6,6 +6,7 @@ import {v4 as uuid} from 'uuid';
 import {schema} from './schema.js';
 import {ItemView} from './ItemView';
 import {AddItemModal} from './AddItemModal.js';
+import {HeaderButton} from './HeaderButton';
 
 export class ItemsScreen extends Component {
   state = {changes: 0, items: null, addItemModalVisible: false};
@@ -29,7 +30,9 @@ export class ItemsScreen extends Component {
     this.setState({items});
 
     this.props.navigation.setOptions({
-      headerLeft: () => <Button onPress={this.showAddItemModal} title="＋" />,
+      headerLeft: () => (
+        <HeaderButton onPress={this.showAddItemModal} title="＋" />
+      ),
     });
   }
 

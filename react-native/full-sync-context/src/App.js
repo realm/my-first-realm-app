@@ -1,11 +1,12 @@
 import React from 'react';
-import {Button} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import Realm from 'realm';
 
 import {LoginScreen} from './LoginScreen';
 import {ToDoRealmProvider} from './ToDoRealmProvider';
 import {ItemsScreen} from './ItemsScreen';
+import {HeaderButton} from './HeaderButton';
 
 const Stack = createStackNavigator();
 
@@ -27,7 +28,7 @@ export const App = () => {
           options={({navigation}) => ({
             headerTitle: 'Things ToDo!',
             headerRight: () => (
-              <Button
+              <HeaderButton
                 title="Logout"
                 onPress={() => {
                   if (Realm.Sync.User.current) {
