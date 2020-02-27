@@ -98,6 +98,19 @@ class WelcomeViewController: UIViewController {
         errorLabel.numberOfLines = 0
         errorLabel.textColor = .red
         container.addArrangedSubview(errorLabel)
+
+        if (SyncUser.all.count > 1) {
+            // If more than one user is unexpectedly logged in, log out all of them
+            for (_, user) in SyncUser.all {
+                user.logOut();
+            }
+        } else if (SyncUser.all.count == 1) {
+            // Switch to the items view, if a user is logged in
+            self.navigationController!.pushViewController(
+                ItemsViewController(),
+                animated: false
+            );
+        }
     }
 
     @objc func signIn() {
