@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Realm Inc.
+ * Copyright 2020 Realm Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.realm.todo
 
+import android.app.Application
+import io.realm.Realm
 
-package io.realm.todo;
-
-import android.app.Application;
-
-import io.realm.Realm;
-import io.realm.log.LogLevel;
-import io.realm.log.RealmLog;
-
-public class ToDoApplication extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Realm.init(this);
+class ToDoApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        Realm.init(this)
     }
 }

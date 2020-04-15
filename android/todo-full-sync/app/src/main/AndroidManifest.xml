@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".ui.login.LoginActivity"
             android:label="@string/app_name"
             android:noHistory="true">
             <intent-filter>
@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TasksActivity"
+            android:name=".ui.tasks.TasksActivity"
             android:label="@string/title_activity_items"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
